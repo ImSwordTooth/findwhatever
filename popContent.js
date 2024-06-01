@@ -1,7 +1,6 @@
 let treeWalker, allNodes, currentNode, setting = {}, activeHighlightIndex = 0, filteredRangeList = [], rangesFlat;
 
 const observer = new MutationObserver(() => {
-    console.log('懂了')
     reCheckTree();
     doSearch();
 })
@@ -28,6 +27,7 @@ const start = async () => {
     const searchInput = document.querySelector('#searchWhateverPopup #searchInput'); // 搜索框
     const matchCaseButton = document.querySelector('#searchWhateverPopup #matchCase');
     const wordButton = document.querySelector('#searchWhateverPopup #word');
+    const regButton = document.querySelector('#searchWhateverPopup #reg');
 
     setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg']); // 缓存值
 
@@ -39,6 +39,9 @@ const start = async () => {
     }
     if (setting.isWord) {
         wordButton.classList.add('active')
+    }
+    if (setting.isReg) {
+        regButton.classList.add('active')
     }
 
     searchInput.oninput = (e) => {
@@ -65,7 +68,6 @@ const start = async () => {
         observer.disconnect()
 
         document.querySelector('#searchWhateverPopup #searchwhatever_result .current').innerText = activeHighlightIndex;
-        console.log(filteredRangeList[activeHighlightIndex - 1])
         filteredRangeList[activeHighlightIndex - 1].scrollIntoView({ behavior: 'instant', block: 'center' })
         observer.observe(document.body, {
             subtree: false, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
@@ -147,12 +149,38 @@ const start = async () => {
         doSearch()
     }
 
+    regButton.onclick = (e) => {
+        const { classList } = e.currentTarget
+        const isActive = classList.contains('active')
+        if (isActive) {
+            classList.remove('active')
+            chrome.runtime.sendMessage({
+                action: 'saveData',
+                data: {
+                    isReg: false
+                }
+            });
+            setting.isReg = false
+        } else {
+            classList.add('active')
+            chrome.runtime.sendMessage({
+                action: 'saveData',
+                data: {
+                    isReg: true
+                }
+            });
+            setting.isReg = true
+        }
+
+        doSearch()
+    }
+
     // 启动后立即进行一次搜索
     doSearch()
 }
 
 async function doSearch() {
-    const { isMatchCase, searchValue, isWord } = setting
+    const { isMatchCase, searchValue, isWord, isReg } = setting
 
     if (!CSS.highlights) {
 
@@ -175,33 +203,51 @@ async function doSearch() {
     rangesFlat = allRangeList.map(({ el, text }) => {
         const indices = [];
         let startPos = 0;
+
+        let regContent = searchValue
+        if (!isReg) {
+            regContent = regContent.replace(/([^a-z0-9_ \n])/g, '\\$1')
+        }
+        if (isWord) {
+            regContent = `\\b${regContent}\\b`
+        }
+        let execResLength = searchValue.value; // 匹配结果的长度，一般情况下等于字符长度，如果是正则，就得是正则结果的长度
+        const reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg`);
         while (startPos < text.length) {
             let index;
 
+            let res;
             if (isMatchCase) {
-                index = text.indexOf(searchValue, startPos)
+                res = reg.exec(text.substring(startPos))
             } else {
-                index = text.toLowerCase().indexOf(searchValue.toLowerCase(), startPos)
+                res = reg.exec(text.substring(startPos).toLowerCase())
+            }
+
+            if (res) {
+                index = res.indices[0][0]
+                execResLength = res.indices[0][1] - res.indices[0][0]
+            } else {
+                index = -1
             }
 
             if (index === -1) {
                 break;
             }
             indices.push(index);
-            startPos = index + searchValue.length;
+            startPos += index + execResLength;
         }
 
         return indices.map((index) => {
             const range = new Range();
             filteredRangeList.push(el.parentElement)
             range.setStart(el, index);
-            range.setEnd(el, index + searchValue.length);
+            range.setEnd(el, index + execResLength);
             return range;
         })
     }).flat()
 
+
     const searchResultsHighlight = new Highlight(...rangesFlat)
-    console.log(searchResultsHighlight)
 
     // 先断开再连接，否则会引起观察者的变动，导致无限循环
     observer.disconnect()
