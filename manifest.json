@@ -17,7 +17,8 @@
     {
       "matches": ["<all_urls>"],
       "css": ["style.css"],
-      "js": ["popContent.js"]
+      "js": ["popContent.js"],
+      "all_frames": true
     }
   ],
   "background": {
