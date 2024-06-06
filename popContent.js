@@ -15,14 +15,6 @@ const observer = new MutationObserver(() => {
     doSearch();
 })
 
-const getCurrentTab = async () => {
-    console.log('123')
-    let queryOptions = { active: true, lastFocusedWindow: true };
-    let [tab] = await chrome.tabs.query(queryOptions);
-    console.log(tab)
-    return tab;
-}
-
 // 创建一个自定义的弹出窗口
 const createPopup = async () => {
     const popup = document.createElement('div');
@@ -79,21 +71,19 @@ const createPopup = async () => {
 </div>
 `
     const { frames } = await chrome.storage.session.get(['frames']);
-    console.log({ frames })
     for (let i=0; i<frames.length; i++) {
-        console.log('i', i)
         content.querySelector('.wp .tabs').innerHTML +=`<button class="${i === 0 ? 'active' : ''}" data-frameid="${frames[i].frameId}">
             <div>${ i === 0 ? '当前页' : `iframe ${i}` }</div>
         </button>`
 
     }
     popup.appendChild(content);
-
-    popup.getElementsByClassName('close')[0].onclick = () => {
+    popup.getElementsByClassName('close')[0].onclick = async () => {
         observer.disconnect()
         CSS.highlights.clear();
         document.body.removeChild(popup);
         chrome.storage.onChanged.removeListener(handleStorageChange)
+        await chrome.storage.session.set({ resultSum: {} })
     }
 
     // 插入到页面
@@ -126,7 +116,12 @@ const start = async () => {
     const wordButton = document.querySelector('#searchWhateverPopup #word');
     const regButton = document.querySelector('#searchWhateverPopup #reg');
 
+    chrome.storage.onChanged.addListener(handleStorageChange)
+
     setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg']); // 缓存值
+
+    // 暂时去掉记忆功能
+    // setting.searchValue = ''
 
     // 仅在主界面进行一些 dom 的操作，frame 内的只搜索
     if (!isFrame) {
@@ -138,7 +133,7 @@ const start = async () => {
             setting.searchValue = selection;
         } else if (setting.searchValue) {
             // 暂时去掉记忆功能
-            // searchInput.value = setting.searchValue;
+            searchInput.value = setting.searchValue;
         }
         if (setting.isMatchCase) {
             matchCaseButton.classList.add('active')
@@ -158,7 +153,6 @@ const start = async () => {
             // 主界面执行完搜索之后，通知 frame 可以搜索了
             await doSearch()
             chrome.storage.local.set({ searchInFrame: Math.random() })
-            console.log('搜了！！')
         }
 
 
@@ -206,42 +200,44 @@ const start = async () => {
             chrome.storage.local.set({ searchInFrame: Math.random() })
         }
 
-        document.querySelector('#searchWhateverPopup #searchwhatever_result .prev').onclick = () => {
-            if (activeHighlightIndex > 1) {
-                activeHighlightIndex--;
-            } else {
-                activeHighlightIndex = rangesFlat.length;
+        document.querySelector('#searchWhateverPopup #searchwhatever_result .prev').onclick = async () => {
+            let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
+            const sum = Object.values(resultSum).reduce((a,b) => a + b, 0);
+            activeResult = activeResult || 1;
+            activeResult--;
+            if (activeResult <= 0) {
+                activeResult = sum
             }
-            observer.disconnect()
+            await chrome.storage.session.set({ activeResult: activeResult})
 
-            document.querySelector('#searchWhateverPopup #searchwhatever_result .current').innerText = activeHighlightIndex;
-            filteredRangeList[activeHighlightIndex - 1].scrollIntoView({ behavior: 'instant', block: 'center' })
+            observer.disconnect()
+            document.querySelector('#searchWhateverPopup #searchwhatever_result .current').innerText = activeResult;
             observer.observe(document.body, {
                 subtree: false, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
                 childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
                 attributes: false, // 不监听属性值
                 characterData: true // 监听声明的 target 节点上所有字符的变化。
             })
-            CSS.highlights.set('search-results-active', new Highlight(rangesFlat[activeHighlightIndex - 1]))
         }
 
-        document.querySelector('#searchWhateverPopup #searchwhatever_result .next').onclick = () => {
-            if (activeHighlightIndex < rangesFlat.length) {
-                activeHighlightIndex++;
-            } else {
-                activeHighlightIndex = 1;
+        document.querySelector('#searchWhateverPopup #searchwhatever_result .next').onclick = async () => {
+            let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
+            const sum = Object.values(resultSum).reduce((a,b) => a + b, 0);
+            activeResult = activeResult || 1;
+            activeResult++;
+            if (activeResult > sum) {
+                activeResult = 1
             }
-            observer.disconnect()
+            await chrome.storage.session.set({ activeResult: activeResult})
 
-            document.querySelector('#searchWhateverPopup #searchwhatever_result .current').innerText = activeHighlightIndex;
-            filteredRangeList[activeHighlightIndex - 1].scrollIntoView({ behavior: 'instant', block: 'center' })
+            observer.disconnect()
+            document.querySelector('#searchWhateverPopup #searchwhatever_result .current').innerText = activeResult;
             observer.observe(document.body, {
                 subtree: false, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
                 childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
                 attributes: false, // 不监听属性值
                 characterData: true // 监听声明的 target 节点上所有字符的变化。
             })
-            CSS.highlights.set('search-results-active', new Highlight(rangesFlat[activeHighlightIndex - 1]))
         }
     }
 
@@ -312,7 +308,6 @@ async function doSearch() {
         characterData: true // 监听声明的 target 节点上所有字符的变化。
     })
     CSS.highlights.set('search-results', searchResultsHighlight)
-    console.log(searchResultsHighlight)
 
     // 向背景脚本发送消息以获取当前标签信息
     chrome?.runtime?.sendMessage({
@@ -339,12 +334,10 @@ const handleStorageChange = async (changes, areaName) => {
         }
     }
     if (areaName === 'session') {
-        console.log({ changes })
         if (!isFrame && changes.resultSum) {
             let sum = 0;
             for (let i in changes.resultSum.newValue) {
                 sum += changes.resultSum.newValue[i]
-                console.log(`#searchWhateverPopup .wp .tabs button[data-frameid="${i}"] .sum`)
                 const currentButton = document.querySelector(`#searchWhateverPopup .wp .tabs button[data-frameid="${i}"]`);
                 if (currentButton) {
                     if (currentButton.querySelector(`.sum`)) {
@@ -353,7 +346,6 @@ const handleStorageChange = async (changes, areaName) => {
                         currentButton.innerHTML += `<span class="sum">${changes.resultSum.newValue[i]}</span>`;
                     }
                 }
-
             }
             if (document.querySelector('#searchWhateverPopup #searchwhatever_result .total')) {
                 document.querySelector('#searchWhateverPopup #searchwhatever_result .total').innerText = sum;
@@ -362,4 +354,4 @@ const handleStorageChange = async (changes, areaName) => {
         }
     }
 }
-chrome.storage.onChanged.addListener(handleStorageChange)
+
