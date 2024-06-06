@@ -1,4 +1,42 @@
 #searchWhateverPopup .wp {
+    /*display: flex;*/
+    /*align-items: center;*/
+}
+
+#searchWhateverPopup .tabs {
+    background-color: rgb(244, 244, 245);
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 3px;
+    border-radius: 12px;
+    margin-bottom: 4px;
+}
+
+#searchWhateverPopup .tabs button {
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 10px;
+    transform: scale(.9);
+    transform-origin: left;
+    line-height: 16px;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+}
+#searchWhateverPopup .tabs button.active {
+    background-color: #ffffff;
+}
+#searchWhateverPopup .tabs .sum {
+    background-color: #f9f9f9;
+    padding: 1px 5px;
+    border-radius: 6px;
+    margin-left: 2px;
+    border: solid 1px #e2e2e2;
+}
+
+#searchWhateverPopup .searchWp {
     display: flex;
     align-items: center;
 }

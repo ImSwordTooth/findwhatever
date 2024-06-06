@@ -9,7 +9,7 @@
       "32": "popup.png"
     }
   },
-  "permissions": ["storage", "declarativeContent", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "webNavigation", "tabs"],
   "host_permissions": [
     "*://*/*"
   ],
