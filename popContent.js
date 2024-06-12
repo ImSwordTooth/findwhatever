@@ -32,53 +32,47 @@ const createPopup = async () => {
 
     // 添加内容
     const content = document.createElement('div');
-    content.innerHTML = `<div class="wp">
-        <div class="tabs" aria-label="Options">
-        
-        </div>
-        
-        <div class="searchWp">
-            <div class="search">
+    content.innerHTML = `<div class="swe_tabsWp">
+                                <div class="swe_tabs"></div>
+                                <div id="searchwhatever_result">
+                                <div class="swe_visible" title="该元素不可见">
+                                <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7976" width="200" height="200"><path d="M764.394366 588.97307c-93.111887 0-170.503211 64.930254-190.69476 151.667381-47.118423-20.148282-90.861972-14.552338-123.399212-0.562479C429.546366 653.340845 352.155042 588.97307 259.605634 588.97307c-108.255549 0-196.305127 87.862085-196.305127 195.886874C63.300507 892.87031 151.350085 980.732394 259.605634 980.732394c103.207662 0 186.771831-79.468169 194.61769-180.209577 16.831099-11.754366 61.151549-33.575662 115.553352 1.124958C578.747493 901.826704 661.749183 980.732394 764.394366 980.732394c108.255549 0 196.305127-87.862085 196.305127-195.87245 0-108.024789-88.049577-195.886873-196.305127-195.886874z m-504.788732 55.959437c77.405746 0 140.215887 62.694761 140.215887 139.927437 0 77.232676-62.810141 139.898592-140.215887 139.898591-77.405746 0-140.215887-62.665915-140.215888-139.898591 0-77.232676 62.810141-139.927437 140.215888-139.927437z m504.788732 0c77.405746 0 140.215887 62.694761 140.215888 139.927437 0 77.232676-62.810141 139.898592-140.215888 139.898591-77.405746 0-140.215887-62.665915-140.215887-139.898591 0-77.232676 62.810141-139.927437 140.215887-139.927437zM1016.788732 475.943662H7.211268v57.690141h1009.577464v-57.690141zM697.675718 77.016338c-11.538028-26.249014-41.334986-40.094648-69.011831-30.907493L512 85.294873l-117.226366-39.186028-2.769127-0.836507c-27.806648-7.687211-57.026704 7.355493-67.338817 34.426592L196.78107 418.253521h630.43786L698.771831 79.69893l-1.096113-2.682592z" p-id="7977"></path></svg>
+                                <div class="swe_visibleStatus">不可见</div>
+                            </div>
+                                    搜索结果：<span class="swe_current">0</span> / <span class="swe_total">0</span>
+                                </div>
+                            </div>
+                            <div class="swe_searchWp">
+                                <div class="swe_search">
+                                    <img class="swe_search_icon" src="https://i0.letvimg.com/lc19_lemf/202406/12/11/10/search.png" alt="">
+                                    <input id="searchInput" autofocus type="text" placeholder="搜索" />
+                                    <div class="swe_toolbar">
+                                        <div class="swe_prev">
+                                            <img src="https://i1.letvimg.com/lc19_lemf/202406/12/11/11/up.png" alt="上一个">
+                                        </div>
+                                        <div class="swe_next">
+                                            <img src="https://i1.letvimg.com/lc19_lemf/202406/12/11/11/up.png" alt="下一个">
+                                        </div>
+                                        <span id="matchCase">Cc</span>
+                                        <span id="word">W</span>
+                                        <span id="reg">.*</span>
+                                    </div>
+                                </div>
+                                <div class="swe_close">
+                                    <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12.47232 12.51328C26.74688-1.76128 49.5104-2.90816 65.15712 9.84064l2.93888 2.70336L1009.664 955.37152c14.96064 14.80704 15.62624 38.76864 1.51552 54.38464-14.12096 15.616-38.02112 17.3568-54.26176 3.95264l-2.9696-2.70336L12.41088 68.17792c-15.34976-15.39072-15.31904-40.30464 0.06144-55.66464z m0 0" fill="#2C2C2C" /><path d="M1009.67424 12.51328c-14.2848-14.27456-37.04832-15.42144-52.69504-2.67264l-2.99008 2.70336L12.41088 955.37152c-14.96064 14.80704-15.62624 38.76864-1.51552 54.38464 14.12096 15.616 38.02112 17.3568 54.25152 3.95264l2.9696-2.70336 941.568-942.82752c15.34976-15.38048 15.32928-40.30464-0.0512-55.66464h0.04096z m0 0" fill="#2C2C2C" /></svg>
+                                </div>
+                            </div>
 
-        
-        <input id="searchInput" autofocus type="text" placeholder="搜索关键字" />
-
-        <div class="toolbar">
-            <span id="matchCase">Cc</span>
-            <span id="word">W</span>
-            <span id="reg">.*</span>
-        </div>
-    </div>
-    
-    <div class="close">
-        <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12.47232 12.51328C26.74688-1.76128 49.5104-2.90816 65.15712 9.84064l2.93888 2.70336L1009.664 955.37152c14.96064 14.80704 15.62624 38.76864 1.51552 54.38464-14.12096 15.616-38.02112 17.3568-54.26176 3.95264l-2.9696-2.70336L12.41088 68.17792c-15.34976-15.39072-15.31904-40.30464 0.06144-55.66464z m0 0" fill="#2C2C2C" /><path d="M1009.67424 12.51328c-14.2848-14.27456-37.04832-15.42144-52.69504-2.67264l-2.99008 2.70336L12.41088 955.37152c-14.96064 14.80704-15.62624 38.76864-1.51552 54.38464 14.12096 15.616 38.02112 17.3568 54.25152 3.95264l2.9696-2.70336 941.568-942.82752c15.34976-15.38048 15.32928-40.30464-0.0512-55.66464h0.04096z m0 0" fill="#2C2C2C" /></svg>
-    </div>
-</div>
-
-</div>
-<div id="searchwhatever_result">
-搜索结果：<span class="current">0</span> / <span class="total">0</span>
-
-<div class="prev">
-    <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M877.863693 338.744408 557.862219 18.745191c-24.991331-24.993589-65.516166-24.993589-90.509755 0L147.353249 338.744408c-24.989073 24.993589-24.989073 65.516166 0 90.509755 24.993589 24.995847 65.518424 24.995847 90.509755 0l210.745399-210.747656 0 741.49227c0 35.347753 28.653444 64.001198 64.001198 64.001198 35.343237 0 63.99894-28.651187 63.99894-64.001198l0.002257-741.49227 210.747656 210.745399c12.494537 12.496794 28.874707 18.74632 45.25262 18.74632s32.758083-6.247268 45.254877-18.744063C902.855024 404.258316 902.855024 363.740254 877.863693 338.744408z" fill="#707070" p-id="1491"></path></svg>
-</div>
-<div class="next">
-    <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M877.863693 338.744408 557.862219 18.745191c-24.991331-24.993589-65.516166-24.993589-90.509755 0L147.353249 338.744408c-24.989073 24.993589-24.989073 65.516166 0 90.509755 24.993589 24.995847 65.518424 24.995847 90.509755 0l210.745399-210.747656 0 741.49227c0 35.347753 28.653444 64.001198 64.001198 64.001198 35.343237 0 63.99894-28.651187 63.99894-64.001198l0.002257-741.49227 210.747656 210.745399c12.494537 12.496794 28.874707 18.74632 45.25262 18.74632s32.758083-6.247268 45.254877-18.744063C902.855024 404.258316 902.855024 363.740254 877.863693 338.744408z" fill="#707070" p-id="9149"></path></svg>
-</div>
-
-
-
-</div>
 `
     const { frames } = await chrome.storage.session.get(['frames']);
     for (let i=0; i<frames.length; i++) {
-        content.querySelector('.wp .tabs').innerHTML +=`<button class="${i === 0 ? 'active' : ''}" data-frameid="${frames[i].frameId}">
+        content.querySelector('.swe_tabs').innerHTML +=`<button class="${i === 0 ? 'active' : ''}" data-frameid="${frames[i].frameId}">
             <div>${ i === 0 ? '当前页' : `iframe ${i}` }</div>
         </button>`
 
     }
     popup.appendChild(content);
-    popup.getElementsByClassName('close')[0].onclick = async () => {
+    popup.getElementsByClassName('swe_close')[0].onclick = async () => {
         observer.disconnect()
         CSS.highlights.clear();
         document.body.removeChild(popup);
@@ -200,7 +194,7 @@ const start = async () => {
             chrome.storage.local.set({ searchInFrame: Math.random() })
         }
 
-        document.querySelector('#searchWhateverPopup #searchwhatever_result .prev').onclick = async () => {
+        document.querySelector('#searchWhateverPopup .swe_toolbar .swe_prev').onclick = async () => {
             let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
             const sum = Object.values(resultSum).reduce((a,b) => a + b, 0);
             activeResult = activeResult || 1;
@@ -211,7 +205,7 @@ const start = async () => {
             await chrome.storage.session.set({ activeResult: activeResult})
 
             observer.disconnect()
-            document.querySelector('#searchWhateverPopup #searchwhatever_result .current').innerText = activeResult;
+            document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = activeResult;
             observer.observe(document.body, {
                 subtree: false, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
                 childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
@@ -220,7 +214,7 @@ const start = async () => {
             })
         }
 
-        document.querySelector('#searchWhateverPopup #searchwhatever_result .next').onclick = async () => {
+        document.querySelector('#searchWhateverPopup .swe_toolbar .swe_next').onclick = async () => {
             let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
             const sum = Object.values(resultSum).reduce((a,b) => a + b, 0);
             activeResult = activeResult || 1;
@@ -231,7 +225,7 @@ const start = async () => {
             await chrome.storage.session.set({ activeResult: activeResult})
 
             observer.disconnect()
-            document.querySelector('#searchWhateverPopup #searchwhatever_result .current').innerText = activeResult;
+            document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = activeResult;
             observer.observe(document.body, {
                 subtree: false, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
                 childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
@@ -250,57 +244,59 @@ async function doSearch() {
 
     CSS.highlights.clear();
 
-    if (!searchValue) {
-        return
-    }
+    if (searchValue) {
+        const allRangeList = allNodes.map(el => ({ el, text: el.textContent }));
+        filteredRangeList = []
 
-    const allRangeList = allNodes.map(el => ({ el, text: el.textContent }));
-    filteredRangeList = []
+        rangesFlat = allRangeList.map(({ el, text }) => {
+            const indices = [];
+            let startPos = 0;
 
-    rangesFlat = allRangeList.map(({ el, text }) => {
-        const indices = [];
-        let startPos = 0;
+            let regContent = searchValue
+            if (!isReg) {
+                regContent = regContent.replace(/([^a-zA-Z0-9_ \n])/g, '\\$1')
+            }
+            if (isWord) {
+                regContent = `\\b${regContent}\\b`
+            }
+            let execResLength = searchValue.value; // 匹配结果的长度，一般情况下等于字符长度，如果是正则，就得是正则结果的长度
+            const reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg`);
 
-        let regContent = searchValue
-        if (!isReg) {
-            regContent = regContent.replace(/([^a-zA-Z0-9_ \n])/g, '\\$1')
-        }
-        if (isWord) {
-            regContent = `\\b${regContent}\\b`
-        }
-        let execResLength = searchValue.value; // 匹配结果的长度，一般情况下等于字符长度，如果是正则，就得是正则结果的长度
-        const reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg`);
+            while (startPos < text.length) {
+                let index;
+                const res = reg.exec(text.substring(startPos));
 
-        while (startPos < text.length) {
-            let index;
-            const res = reg.exec(text.substring(startPos));
+                if (res) {
+                    index = res.indices[0][0]
+                    execResLength = res.indices[0][1] - res.indices[0][0]
+                } else {
+                    index = -1;
+                    break;
+                }
 
-            if (res) {
-                index = res.indices[0][0]
-                execResLength = res.indices[0][1] - res.indices[0][0]
-            } else {
-                index = -1;
-                break;
+                indices.push(startPos + index);
+                startPos += index + execResLength;
             }
 
-            indices.push(startPos + index);
-            startPos += index + execResLength;
-        }
+            return indices.map((index) => {
+                const range = new Range();
+                filteredRangeList.push(el.parentElement)
+                range.setStart(el, index);
+                range.setEnd(el, index + execResLength);
+                return range;
+            })
+        }).flat()
+    } else {
+        rangesFlat = []
+    }
 
-        return indices.map((index) => {
-            const range = new Range();
-            filteredRangeList.push(el.parentElement)
-            range.setStart(el, index);
-            range.setEnd(el, index + execResLength);
-            return range;
-        })
-    }).flat()
+
 
     const searchResultsHighlight = new Highlight(...rangesFlat)
 
     // 先断开再连接，否则会引起观察者的变动，导致无限循环
     observer.disconnect()
-    // document.querySelector('#searchWhateverPopup #searchwhatever_result .total').innerText = searchResultsHighlight.size;
+    // document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = searchResultsHighlight.size;
     observer.observe(document.body, {
         subtree: false, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
         childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
@@ -318,13 +314,22 @@ async function doSearch() {
         }
     });
 
-    if (searchResultsHighlight.size > 0) {
-        activeHighlightIndex = 1
-        if (!isFrame) {
-            document.querySelector('#searchWhateverPopup #searchwhatever_result .current').innerText = activeHighlightIndex;
-        }
-        CSS.highlights.set('search-results-active', new Highlight(rangesFlat[activeHighlightIndex - 1]))
+    console.log(searchResultsHighlight.size)
+    if (rangesFlat[0]) {
+        CSS.highlights.set('search-results-active', new Highlight(rangesFlat[0]))
+
     }
+    // if (searchResultsHighlight.size > 0) {
+    //     if (!isFrame) {
+    //         await chrome.storage.session.set({ activeResult: 1})
+    //         document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 1;
+    //     }
+    //     CSS.highlights.set('search-results-active', new Highlight(rangesFlat[0]))
+    // } else {
+    //     if (!isFrame) {
+    //         document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 0;
+    //     }
+    // }
 }
 const handleStorageChange = async (changes, areaName) => {
     if(areaName === 'local') {
@@ -338,20 +343,51 @@ const handleStorageChange = async (changes, areaName) => {
             let sum = 0;
             for (let i in changes.resultSum.newValue) {
                 sum += changes.resultSum.newValue[i]
-                const currentButton = document.querySelector(`#searchWhateverPopup .wp .tabs button[data-frameid="${i}"]`);
+                const currentButton = document.querySelector(`#searchWhateverPopup .swe_tabs button[data-frameid="${i}"]`);
                 if (currentButton) {
-                    if (currentButton.querySelector(`.sum`)) {
-                        currentButton.querySelector(`.sum`).innerText = changes.resultSum.newValue[i];
+                    if (currentButton.querySelector(`.swe_sum`)) {
+                        currentButton.querySelector(`.swe_sum`).innerText = changes.resultSum.newValue[i];
                     } else {
-                        currentButton.innerHTML += `<span class="sum">${changes.resultSum.newValue[i]}</span>`;
+                        currentButton.innerHTML += `<span class="swe_sum">${changes.resultSum.newValue[i]}</span>`;
                     }
                 }
             }
-            if (document.querySelector('#searchWhateverPopup #searchwhatever_result .total')) {
-                document.querySelector('#searchWhateverPopup #searchwhatever_result .total').innerText = sum;
+            if (document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total')) {
+                document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = sum;
 
+                if (sum > 0) {
+                    await chrome.storage.session.set({ activeResult: 1})
+                    document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 1;
+
+                } else {
+                    document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 0;
+                    await chrome.storage.session.set({ activeResult: 0})
+                }
             }
+        }
+        if (!isFrame && changes.visibleStatus !== undefined) {
+            document.querySelector('#searchWhateverPopup .swe_visible').title = changes.visibleStatus.newValue;
+            document.querySelector('#searchWhateverPopup .swe_visible').style.opacity = changes.visibleStatus.newValue ? 1 : 0;
         }
     }
 }
+
+// 获取元素的隐藏状态，返回一个描述元素不可见的原因的字符串，如果不为空，说明元素不可见
+const isElementVisible = (el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) {
+        return '隐藏中'
+    } else {
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const topElement = document.elementFromPoint(centerX, centerY);
+        console.log(topElement)
+        if (el !== topElement && !el.contains(topElement)) {
+            return '被其他元素遮盖'
+        }
+    }
+
+    return '';
+}
+
 

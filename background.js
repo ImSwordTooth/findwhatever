@@ -64,7 +64,7 @@ const handleStorageChange = async (changes, areaName) => {
                             target: { tabId: currentTab.id, frameIds: [0] },
                             args: [i],
                             func: (currentFrameId) => {
-                                const buttons = document.querySelectorAll('#searchWhateverPopup .wp .tabs button');
+                                const buttons = document.querySelectorAll('#searchWhateverPopup .swe_tabs button');
                                 for (let btn of buttons) {
                                     btn.classList.remove('active');
 
@@ -80,6 +80,7 @@ const handleStorageChange = async (changes, areaName) => {
                             func: (realIndex) => {
                                 CSS.highlights.set('search-results-active', new Highlight(rangesFlat[realIndex - 1]))
                                 filteredRangeList[realIndex - 1].scrollIntoView({ behavior: 'instant', block: 'center' })
+                                chrome.storage.session.set({ visibleStatus: isElementVisible(filteredRangeList[realIndex - 1]) })
                             }
                         })
                     })
@@ -94,8 +95,6 @@ chrome.storage.onChanged.addListener(handleStorageChange)
 
 chrome.tabs.onActivated.addListener(async () => {
     const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    
-    console.log('变了')
 
     await chrome.scripting.executeScript({
         target: { tabId: currentTab.id, allFrames: true },
