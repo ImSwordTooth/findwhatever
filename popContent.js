@@ -144,9 +144,6 @@ const start = async () => {
             // 向背景脚本发送消息以获取当前标签信息
             await chrome.storage.sync.set({ searchValue: value })
             setting.searchValue = value;
-            // 主界面执行完搜索之后，通知 frame 可以搜索了
-            await doSearch()
-            chrome.storage.local.set({ searchInFrame: Math.random() })
         }
 
 
@@ -160,8 +157,6 @@ const start = async () => {
             }
             await chrome.storage.sync.set({ isMatchCase: !isActive })
             setting.isMatchCase = !isActive
-            await doSearch()
-            chrome.storage.local.set({ searchInFrame: Math.random() })
         }
 
         wordButton.onclick = async (e) => {
@@ -175,8 +170,6 @@ const start = async () => {
 
             await chrome.storage.sync.set({ isWord: !isActive })
             setting.isWord = !isActive
-            await doSearch()
-            chrome.storage.local.set({ searchInFrame: Math.random() })
         }
 
         regButton.onclick = async (e) => {
@@ -190,8 +183,6 @@ const start = async () => {
 
             await chrome.storage.sync.set({ isReg: !isActive })
             setting.isReg = !isActive
-            await doSearch()
-            chrome.storage.local.set({ searchInFrame: Math.random() })
         }
 
         document.querySelector('#searchWhateverPopup .swe_toolbar .swe_prev').onclick = async () => {
@@ -304,6 +295,7 @@ async function doSearch() {
     })
     CSS.highlights.set('search-results', searchResultsHighlight)
 
+    console.log(rangesFlat.length)
     // 向背景脚本发送消息以获取当前标签信息
     chrome?.runtime?.sendMessage({
         action: 'saveResult',
@@ -316,62 +308,27 @@ async function doSearch() {
     if (rangesFlat[0]) {
         CSS.highlights.set('search-results-active', new Highlight(rangesFlat[0]))
     }
-    if (!isFrame) {
-        if (searchResultsHighlight.size > 0) {
-            await chrome.storage.session.set({ activeResult: 1})
-            document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 1;
-
-        } else {
-            await chrome.storage.session.set({ activeResult: 0})
-            document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 0;
-        }
-    }
-    // if (searchResultsHighlight.size > 0) {
-    //     if (!isFrame) {
-    //         await chrome.storage.session.set({ activeResult: 1})
-    //         document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 1;
-    //     }
-    //     CSS.highlights.set('search-results-active', new Highlight(rangesFlat[0]))
-    // } else {
-    //     if (!isFrame) {
-    //         document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 0;
-    //     }
-    // }
 }
 const handleStorageChange = async (changes, areaName) => {
-    if(areaName === 'local') {
-        if (isFrame && changes.searchInFrame) {
-            setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg']);
-            doSearch()
-        }
-    }
     if (areaName === 'session') {
         if (!isFrame && changes.resultSum) {
-            let totalSum = 0;
-            for (let i in changes.resultSum.newValue) {
-                const { sum, frameId } = changes.resultSum.newValue[i];
-                totalSum += sum
-                const currentButton = document.querySelector(`#searchWhateverPopup .swe_tabs button[data-frameid="${frameId}"]`);
-                if (currentButton) {
-                    if (currentButton.querySelector(`.swe_sum`)) {
-                        currentButton.querySelector(`.swe_sum`).innerText = sum;
-                    } else {
-                        currentButton.innerHTML += `<span class="swe_sum">${sum}</span>`;
-                    }
-                }
-            }
-            if (document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total')) {
-                document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = totalSum;
-
-                // if (sum > 0) {
-                //     await chrome.storage.session.set({ activeResult: 1})
-                //     document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 1;
-                //
-                // } else {
-                //     document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 0;
-                //     await chrome.storage.session.set({ activeResult: 0})
-                // }
-            }
+            // let totalSum = 0;
+            // for (let i in changes.resultSum.newValue) {
+            //     const { sum, frameId } = changes.resultSum.newValue[i];
+            //     totalSum += sum
+            //     const currentButton = document.querySelector(`#searchWhateverPopup .swe_tabs button[data-frameid="${frameId}"]`);
+            //     if (currentButton) {
+            //         if (currentButton.querySelector(`.swe_sum`)) {
+            //             currentButton.querySelector(`.swe_sum`).innerText = sum;
+            //         } else {
+            //             currentButton.innerHTML += `<span class="swe_sum">${sum}</span>`;
+            //         }
+            //     }
+            // }
+            //
+            // if (document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total')) {
+            //     document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = totalSum;
+            // }
         }
         if (!isFrame && changes.visibleStatus !== undefined) {
             document.querySelector('#searchWhateverPopup .swe_visible').title = changes.visibleStatus.newValue;
