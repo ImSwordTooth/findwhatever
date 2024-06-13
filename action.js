@@ -4,7 +4,6 @@
 reCheckTree()
 chrome.storage.local.set({ frameList: [] })
 
-console.log({ isFrame })
 if (!isFrame) {
     if (document.getElementById('searchWhateverPopup')) {
         // 如果已存在相同的弹出窗口，将其移除

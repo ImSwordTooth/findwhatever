@@ -100,7 +100,7 @@
     height: 10px;
 }
 #searchWhateverPopup #searchInput {
-    width: calc(100% - 132px);
+    width: 100%;
     min-width: 200px;
     height: 32px;
     box-sizing: border-box;

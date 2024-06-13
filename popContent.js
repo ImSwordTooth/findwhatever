@@ -67,7 +67,7 @@ const createPopup = async () => {
     const { frames } = await chrome.storage.session.get(['frames']);
     for (let i=0; i<frames.length; i++) {
         content.querySelector('.swe_tabs').innerHTML +=`<button class="${i === 0 ? 'active' : ''}" data-frameid="${frames[i].frameId}">
-            <div>${ i === 0 ? '当前页' : `iframe ${i}` }</div>
+            <div>${ i === 0 ? '当前页' : `iframe${i}` }</div>
         </button>`
 
     }
@@ -77,7 +77,7 @@ const createPopup = async () => {
         CSS.highlights.clear();
         document.body.removeChild(popup);
         chrome.storage.onChanged.removeListener(handleStorageChange)
-        await chrome.storage.session.set({ resultSum: {} })
+        await chrome.storage.session.set({ resultSum: [] })
     }
 
     // 插入到页面
@@ -196,7 +196,7 @@ const start = async () => {
 
         document.querySelector('#searchWhateverPopup .swe_toolbar .swe_prev').onclick = async () => {
             let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
-            const sum = Object.values(resultSum).reduce((a,b) => a + b, 0);
+            const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
             activeResult = activeResult || 1;
             activeResult--;
             if (activeResult <= 0) {
@@ -216,7 +216,7 @@ const start = async () => {
 
         document.querySelector('#searchWhateverPopup .swe_toolbar .swe_next').onclick = async () => {
             let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
-            const sum = Object.values(resultSum).reduce((a,b) => a + b, 0);
+            const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
             activeResult = activeResult || 1;
             activeResult++;
             if (activeResult > sum) {
@@ -315,7 +315,6 @@ async function doSearch() {
 
     if (rangesFlat[0]) {
         CSS.highlights.set('search-results-active', new Highlight(rangesFlat[0]))
-
     }
     if (!isFrame) {
         if (searchResultsHighlight.size > 0) {
@@ -348,20 +347,21 @@ const handleStorageChange = async (changes, areaName) => {
     }
     if (areaName === 'session') {
         if (!isFrame && changes.resultSum) {
-            let sum = 0;
+            let totalSum = 0;
             for (let i in changes.resultSum.newValue) {
-                sum += changes.resultSum.newValue[i]
-                const currentButton = document.querySelector(`#searchWhateverPopup .swe_tabs button[data-frameid="${i}"]`);
+                const { sum, frameId } = changes.resultSum.newValue[i];
+                totalSum += sum
+                const currentButton = document.querySelector(`#searchWhateverPopup .swe_tabs button[data-frameid="${frameId}"]`);
                 if (currentButton) {
                     if (currentButton.querySelector(`.swe_sum`)) {
-                        currentButton.querySelector(`.swe_sum`).innerText = changes.resultSum.newValue[i];
+                        currentButton.querySelector(`.swe_sum`).innerText = sum;
                     } else {
-                        currentButton.innerHTML += `<span class="swe_sum">${changes.resultSum.newValue[i]}</span>`;
+                        currentButton.innerHTML += `<span class="swe_sum">${sum}</span>`;
                     }
                 }
             }
             if (document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total')) {
-                document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = sum;
+                document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = totalSum;
 
                 // if (sum > 0) {
                 //     await chrome.storage.session.set({ activeResult: 1})
