@@ -264,6 +264,7 @@ async function doSearch() {
 
             while (startPos < text.length) {
                 let index;
+                reg.lastIndex = 0;
                 const res = reg.exec(text.substring(startPos));
 
                 if (res) {
@@ -290,8 +291,6 @@ async function doSearch() {
         rangesFlat = []
     }
 
-
-
     const searchResultsHighlight = new Highlight(...rangesFlat)
 
     // 先断开再连接，否则会引起观察者的变动，导致无限循环
@@ -314,10 +313,19 @@ async function doSearch() {
         }
     });
 
-    console.log(searchResultsHighlight.size)
     if (rangesFlat[0]) {
         CSS.highlights.set('search-results-active', new Highlight(rangesFlat[0]))
 
+    }
+    if (!isFrame) {
+        if (searchResultsHighlight.size > 0) {
+            await chrome.storage.session.set({ activeResult: 1})
+            document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 1;
+
+        } else {
+            await chrome.storage.session.set({ activeResult: 0})
+            document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 0;
+        }
     }
     // if (searchResultsHighlight.size > 0) {
     //     if (!isFrame) {
@@ -355,14 +363,14 @@ const handleStorageChange = async (changes, areaName) => {
             if (document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total')) {
                 document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = sum;
 
-                if (sum > 0) {
-                    await chrome.storage.session.set({ activeResult: 1})
-                    document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 1;
-
-                } else {
-                    document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 0;
-                    await chrome.storage.session.set({ activeResult: 0})
-                }
+                // if (sum > 0) {
+                //     await chrome.storage.session.set({ activeResult: 1})
+                //     document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 1;
+                //
+                // } else {
+                //     document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = 0;
+                //     await chrome.storage.session.set({ activeResult: 0})
+                // }
             }
         }
         if (!isFrame && changes.visibleStatus !== undefined) {
@@ -381,8 +389,7 @@ const isElementVisible = (el) => {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         const topElement = document.elementFromPoint(centerX, centerY);
-        console.log(topElement)
-        if (el !== topElement && !el.contains(topElement)) {
+        if (el !== topElement && !el.contains(topElement) && !topElement.contains(el)) {
             return '被其他元素遮盖'
         }
     }

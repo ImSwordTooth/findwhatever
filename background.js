@@ -18,7 +18,6 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 let resultSum = {};
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log(message, sender)
     const { action, data } = message
     if (action === 'saveResult') {
         // 只取当前 active 的标签页
@@ -27,7 +26,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         } else {
             delete resultSum[sender.frameId]
         }
-        console.log(resultSum)
         chrome.storage.session.set({ resultSum })
     }
 });
@@ -80,6 +78,7 @@ const handleStorageChange = async (changes, areaName) => {
                             func: (realIndex) => {
                                 CSS.highlights.set('search-results-active', new Highlight(rangesFlat[realIndex - 1]))
                                 filteredRangeList[realIndex - 1].scrollIntoView({ behavior: 'instant', block: 'center' })
+                                console.log(filteredRangeList[realIndex - 1], isElementVisible(filteredRangeList[realIndex - 1]))
                                 chrome.storage.session.set({ visibleStatus: isElementVisible(filteredRangeList[realIndex - 1]) })
                             }
                         })

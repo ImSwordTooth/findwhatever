@@ -197,9 +197,15 @@
 
 #searchWhateverPopup #searchwhatever_result .swe_current {
     margin: 0 4px 0 2px;
+    display: inline-block;
+    min-width: 10px;
+    text-align: right;
 }
 #searchWhateverPopup #searchwhatever_result .swe_total {
     margin: 0 0 0 4px;
+    display: inline-block;
+    min-width: 20px;
+    text-align: left;
 }
 
 #searchWhateverPopup .swe_visible {
