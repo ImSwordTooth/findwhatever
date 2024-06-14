@@ -224,6 +224,33 @@ const start = async () => {
                 characterData: true // 监听声明的 target 节点上所有字符的变化。
             })
         }
+
+
+        let tabButton = document.querySelectorAll('.swe_tabs button')
+        for (let i in tabButton) {
+            tabButton[i].onclick = async (e) => {
+                const { frameid } = e.currentTarget.dataset
+                const { resultSum } = await chrome.storage.session.get(['resultSum'])
+
+                let current = 0;
+                for (let item of resultSum) {
+                    if (item.frameId !== +frameid) {
+                        current += item.sum;
+                    } else {
+                        break;
+                    }
+                }
+                await chrome.storage.session.set({ activeResult: current + 1})
+                observer.disconnect()
+                document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = current + 1;
+                observer.observe(document.body, {
+                    subtree: false, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
+                    childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
+                    attributes: false, // 不监听属性值
+                    characterData: true // 监听声明的 target 节点上所有字符的变化。
+                })
+            }
+        }
     }
 
     // 启动后立即进行一次搜索

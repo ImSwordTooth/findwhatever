@@ -24,6 +24,7 @@
     align-items: baseline;
     color: #888888;
     margin-right: 6px;
+    padding: 0 4px;
 }
 #searchWhateverPopup .swe_tabs button.active {
     color: #333;
@@ -112,6 +113,7 @@
     border-radius: 12px;
     font-size: 12px;
     line-height: 15px;
+    margin: 0;
 }
 
 #searchWhateverPopup .swe_toolbar {
