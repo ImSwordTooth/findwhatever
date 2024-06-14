@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             resultSum.splice(currentResultIndex, 1)
         }
 
-        const finalSession = { resultSum, force: new Date().toString() }
+        const finalSession = { resultSum, force: Math.random() + 1 }
         const totalSum = resultSum.map(a => a.sum).reduce((a, b) => a + b, 0)
         if (totalSum > 0) {
             finalSession.activeResult = 1
@@ -146,13 +146,28 @@ chrome.storage.onChanged.addListener(handleStorageChange)
 
 chrome.tabs.onActivated.addListener(async () => {
     const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (currentTab.url.indexOf('chrome://') === 0) {
+        return;
+    }
     const frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
     resultSum = []
     await chrome.storage.session.set({ resultSum: [], frames })
-    await chrome.scripting.executeScript({
-        target: { tabId: currentTab.id, allFrames: true },
-        func: () => {
-            start();
+
+    const res = await chrome.scripting.executeScript({
+        target: { tabId: currentTab.id, frameIds: [0] },
+        func: async () => {
+            return !!document.getElementById('searchWhateverPopup')
         }
     })
+
+    if (res[0].result) {
+        for (let i of frames) {
+            await chrome.scripting.executeScript({
+                target: { tabId: currentTab.id, frameIds: [i.frameId] },
+                func: async () => {
+                    start();
+                }
+            })
+        }
+    }
 })
