@@ -188,6 +188,16 @@
     height: 20px;
 }
 
+#searchWhateverPopup .swe_toolbar #live svg {
+    width: 16px!important;
+    height: 16px!important;
+    filter: grayscale(1);
+    transition: all .3s;
+}
+#searchWhateverPopup .swe_toolbar #live.active svg {
+    filter: drop-shadow(4px -4px 4px #3aa9e3);
+}
+
 #searchWhateverPopup #searchwhatever_result {
     font-size: 12px;
     line-height: 15px;

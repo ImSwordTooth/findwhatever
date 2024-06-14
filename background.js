@@ -21,6 +21,8 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     const { action, data } = message
     const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    const { isLive } = await chrome.storage.sync.get(['isLive']);
+
     if (action === 'saveResult') {
         const currentResultIndex = resultSum.findIndex(r => r.frameId === sender.frameId);
         if (sender.tab.active) { // 只取当前 active 的标签页
@@ -44,8 +46,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         chrome.storage.session.set(finalSession);
         chrome.scripting.executeScript({
             target: { tabId: currentTab.id, frameIds: [0] },
-            args: [finalSession.activeResult, resultSum, totalSum],
-            func: (current, resultSum, totalSum) => {
+            args: [finalSession.activeResult, resultSum, totalSum, isLive],
+            func: (current, resultSum, totalSum, isLive) => {
                 for (let sumItem of resultSum) {
                     const { sum, frameId } = sumItem;
                     const currentButton = document.querySelector(`#searchWhateverPopup .swe_tabs button[data-frameid="${frameId}"]`);
@@ -64,12 +66,14 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                     document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = totalSum;
                 }
                 document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = current;
-                observer.observe(document.body, {
-                    subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
-                    childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
-                    attributes: false, // 不监听属性值
-                    characterData: true // 监听声明的 target 节点上所有字符的变化。
-                })
+                if (isLive) {
+                    observer.observe(document.body, {
+                        subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
+                        childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
+                        attributes: false, // 不监听属性值
+                        characterData: true // 监听声明的 target 节点上所有字符的变化。
+                    })
+                }
             }
         })
     }
@@ -135,7 +139,7 @@ const handleStorageChange = async (changes, areaName) => {
         await chrome.scripting.executeScript({
             target: {tabId: currentTab.id, allFrames: true},
             func: async () => {
-                setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg']);
+                setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive']);
                 doSearch()
             }
         })

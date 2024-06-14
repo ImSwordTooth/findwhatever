@@ -49,6 +49,7 @@ const createPopup = async () => {
                                     <span id="matchCase">Cc</span>
                                     <span id="word">W</span>
                                     <span id="reg">.*</span>
+                                    <span id="live"><svg class="icon" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2617" width="32" height="32"><path d="M432.877037 518.755668a88.046876 88.046876 0 0 0 175.973139 0 85.755245 85.755245 0 0 0-10.734482-42.093643l353.031788-180.918238a21.951413 21.951413 0 0 0 12.061216-14.111623 24.122432 24.122432 0 0 0-1.567958-18.333048c-31.359161-59.341182-82.619329-116.631957-152.212544-170.063143S649.978922 8.325013 546.252466 0.123386a22.554474 22.554474 0 0 0-18.333048 6.513057A24.122432 24.122432 0 0 0 520.320852 24.245818v406.462974a88.2881 88.2881 0 0 0-87.443815 88.046876z m88.046876 39.922624A39.922624 39.922624 0 1 1 560.846537 518.755668a39.802012 39.802012 0 0 1-39.922624 39.922624z" fill="#444444" p-id="2618"></path><path d="M253.285533 358.100273a312.626715 312.626715 0 0 0 267.035319 473.402722 334.095679 334.095679 0 0 0 76.106272-9.166524 312.867939 312.867939 0 0 0 227.836367-378.963402 24.122432 24.122432 0 0 0-10.975706-14.714684 24.122432 24.122432 0 0 0-35.459975 26.655288 264.502464 264.502464 0 1 1-483.654755-72.367296 261.004711 261.004711 0 0 1 162.464577-119.888485 23.157534 23.157534 0 0 0 14.714684-10.975707 24.122432 24.122432 0 0 0-8.322239-32.927119 24.122432 24.122432 0 0 0-18.212436-2.532855A307.922841 307.922841 0 0 0 253.285533 358.100273z" fill="#444444" p-id="2619"></path><path d="M1015.916211 413.220029a24.122432 24.122432 0 0 0-10.131421-15.07652 24.122432 24.122432 0 0 0-17.971212-3.618364 24.122432 24.122432 0 0 0-15.197132 10.131421 23.157534 23.157534 0 0 0-3.618364 17.971212A464.598035 464.598035 0 1 1 423.710513 54.157633a24.122432 24.122432 0 0 0 15.317744-10.010809 24.122432 24.122432 0 0 0 3.618365-17.971212 24.122432 24.122432 0 0 0-10.131422-15.317744 24.122432 24.122432 0 0 0-17.971211-3.618364 511.878001 511.878001 0 0 0-326.497113 217.101885 512.239837 512.239837 0 0 0 138.100921 711.611735 510.310043 510.310043 0 0 0 285.609592 88.046876 522.491871 522.491871 0 0 0 98.781357-9.769585 512.601674 512.601674 0 0 0 405.377465-601.010386z" fill="#444444" p-id="2620"></path><path d="M567.842042 50.418656a429.982345 429.982345 0 0 1 211.674339 80.930759 511.395552 511.395552 0 0 1 126.763378 133.397047L566.877145 438.548582V50.418656z" fill="#50B3EA" p-id="2621"></path></svg></span>
                                 </div>
                             </div>
                             <div class="swe_close">
@@ -97,9 +98,10 @@ const start = async () => {
     const matchCaseButton = document.querySelector('#searchWhateverPopup #matchCase');
     const wordButton = document.querySelector('#searchWhateverPopup #word');
     const regButton = document.querySelector('#searchWhateverPopup #reg');
+    const liveButton = document.querySelector('#searchWhateverPopup #live');
 
     chrome.storage.onChanged.addListener(handleStorageChange)
-    setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg']); // 缓存值
+    setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive']); // 缓存值
 
     // 仅在主界面进行一些 dom 的操作，frame 内的只搜索
     if (!isFrame) {
@@ -114,12 +116,30 @@ const start = async () => {
         }
         if (setting.isMatchCase) {
             matchCaseButton.classList.add('active')
+        } else {
+            matchCaseButton.classList.remove('active')
         }
         if (setting.isWord) {
             wordButton.classList.add('active')
+        } else {
+            wordButton.classList.remove('active')
         }
         if (setting.isReg) {
             regButton.classList.add('active')
+        } else {
+            regButton.classList.remove('active')
+        }
+        if (setting.isLive) {
+            liveButton.classList.add('active')
+            observer.observe(document.body, {
+                subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
+                childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
+                attributes: false, // 不监听属性值
+                characterData: true // 监听声明的 target 节点上所有字符的变化。
+            })
+        } else {
+            liveButton.classList.remove('active')
+            observer.disconnect()
         }
 
         searchInput.oninput = async (e) => {
@@ -170,6 +190,25 @@ const start = async () => {
             setting.isReg = !isActive
         }
 
+        liveButton.onclick = async (e) => {
+            const { classList } = e.currentTarget
+            const isActive = classList.contains('active')
+            if (isActive) {
+                observer.disconnect()
+                classList.remove('active')
+            } else {
+                observer.observe(document.body, {
+                    subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
+                    childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
+                    attributes: false, // 不监听属性值
+                    characterData: true // 监听声明的 target 节点上所有字符的变化。
+                })
+                classList.add('active')
+            }
+            await chrome.storage.sync.set({ isLive: !isActive })
+            setting.isLive = !isActive
+        }
+
         document.querySelector('#searchWhateverPopup .swe_toolbar .swe_prev').onclick = async () => {
             let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
             const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
@@ -182,12 +221,14 @@ const start = async () => {
 
             observer.disconnect()
             document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = activeResult;
-            observer.observe(document.body, {
-                subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
-                childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
-                attributes: false, // 不监听属性值
-                characterData: true // 监听声明的 target 节点上所有字符的变化。
-            })
+            if (setting.isLive) {
+                observer.observe(document.body, {
+                    subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
+                    childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
+                    attributes: false, // 不监听属性值
+                    characterData: true // 监听声明的 target 节点上所有字符的变化。
+                })
+            }
         }
 
         document.querySelector('#searchWhateverPopup .swe_toolbar .swe_next').onclick = doNext;
@@ -212,12 +253,14 @@ const start = async () => {
                 await chrome.storage.session.set({ activeResult: current + 1})
                 observer.disconnect()
                 document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = current + 1;
-                observer.observe(document.body, {
-                    subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
-                    childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
-                    attributes: false, // 不监听属性值
-                    characterData: true // 监听声明的 target 节点上所有字符的变化。
-                })
+                if (setting.isLive) {
+                    observer.observe(document.body, {
+                        subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
+                        childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
+                        attributes: false, // 不监听属性值
+                        characterData: true // 监听声明的 target 节点上所有字符的变化。
+                    })
+                }
             }
         }
     }
@@ -303,12 +346,14 @@ const doNext = async () => {
 
     observer.disconnect()
     document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = activeResult;
-    observer.observe(document.body, {
-        subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
-        childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
-        attributes: false, // 不监听属性值
-        characterData: true // 监听声明的 target 节点上所有字符的变化。
-    })
+    if (setting.isLive) {
+        observer.observe(document.body, {
+            subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
+            childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
+            attributes: false, // 不监听属性值
+            characterData: true // 监听声明的 target 节点上所有字符的变化。
+        })
+    }
 }
 
 const handleStorageChange = async (changes, areaName) => {
