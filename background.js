@@ -5,9 +5,9 @@ chrome.action.onClicked.addListener(async (tab, x, b) => {
     resultSum = []
     await chrome.storage.session.set({ resultSum: [], frames })
 
-    for (let i = 0; i < frames.length; i++) {
+    for (let i of frames) {
         await chrome.scripting.executeScript({
-            target: { tabId: tab.id, frameIds: [frames[i].frameId] },
+            target: { tabId: tab.id, frameIds: [i.frameId] },
             files: ['action.js']
         })
     }
@@ -58,10 +58,18 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                     }
                 }
 
+                // 先断开再连接，否则会引起观察者的变动，导致无限循环
+                observer.disconnect()
                 if (document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total')) {
                     document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_total').innerText = totalSum;
                 }
                 document.querySelector('#searchWhateverPopup #searchwhatever_result .swe_current').innerText = current;
+                observer.observe(document.body, {
+                    subtree: true, // 监听以 target 为根节点的整个子树。包括子树中所有节点的属性，而不仅仅是针对 target。
+                    childList: true, // 监听 target 节点中发生的节点的新增与删除（同时，如果 subtree 为 true，会针对整个子树生效）。
+                    attributes: false, // 不监听属性值
+                    characterData: true // 监听声明的 target 节点上所有字符的变化。
+                })
             }
         })
     }
