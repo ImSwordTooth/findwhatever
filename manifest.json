@@ -1,8 +1,15 @@
 {
   "name": "Find whatever",
-  "description": "Find whatever",
+  "description": "Enhance your browser's search capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
   "version": "0.0.1",
   "manifest_version": 3,
+  "icons": {
+    "16": "popup.png",
+    "32": "popup.png",
+    "48": "popup.png",
+    "128": "popup.png"
+  },
+  "author": "2223133607@qq.com",
   "action": {
     "default_icon": {
       "16": "popup.png",
