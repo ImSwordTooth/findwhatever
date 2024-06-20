@@ -12,6 +12,7 @@ if (!isFrame) {
 
         // 创建新的弹出窗口
         createPopup().then(() => {
+            document.getElementById('searchInput').focus()
             start()
         });
     }

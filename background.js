@@ -14,7 +14,7 @@ chrome.action.onClicked.addListener(async (tab, x, b) => {
 })
 
 chrome.runtime.onInstalled.addListener(async () => {
-    chrome.storage.sync.set({ searchValue: '', isMatchCase: false, isWord: false, isReg: false })
+    chrome.storage.sync.set({ searchValue: '', isMatchCase: false, isWord: false, isReg: false, isLive: false })
     chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
 })
 
@@ -150,7 +150,7 @@ chrome.storage.onChanged.addListener(handleStorageChange)
 
 chrome.tabs.onActivated.addListener(async () => {
     const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (currentTab.url.indexOf('chrome://') === 0) {
+    if (currentTab.url.indexOf('http') !== 0) {
         return;
     }
     const frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
