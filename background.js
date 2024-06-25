@@ -1,9 +1,9 @@
 let resultSum = []
 // 手动实现弹出窗口，避免点击空白处自动关闭
-chrome.action.onClicked.addListener(async (tab, x, b) => {
+chrome.action.onClicked.addListener(async (tab) => {
     const frames = await chrome.webNavigation.getAllFrames({ tabId: tab.id })
     resultSum = []
-    await chrome.storage.session.set({ resultSum: [], frames })
+    await chrome.storage.session.set({ resultSum: [], frames: frames.filter(f => f.url !== 'about:blank') })
 
     for (let i of frames) {
         await chrome.scripting.executeScript({

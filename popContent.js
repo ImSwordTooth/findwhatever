@@ -17,24 +17,29 @@ const observer = new MutationObserver(() => {
 // 创建一个自定义的弹出窗口
 const createPopup = async () => {
     const popup = document.createElement('div');
+    const { top, right } = await chrome.storage.sync.get(['top', 'right'])
     popup.id = 'searchWhateverPopup';
     popup.style.position = 'fixed';
-    popup.style.top = '10%';
-    popup.style.right = '10%';
+    popup.style.top = top ? top + 'px' : '10%';
+    popup.style.right = right ? right + 'px' : '10%';
     popup.style.backgroundColor = '#fff';
     popup.style.boxShadow = '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3)';
     popup.style.zIndex = '10000';
-    popup.style.padding = '12px 12px 10px 12px';
+    popup.style.padding = '16px 12px 10px 12px';
     popup.style.borderRadius = '8px';
 
     // 添加内容
     const content = document.createElement('div');
-    content.innerHTML = `<div class="swe_tabsWp">
+    content.innerHTML = `
+<div class="swe_moveWp">
+<div class="swe_moveBar"></div>
+</div>
+<div class="swe_tabsWp">
                             <div class="swe_tabs"></div>
                             <div id="searchwhatever_result">
-                                <div class="swe_visible" title="该元素不可见">
+                                <div class="swe_visible">
                                     <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="200" height="200"><path d="M764.394366 588.97307c-93.111887 0-170.503211 64.930254-190.69476 151.667381-47.118423-20.148282-90.861972-14.552338-123.399212-0.562479C429.546366 653.340845 352.155042 588.97307 259.605634 588.97307c-108.255549 0-196.305127 87.862085-196.305127 195.886874C63.300507 892.87031 151.350085 980.732394 259.605634 980.732394c103.207662 0 186.771831-79.468169 194.61769-180.209577 16.831099-11.754366 61.151549-33.575662 115.553352 1.124958C578.747493 901.826704 661.749183 980.732394 764.394366 980.732394c108.255549 0 196.305127-87.862085 196.305127-195.87245 0-108.024789-88.049577-195.886873-196.305127-195.886874z m-504.788732 55.959437c77.405746 0 140.215887 62.694761 140.215887 139.927437 0 77.232676-62.810141 139.898592-140.215887 139.898591-77.405746 0-140.215887-62.665915-140.215888-139.898591 0-77.232676 62.810141-139.927437 140.215888-139.927437z m504.788732 0c77.405746 0 140.215887 62.694761 140.215888 139.927437 0 77.232676-62.810141 139.898592-140.215888 139.898591-77.405746 0-140.215887-62.665915-140.215887-139.898591 0-77.232676 62.810141-139.927437 140.215887-139.927437zM1016.788732 475.943662H7.211268v57.690141h1009.577464v-57.690141zM697.675718 77.016338c-11.538028-26.249014-41.334986-40.094648-69.011831-30.907493L512 85.294873l-117.226366-39.186028-2.769127-0.836507c-27.806648-7.687211-57.026704 7.355493-67.338817 34.426592L196.78107 418.253521h630.43786L698.771831 79.69893l-1.096113-2.682592z"></path></svg>
-                                    <div class="swe_visibleStatus">不可见</div>
+                                    <div class="swe_visibleStatus"></div>
                                 </div>
                                 搜索结果：<span class="swe_current">0</span> / <span class="swe_total">0</span>
                             </div>
@@ -46,10 +51,35 @@ const createPopup = async () => {
                                 <div class="swe_toolbar">
                                     <div class="swe_prev"><svg version="1.1" width="20px" height="20px" viewBox="0 0 20.0 20.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><clipPath id="i0"><path d="M1440,0 L1440,900 L0,900 L0,0 L1440,0 Z"></path></clipPath><clipPath id="i1"><path d="M14,0 C17.3137085,-6.08718376e-16 20,2.6862915 20,6 L20,14 C20,17.3137085 17.3137085,20 14,20 L6,20 C2.6862915,20 2.02906125e-16,17.3137085 0,14 L0,6 C-4.05812251e-16,2.6862915 2.6862915,4.05812251e-16 6,0 L14,0 Z"></path></clipPath><clipPath id="i2"><path d="M4.5020472,0 C4.82798928,0 5.09221754,0.273589457 5.09221754,0.611079156 L5.09221754,8.82601993 L7.97578979,5.59137427 C8.0819496,5.47222765 8.22948131,5.40163948 8.38591546,5.39514515 C8.5423496,5.38865082 8.69486567,5.44678256 8.8098972,5.55674646 C8.92510133,5.66660878 8.99333655,5.81943154 8.9995374,5.98147342 C9.00573824,6.1435153 8.9493947,6.30144908 8.84294673,6.42040499 L4.93562567,10.8038795 C4.82378408,10.9289211 4.66664452,11 4.50204719,11 C4.33744987,11 4.18031031,10.9289211 4.06846872,10.8038795 L0.16114767,6.42040499 C0.0152688428,6.26049369 -0.0363473832,6.03174004 0.0260001978,5.82145616 C0.0883477788,5.61117228 0.25503685,5.45181202 0.462444477,5.404201 C0.669852104,5.35658997 0.885968354,5.42807616 1.02830462,5.59137427 L3.91187687,8.82561254 L3.91187687,0.611079156 C3.91187687,0.273589457 4.17610513,0 4.5020472,0 Z"></path></clipPath></defs><g transform="translate(-1156.0 -182.0)"><g clip-path="url(#i0)"><g transform="translate(1156.0 182.0)"><g clip-path="url(#i1)"><polygon points="0,0 20,0 20,20 0,20 0,0" stroke="none" fill="#F5F5F5" opacity="3.78781273%"></polygon></g><g transform="translate(5.5 15.0) scale(1.0 -1.0)"><g clip-path="url(#i2)"><polygon points="-7.10741886e-17,0 9,0 9,11 -7.10741886e-17,11 -7.10741886e-17,0" stroke="none" fill="#888888"></polygon></g></g></g></g></g></svg></div>
                                     <div class="swe_next"><svg version="1.1" width="20px" height="20px" viewBox="0 0 20.0 20.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><clipPath id="i0"><path d="M1440,0 L1440,900 L0,900 L0,0 L1440,0 Z"></path></clipPath><clipPath id="i1"><path d="M14,0 C17.3137085,-6.08718376e-16 20,2.6862915 20,6 L20,14 C20,17.3137085 17.3137085,20 14,20 L6,20 C2.6862915,20 2.02906125e-16,17.3137085 0,14 L0,6 C-4.05812251e-16,2.6862915 2.6862915,4.05812251e-16 6,0 L14,0 Z"></path></clipPath><clipPath id="i2"><path d="M4.5020472,0 C4.82798928,0 5.09221754,0.273589457 5.09221754,0.611079156 L5.09221754,8.82601993 L7.97578979,5.59137427 C8.0819496,5.47222765 8.22948131,5.40163948 8.38591546,5.39514515 C8.5423496,5.38865082 8.69486567,5.44678256 8.8098972,5.55674646 C8.92510133,5.66660878 8.99333655,5.81943154 8.9995374,5.98147342 C9.00573824,6.1435153 8.9493947,6.30144908 8.84294673,6.42040499 L4.93562567,10.8038795 C4.82378408,10.9289211 4.66664452,11 4.50204719,11 C4.33744987,11 4.18031031,10.9289211 4.06846872,10.8038795 L0.16114767,6.42040499 C0.0152688428,6.26049369 -0.0363473832,6.03174004 0.0260001978,5.82145616 C0.0883477788,5.61117228 0.25503685,5.45181202 0.462444477,5.404201 C0.669852104,5.35658997 0.885968354,5.42807616 1.02830462,5.59137427 L3.91187687,8.82561254 L3.91187687,0.611079156 C3.91187687,0.273589457 4.17610513,0 4.5020472,0 Z"></path></clipPath></defs><g transform="translate(-1156.0 -182.0)"><g clip-path="url(#i0)"><g transform="translate(1156.0 182.0)"><g clip-path="url(#i1)"><polygon points="0,0 20,0 20,20 0,20 0,0" stroke="none" fill="#F5F5F5" opacity="3.78781273%"></polygon></g><g transform="translate(5.5 15.0) scale(1.0 -1.0)"><g clip-path="url(#i2)"><polygon points="-7.10741886e-17,0 9,0 9,11 -7.10741886e-17,11 -7.10741886e-17,0" stroke="none" fill="#888888"></polygon></g></g></g></g></g></svg></div>
-                                    <span id="matchCase">Cc</span>
-                                    <span id="word">W</span>
-                                    <span id="reg">.*</span>
-                                    <span id="live"><svg class="icon" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2617" width="32" height="32"><path d="M432.877037 518.755668a88.046876 88.046876 0 0 0 175.973139 0 85.755245 85.755245 0 0 0-10.734482-42.093643l353.031788-180.918238a21.951413 21.951413 0 0 0 12.061216-14.111623 24.122432 24.122432 0 0 0-1.567958-18.333048c-31.359161-59.341182-82.619329-116.631957-152.212544-170.063143S649.978922 8.325013 546.252466 0.123386a22.554474 22.554474 0 0 0-18.333048 6.513057A24.122432 24.122432 0 0 0 520.320852 24.245818v406.462974a88.2881 88.2881 0 0 0-87.443815 88.046876z m88.046876 39.922624A39.922624 39.922624 0 1 1 560.846537 518.755668a39.802012 39.802012 0 0 1-39.922624 39.922624z" fill="#444444" p-id="2618"></path><path d="M253.285533 358.100273a312.626715 312.626715 0 0 0 267.035319 473.402722 334.095679 334.095679 0 0 0 76.106272-9.166524 312.867939 312.867939 0 0 0 227.836367-378.963402 24.122432 24.122432 0 0 0-10.975706-14.714684 24.122432 24.122432 0 0 0-35.459975 26.655288 264.502464 264.502464 0 1 1-483.654755-72.367296 261.004711 261.004711 0 0 1 162.464577-119.888485 23.157534 23.157534 0 0 0 14.714684-10.975707 24.122432 24.122432 0 0 0-8.322239-32.927119 24.122432 24.122432 0 0 0-18.212436-2.532855A307.922841 307.922841 0 0 0 253.285533 358.100273z" fill="#444444" p-id="2619"></path><path d="M1015.916211 413.220029a24.122432 24.122432 0 0 0-10.131421-15.07652 24.122432 24.122432 0 0 0-17.971212-3.618364 24.122432 24.122432 0 0 0-15.197132 10.131421 23.157534 23.157534 0 0 0-3.618364 17.971212A464.598035 464.598035 0 1 1 423.710513 54.157633a24.122432 24.122432 0 0 0 15.317744-10.010809 24.122432 24.122432 0 0 0 3.618365-17.971212 24.122432 24.122432 0 0 0-10.131422-15.317744 24.122432 24.122432 0 0 0-17.971211-3.618364 511.878001 511.878001 0 0 0-326.497113 217.101885 512.239837 512.239837 0 0 0 138.100921 711.611735 510.310043 510.310043 0 0 0 285.609592 88.046876 522.491871 522.491871 0 0 0 98.781357-9.769585 512.601674 512.601674 0 0 0 405.377465-601.010386z" fill="#444444" p-id="2620"></path><path d="M567.842042 50.418656a429.982345 429.982345 0 0 1 211.674339 80.930759 511.395552 511.395552 0 0 1 126.763378 133.397047L566.877145 438.548582V50.418656z" fill="#50B3EA" p-id="2621"></path></svg></span>
+                                    <span id="matchCase">
+                                    Cc
+                                    <div class="tooltip">
+                                        <div>大小写敏感</div>
+                                        <div class="desc">Match Case</div>
+                                        </div>
+                                    </span>
+                                    <span id="word">
+                                    W
+                                    <div class="tooltip">
+                                    <div>匹配单词</div>
+                                    <div class="desc">Words</div>
+                                     </div>
+                                    </span>
+                                    <span id="reg">
+                                    .*
+                                    <div class="tooltip">
+                                    <div>正则表达式</div>
+                                    <div class="desc">Regex</div>
+                                     </div>
+                                    
+                                    </span>
+                                    <span id="live">
+                                    <svg class="icon" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2617" width="32" height="32"><path d="M432.877037 518.755668a88.046876 88.046876 0 0 0 175.973139 0 85.755245 85.755245 0 0 0-10.734482-42.093643l353.031788-180.918238a21.951413 21.951413 0 0 0 12.061216-14.111623 24.122432 24.122432 0 0 0-1.567958-18.333048c-31.359161-59.341182-82.619329-116.631957-152.212544-170.063143S649.978922 8.325013 546.252466 0.123386a22.554474 22.554474 0 0 0-18.333048 6.513057A24.122432 24.122432 0 0 0 520.320852 24.245818v406.462974a88.2881 88.2881 0 0 0-87.443815 88.046876z m88.046876 39.922624A39.922624 39.922624 0 1 1 560.846537 518.755668a39.802012 39.802012 0 0 1-39.922624 39.922624z" fill="#444444" p-id="2618"></path><path d="M253.285533 358.100273a312.626715 312.626715 0 0 0 267.035319 473.402722 334.095679 334.095679 0 0 0 76.106272-9.166524 312.867939 312.867939 0 0 0 227.836367-378.963402 24.122432 24.122432 0 0 0-10.975706-14.714684 24.122432 24.122432 0 0 0-35.459975 26.655288 264.502464 264.502464 0 1 1-483.654755-72.367296 261.004711 261.004711 0 0 1 162.464577-119.888485 23.157534 23.157534 0 0 0 14.714684-10.975707 24.122432 24.122432 0 0 0-8.322239-32.927119 24.122432 24.122432 0 0 0-18.212436-2.532855A307.922841 307.922841 0 0 0 253.285533 358.100273z" fill="#444444" p-id="2619"></path><path d="M1015.916211 413.220029a24.122432 24.122432 0 0 0-10.131421-15.07652 24.122432 24.122432 0 0 0-17.971212-3.618364 24.122432 24.122432 0 0 0-15.197132 10.131421 23.157534 23.157534 0 0 0-3.618364 17.971212A464.598035 464.598035 0 1 1 423.710513 54.157633a24.122432 24.122432 0 0 0 15.317744-10.010809 24.122432 24.122432 0 0 0 3.618365-17.971212 24.122432 24.122432 0 0 0-10.131422-15.317744 24.122432 24.122432 0 0 0-17.971211-3.618364 511.878001 511.878001 0 0 0-326.497113 217.101885 512.239837 512.239837 0 0 0 138.100921 711.611735 510.310043 510.310043 0 0 0 285.609592 88.046876 522.491871 522.491871 0 0 0 98.781357-9.769585 512.601674 512.601674 0 0 0 405.377465-601.010386z" fill="#444444" p-id="2620"></path><path d="M567.842042 50.418656a429.982345 429.982345 0 0 1 211.674339 80.930759 511.395552 511.395552 0 0 1 126.763378 133.397047L566.877145 438.548582V50.418656z" fill="#50B3EA"></path></svg>
+                                    <div class="tooltip">
+                                        <div>实时监测 DOM 变化</div>
+                                        <div class="desc">在不适合实时监测的情况下请临时关闭此功能</div>
+                                        </div>
+                                    </span>
                                 </div>
                             </div>
                             <div class="swe_close">
@@ -63,6 +93,7 @@ const createPopup = async () => {
             <div>${ i === 0 ? '当前页' : `iframe${i}` }</div>
         </button>`
     }
+
     popup.appendChild(content);
     popup.getElementsByClassName('swe_close')[0].onclick = async () => {
         observer.disconnect()
@@ -72,6 +103,27 @@ const createPopup = async () => {
         await chrome.storage.session.set({ resultSum: [] })
     }
     document.body.appendChild(popup);
+
+    document.querySelector('#searchWhateverPopup .swe_moveBar').addEventListener('mousedown', (downEvent) => {
+        downEvent.preventDefault();
+        const { top: popTop, right: popRight } = popup.getBoundingClientRect()
+        const { clientX: startX, clientY: startY } = downEvent
+
+        const handleMove = (e) => {
+            e.preventDefault();
+            const { clientX, clientY } = e
+            popup.style.top = popTop + (clientY - startY) + 'px';
+            popup.style.right = window.innerWidth - (popRight + (clientX - startX)) + 'px';
+        }
+        const handleUp = async () => {
+            document.removeEventListener('mousemove', handleMove)
+            document.removeEventListener('mouseup', handleUp)
+            await chrome.storage.sync.set({ top: parseFloat(popup.style.top), right: parseFloat(popup.style.right) })
+        }
+
+        document.addEventListener('mousemove', handleMove)
+        document.addEventListener('mouseup', handleUp)
+    })
 }
 
 // 生成匹配节点树
@@ -359,7 +411,7 @@ const doNext = async () => {
 const handleStorageChange = async (changes, areaName) => {
     if (areaName === 'session') {
         if (!isFrame && changes.visibleStatus !== undefined) {
-            document.querySelector('#searchWhateverPopup .swe_visible').title = changes.visibleStatus.newValue;
+            document.querySelector('#searchWhateverPopup .swe_visible .swe_visibleStatus').innerText = changes.visibleStatus.newValue;
             document.querySelector('#searchWhateverPopup .swe_visible').style.opacity = changes.visibleStatus.newValue ? 1 : 0;
         }
     }
@@ -374,8 +426,8 @@ const isElementVisible = (el) => {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         const topElement = document.elementFromPoint(centerX, centerY);
-        if (el !== topElement && !el.contains(topElement) && !topElement.contains(el)) {
-            return '被其他元素遮盖'
+        if (topElement && el !== topElement && !el.contains(topElement) && !topElement.contains(el)) {
+            return '被遮盖'
         }
     }
     return '';
