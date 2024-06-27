@@ -11,7 +11,7 @@ isFrame = window !== window.top;
 // 创建 DOM 监听器
 const observer = new MutationObserver(() => {
     reCheckTree(); // 重新生成节点数
-    doSearch(); // 然后执行搜索
+    doSearch(true); // 然后执行搜索
 })
 
 // 创建一个自定义的弹出窗口
@@ -47,7 +47,7 @@ const createPopup = async () => {
                          <div class="swe_searchWp">
                             <div class="swe_search">
                                 <svg class="swe_search_icon" version="1.1" width="13px" height="13px" viewBox="0 0 13.0 13.0" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="i0"><path d="M1440,0 L1440,900 L0,900 L0,0 L1440,0 Z"></path></clipPath><clipPath id="i1"><path d="M5.90691349,0 C9.16926707,0 11.813827,2.64455992 11.813827,5.90691349 C11.813827,7.30893678 11.3252905,8.59699139 10.5094415,9.60985333 C10.5767785,9.62280035 10.6386524,9.6557352 10.6869964,9.70436393 L12.8982668,11.9156344 C13.0339111,12.0513196 13.0339111,12.2712654 12.8982668,12.4069506 L12.4069506,12.8982668 C12.2712654,13.0339111 12.0513196,13.0339111 11.9156344,12.8982668 L9.70436393,10.6869964 C9.65570541,10.6385756 9.62256273,10.5767657 9.60915839,10.5094415 C8.560957,11.3555423 7.25398733,11.8160176 5.90691349,11.813827 C2.6445599,11.813827 0,9.16926707 0,5.90691349 C0,2.6445599 2.64455992,0 5.90691349,0 Z M5.90691349,1.38986199 C3.4121112,1.38986199 1.38986199,3.4121112 1.38986199,5.90691349 C1.38986199,8.40171577 3.4121112,10.423965 5.90691349,10.423965 C8.40171577,10.423965 10.423965,8.40171579 10.423965,5.90691349 C10.423965,3.41211119 8.40171579,1.38986199 5.90691349,1.38986199 Z"></path></clipPath></defs><g transform="translate(-928.0 -186.0)"><g clip-path="url(#i0)"><g transform="translate(928.0 186.0)"><g clip-path="url(#i1)"><polygon points="0,0 13,0 13,13 0,13 0,0" stroke="none" fill="#999999"></polygon></g></g></g></g></svg>
-                                <input id="searchInput" autofocus type="text" placeholder="搜索" />
+                                <input id="swe_searchInput" autofocus type="text" placeholder="搜索" />
                                 <div class="swe_toolbar">
                                     <div class="swe_prev"><svg version="1.1" width="20px" height="20px" viewBox="0 0 20.0 20.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><clipPath id="i0"><path d="M1440,0 L1440,900 L0,900 L0,0 L1440,0 Z"></path></clipPath><clipPath id="i1"><path d="M14,0 C17.3137085,-6.08718376e-16 20,2.6862915 20,6 L20,14 C20,17.3137085 17.3137085,20 14,20 L6,20 C2.6862915,20 2.02906125e-16,17.3137085 0,14 L0,6 C-4.05812251e-16,2.6862915 2.6862915,4.05812251e-16 6,0 L14,0 Z"></path></clipPath><clipPath id="i2"><path d="M4.5020472,0 C4.82798928,0 5.09221754,0.273589457 5.09221754,0.611079156 L5.09221754,8.82601993 L7.97578979,5.59137427 C8.0819496,5.47222765 8.22948131,5.40163948 8.38591546,5.39514515 C8.5423496,5.38865082 8.69486567,5.44678256 8.8098972,5.55674646 C8.92510133,5.66660878 8.99333655,5.81943154 8.9995374,5.98147342 C9.00573824,6.1435153 8.9493947,6.30144908 8.84294673,6.42040499 L4.93562567,10.8038795 C4.82378408,10.9289211 4.66664452,11 4.50204719,11 C4.33744987,11 4.18031031,10.9289211 4.06846872,10.8038795 L0.16114767,6.42040499 C0.0152688428,6.26049369 -0.0363473832,6.03174004 0.0260001978,5.82145616 C0.0883477788,5.61117228 0.25503685,5.45181202 0.462444477,5.404201 C0.669852104,5.35658997 0.885968354,5.42807616 1.02830462,5.59137427 L3.91187687,8.82561254 L3.91187687,0.611079156 C3.91187687,0.273589457 4.17610513,0 4.5020472,0 Z"></path></clipPath></defs><g transform="translate(-1156.0 -182.0)"><g clip-path="url(#i0)"><g transform="translate(1156.0 182.0)"><g clip-path="url(#i1)"><polygon points="0,0 20,0 20,20 0,20 0,0" stroke="none" fill="#F5F5F5" opacity="3.78781273%"></polygon></g><g transform="translate(5.5 15.0) scale(1.0 -1.0)"><g clip-path="url(#i2)"><polygon points="-7.10741886e-17,0 9,0 9,11 -7.10741886e-17,11 -7.10741886e-17,0" stroke="none" fill="#888888"></polygon></g></g></g></g></g></svg></div>
                                     <div class="swe_next"><svg version="1.1" width="20px" height="20px" viewBox="0 0 20.0 20.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><clipPath id="i0"><path d="M1440,0 L1440,900 L0,900 L0,0 L1440,0 Z"></path></clipPath><clipPath id="i1"><path d="M14,0 C17.3137085,-6.08718376e-16 20,2.6862915 20,6 L20,14 C20,17.3137085 17.3137085,20 14,20 L6,20 C2.6862915,20 2.02906125e-16,17.3137085 0,14 L0,6 C-4.05812251e-16,2.6862915 2.6862915,4.05812251e-16 6,0 L14,0 Z"></path></clipPath><clipPath id="i2"><path d="M4.5020472,0 C4.82798928,0 5.09221754,0.273589457 5.09221754,0.611079156 L5.09221754,8.82601993 L7.97578979,5.59137427 C8.0819496,5.47222765 8.22948131,5.40163948 8.38591546,5.39514515 C8.5423496,5.38865082 8.69486567,5.44678256 8.8098972,5.55674646 C8.92510133,5.66660878 8.99333655,5.81943154 8.9995374,5.98147342 C9.00573824,6.1435153 8.9493947,6.30144908 8.84294673,6.42040499 L4.93562567,10.8038795 C4.82378408,10.9289211 4.66664452,11 4.50204719,11 C4.33744987,11 4.18031031,10.9289211 4.06846872,10.8038795 L0.16114767,6.42040499 C0.0152688428,6.26049369 -0.0363473832,6.03174004 0.0260001978,5.82145616 C0.0883477788,5.61117228 0.25503685,5.45181202 0.462444477,5.404201 C0.669852104,5.35658997 0.885968354,5.42807616 1.02830462,5.59137427 L3.91187687,8.82561254 L3.91187687,0.611079156 C3.91187687,0.273589457 4.17610513,0 4.5020472,0 Z"></path></clipPath></defs><g transform="translate(-1156.0 -182.0)"><g clip-path="url(#i0)"><g transform="translate(1156.0 182.0)"><g clip-path="url(#i1)"><polygon points="0,0 20,0 20,20 0,20 0,0" stroke="none" fill="#F5F5F5" opacity="3.78781273%"></polygon></g><g transform="translate(5.5 15.0) scale(1.0 -1.0)"><g clip-path="url(#i2)"><polygon points="-7.10741886e-17,0 9,0 9,11 -7.10741886e-17,11 -7.10741886e-17,0" stroke="none" fill="#888888"></polygon></g></g></g></g></g></svg></div>
@@ -146,7 +146,7 @@ const reCheckTree = () => {
 }
 
 const start = async () => {
-    const searchInput = document.querySelector('#searchWhateverPopup #searchInput'); // 搜索框
+    const searchInput = document.querySelector('#searchWhateverPopup #swe_searchInput'); // 搜索框
     const matchCaseButton = document.querySelector('#searchWhateverPopup #matchCase');
     const wordButton = document.querySelector('#searchWhateverPopup #word');
     const regButton = document.querySelector('#searchWhateverPopup #reg');
@@ -264,7 +264,7 @@ const start = async () => {
         document.querySelector('#searchWhateverPopup .swe_toolbar .swe_prev').onclick = async () => {
             let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
             const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
-            activeResult = activeResult || 1;
+            activeResult = activeResult || 0;
             activeResult--;
             if (activeResult <= 0) {
                 activeResult = sum
@@ -321,7 +321,7 @@ const start = async () => {
     doSearch()
 }
 
-async function doSearch() {
+async function doSearch(isAuto = false) {
     const { isMatchCase, searchValue, isWord, isReg } = setting; // 从本地获取 setting，比 storage 里获取快很多
     CSS.highlights.clear(); // 清除所有高亮
 
@@ -378,7 +378,8 @@ async function doSearch() {
         action: 'saveResult',
         data: {
             isFrame,
-            resultNum: rangesFlat.length
+            resultNum: rangesFlat.length,
+            isAuto
         }
     });
 }
@@ -389,7 +390,7 @@ const doNext = async () => {
     if (sum === 0) {
         return;
     }
-    activeResult = activeResult || 1;
+    activeResult = activeResult || 0;
     activeResult++;
     if (activeResult > sum) {
         activeResult = 1

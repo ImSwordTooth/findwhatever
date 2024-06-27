@@ -25,6 +25,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     if (action === 'saveResult') {
         const currentResultIndex = resultSum.findIndex(r => r.frameId === sender.frameId);
+        const isAuto = data.isAuto;
         if (sender.tab.active) { // 只取当前 active 的标签页
             if (currentResultIndex > -1) {
                 resultSum[currentResultIndex].sum = data.resultNum
@@ -38,10 +39,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
         const finalSession = { resultSum, force: Math.random() + 1 }
         const totalSum = resultSum.map(a => a.sum).reduce((a, b) => a + b, 0)
-        if (totalSum > 0) {
-            finalSession.activeResult = 1
+
+        const { activeResult: activeResultFromStorage } = await chrome.storage.session.get(['activeResult']);
+
+        if (isAuto) {
+            finalSession.activeResult = activeResultFromStorage
         } else {
-            finalSession.activeResult = 0
+            finalSession.activeResult = 0;
         }
         chrome.storage.session.set(finalSession);
         chrome.scripting.executeScript({
@@ -85,22 +89,16 @@ const handleStorageChange = async (changes, areaName) => {
         if (changes.activeResult || changes.force) {
             const { resultSum, activeResult: activeResultFromStorage } = await chrome.storage.session.get(['resultSum', 'activeResult']);
             const activeResult = changes.activeResult ? changes.activeResult.newValue : activeResultFromStorage
-            const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
-            if (activeResult > sum) {
-                chrome.storage.session.set({ activeResult: 1 });
-                return;
-            }
-            if (activeResult === 0) {
-                chrome.storage.session.set({ activeResult: sum });
-                return;
-            }
-
             await chrome.scripting.executeScript({
                 target: {tabId: currentTab.id, allFrames: true},
                 func: () => {
                     CSS.highlights.delete('search-results-active')
                 }
             })
+
+            if (activeResult === 0) {
+                return;
+            }
 
             let temp = 0;
             for (let i in resultSum) {
