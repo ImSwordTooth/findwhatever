@@ -105,7 +105,9 @@
     flex: 1;
 }
 
-#searchWhateverPopup .swe_close {
+#searchWhateverPopup .swe_close,
+#searchWhateverPopup .swe_setting {
+    position: relative;
     margin-left: 12px;
     width: 24px;
     height: 24px;
@@ -117,16 +119,116 @@
     transition: all ease .3s;
 }
 
+#searchWhateverPopup .swe_close {
+    margin-left: 6px;
+}
+
 #searchWhateverPopup .swe_close:hover {
-    background-color: #fbfbfb;
+    background-color: #fdecec;
+}
+#searchWhateverPopup .swe_close:hover svg {
+    animation: rotate360 2s infinite linear;
 }
 #searchWhateverPopup .swe_close:hover svg path {
     fill: red;
 }
 
-#searchWhateverPopup svg {
+#searchWhateverPopup .swe_setting:hover {
+    background-color: #e9f1ff;
+}
+#searchWhateverPopup .swe_setting:hover svg {
+    animation: rotate360 2s infinite linear;
+}
+#searchWhateverPopup .swe_setting:hover svg path {
+    fill: #0080ff;
+}
+
+#searchWhateverPopup .swe_popover {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    background: #ffffff;
+    border-radius: 4px;
+    padding: 4px 8px;
+    width: max-content;
+    box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.1);
+    color: #565656;
+    text-align: left;
+    line-height: 18px;
+    user-select: none;
+    cursor: default;
+    animation: smallToBig ease .1s forwards;
+}
+
+#searchWhateverPopup .swe_popover::after {
+    content: '';
+    position: absolute;
+    margin: auto;
+    width: 0;
+    height: 0;
+    border: none;
+    left: 0;
+    right: 0;
+    top: -6px;
+    border-left: solid 6px transparent;
+    border-right: solid 6px transparent;
+    border-bottom: solid 6px #ffffff;
+    filter: drop-shadow(0px -1px 1px rgba(0, 0, 0, 0.1));
+}
+
+#searchWhateverPopup .swe_popover .swe_colors {
+    display: flex;
+}
+
+#searchWhateverPopup .swe_popover .swe_colors > div {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-left: 8px;
+    background-image:
+            linear-gradient(45deg, #bdbdbd 25%, transparent 0, transparent 75%, #bdbdbd 0),
+            linear-gradient(45deg, #bdbdbd 25%, transparent 0, transparent 75%, #bdbdbd 0);
+    background-size: 8px 8px;
+    background-position: 0 0, 12px 12px;
+    cursor: pointer;
+}
+
+#searchWhateverPopup .swe_popover .swe_colors > div.active {
+    outline: double 3px #3aa9e3;
+    box-shadow: 1px 1px 6px 2px #3aa9e3;;
+}
+
+#searchWhateverPopup .swe_popover .swe_colors > div > span {
+    display: inline-block;
+    width: 100%;
+    height: 50%;
+}
+
+#searchWhateverPopup .swe_popover .swe_rows {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: solid 1px #f1f1f1;
+    padding: 4px 0;
+    font-size: 12px;
+}
+#searchWhateverPopup .swe_popover .swe_rows .prop {
+    transform: scale(0.9);
+}
+#searchWhateverPopup .swe_popover .swe_rows:nth-last-of-type(1) {
+    border-bottom: none;
+}
+
+#searchWhateverPopup .swe_close svg {
     width: 10px;
     height: 10px;
+}
+#searchWhateverPopup .swe_setting svg {
+    width: 24px;
+    height: 24px;
 }
 #searchWhateverPopup #swe_searchInput {
     width: 100%;
@@ -194,6 +296,7 @@
     font-weight: bold;
     text-align: left;
     line-height: 18px;
+    animation: smallToBig ease .1s forwards;
 }
 #searchWhateverPopup .swe_toolbar .tooltip .desc {
     color: #999999;
@@ -300,6 +403,8 @@
 #searchWhateverPopup .swe_visible svg {
     fill: #a0a0a0;
     margin-right: 4px;
+    width: 10px;
+    height: 10px;
 }
 #searchWhateverPopup .swe_visible .swe_visibleStatus {
     display: inline-block;
@@ -307,11 +412,24 @@
     transform: scale(.8);
 }
 
-::highlight(search-results) {
-    background-color: rgba(253, 121, 174, 0.67);
-    color: white;
+@keyframes smallToBig {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
-::highlight(search-results-active) {
-    background-color: #f00;
-    color: white;
+
+@keyframes rotate360 {
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+        opacity: 1;
+    }
 }
+

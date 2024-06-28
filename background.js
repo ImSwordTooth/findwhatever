@@ -1,11 +1,23 @@
 let resultSum = []
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
-    const frames = await chrome.webNavigation.getAllFrames({ tabId: tab.id })
+    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(f => f.url !== 'about:blank')
     resultSum = []
-    await chrome.storage.session.set({ resultSum: [], frames: frames.filter(f => f.url !== 'about:blank') })
+    await chrome.storage.session.set({ resultSum: [], frames })
+    const { normalColor, activeColor } = await chrome.storage.sync.get(['normalColor', 'activeColor'])
 
     for (let i of frames) {
+        await chrome.scripting.insertCSS({
+            target: { tabId: tab.id, frameIds: [i.frameId] },
+            css: `::highlight(search-results) {
+    background-color: ${normalColor};
+    color: black;
+}
+::highlight(search-results-active) {
+    background-color: ${activeColor};
+    color: black;
+}`
+        })
         await chrome.scripting.executeScript({
             target: { tabId: tab.id, frameIds: [i.frameId] },
             files: ['action.js']
@@ -14,7 +26,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 })
 
 chrome.runtime.onInstalled.addListener(async () => {
-    chrome.storage.sync.set({ searchValue: '', isMatchCase: false, isWord: false, isReg: false, isLive: false })
+    chrome.storage.sync.set({ searchValue: '', isMatchCase: false, isWord: false, isReg: false, isLive: true, normalColor: '#ffff37', activeColor: '#ff8b3a' })
     chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
 })
 
@@ -134,13 +146,63 @@ const handleStorageChange = async (changes, areaName) => {
     }
 
     if (areaName === 'sync') {
-        await chrome.scripting.executeScript({
-            target: {tabId: currentTab.id, allFrames: true},
-            func: async () => {
-                setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive']);
-                doSearch()
+        if (
+            changes.searchValue !== undefined ||
+            changes.isMatchCase !== undefined ||
+            changes.isWord !== undefined ||
+            changes.isReg !== undefined ||
+            changes.isLive !== undefined
+        ) {
+            await chrome.scripting.executeScript({
+                target: {tabId: currentTab.id, allFrames: true},
+                func: async () => {
+                    setting = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive']);
+                    doSearch()
+                }
+            })
+        }
+
+        console.log(changes)
+        // 它俩只能一起改
+            if (changes.normalColor !== undefined && changes.activeColor !== undefined) {
+
+                const oldNormal = changes.normalColor.oldValue;
+                const newNormal = changes.normalColor.newValue;
+                const oldActive = changes.activeColor.oldValue;
+                const newActive = changes.activeColor.newValue;
+                console.log('second', `::highlight(search-results) {
+    background-color: ${oldNormal};
+    color: black;
+}
+::highlight(search-results-active) {
+    background-color: ${oldActive};
+    color: black;
+}`)
+
+                await chrome.scripting.removeCSS({
+                    target: { tabId: currentTab.id, allFrames: true },
+                    css: `::highlight(search-results) {
+    background-color: ${oldNormal};
+    color: black;
+}
+::highlight(search-results-active) {
+    background-color: ${oldActive};
+    color: black;
+}`
+                })
+
+                await chrome.scripting.insertCSS({
+                    target: { tabId: currentTab.id, allFrames: true },
+                    css: `::highlight(search-results) {
+    background-color: ${newNormal};
+    color: black;
+}
+::highlight(search-results-active) {
+    background-color: ${newActive};
+    color: black;
+}`
+                })
             }
-        })
     }
 }
 
