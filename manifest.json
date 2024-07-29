@@ -1,7 +1,7 @@
 {
   "name": "Find whatever",
   "description": "Enhance your browser's find capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "manifest_version": 3,
   "icons": {
     "16": "popup.png",

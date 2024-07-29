@@ -1,23 +1,11 @@
 let resultSum = []
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
-    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(f => f.url !== 'about:blank')
+    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(f => f.url !== 'about:blank'); // 获取当前标签页下的所有 iframe，去除无效的
     resultSum = []
-    await chrome.storage.session.set({ resultSum: [], frames })
-    const { normalColor, activeColor } = await chrome.storage.sync.get(['normalColor', 'activeColor'])
-
+    await chrome.storage.session.set({ resultSum: [], frames }) // 重置查找总数，并设置 frames
     for (let i of frames) {
-        await chrome.scripting.insertCSS({
-            target: { tabId: tab.id, frameIds: [i.frameId] },
-            css: `::highlight(search-results) {
-    background-color: ${normalColor};
-    color: black;
-}
-::highlight(search-results-active) {
-    background-color: ${activeColor};
-    color: black;
-}`
-        })
+        // 插入脚本
         await chrome.scripting.executeScript({
             target: { tabId: tab.id, frameIds: [i.frameId] },
             files: ['action.js']
@@ -30,23 +18,28 @@ chrome.runtime.onInstalled.addListener(async () => {
     chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
 })
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender) => {
     const { action, data } = message
     const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    const { isLive } = await chrome.storage.sync.get(['isLive']);
+    const { isLive, normalColor, activeColor } = await chrome.storage.sync.get(['isLive', 'normalColor', 'activeColor']);
 
     if (action === 'saveResult') {
         const currentResultIndex = resultSum.findIndex(r => r.frameId === sender.frameId);
         const isAuto = data.isAuto;
-        if (sender.tab.active) { // 只取当前 active 的标签页
+        if (sender.tab.active) { // 只取当前 active 的标签页，保存查找总数
             if (currentResultIndex > -1) {
                 resultSum[currentResultIndex].sum = data.resultNum
             } else {
                 resultSum.push({ sum: data.resultNum, frameId: sender.frameId })
             }
-            // resultSum[sender.frameId] = data.resultNum
-        } else {
+        } else { // 不在当前标签页的，删掉
             resultSum.splice(currentResultIndex, 1)
+        }
+
+        // 保证【当前页】的总是在第一位
+        const index = resultSum.findIndex(r => r.frameId === 0);
+        if (index > 0) {
+            resultSum.unshift(resultSum.splice(index, 1)[0])
         }
 
         const finalSession = { resultSum, force: Math.random() + 1 }
@@ -93,6 +86,34 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             }
         })
     }
+
+    if (action === 'closeAction') {
+        chrome.scripting.removeCSS({
+            target: { tabId: currentTab.id, allFrames: true },
+            css: `::highlight(search-results) {
+    background-color: ${normalColor};
+    color: black;
+}
+::highlight(search-results-active) {
+    background-color: ${activeColor};
+    color: black;
+}`
+        })
+    }
+
+    if (action === 'openAction') {
+        chrome.scripting.insertCSS({
+            target: { tabId: currentTab.id, allFrames: true },
+            css: `::highlight(search-results) {
+    background-color: ${normalColor};
+    color: black;
+}
+::highlight(search-results-active) {
+    background-color: ${activeColor};
+    color: black;
+}`
+        })
+    }
 });
 
 const handleStorageChange = async (changes, areaName) => {
@@ -135,8 +156,17 @@ const handleStorageChange = async (changes, areaName) => {
                         args: [activeResult - temp + resultSum[i].sum],
                         func: (realIndex) => {
                             CSS.highlights.set('search-results-active', new Highlight(rangesFlat[realIndex - 1]))
-                            filteredRangeList[realIndex - 1].scrollIntoView({ behavior: 'instant', block: 'center' })
+                            let parents = [filteredRangeList[realIndex - 1]];
+                            let currentDom = filteredRangeList[realIndex - 1].parentElement;
+                            while (currentDom) {
+                                parents.unshift(currentDom);
+                                currentDom = currentDom.parentElement;
+                            }
+                            for (let dom of parents) {
+                                dom.scrollIntoView({ behavior: 'instant', block: 'center' })
+                            }
                             chrome.storage.session.set({ visibleStatus: isElementVisible(filteredRangeList[realIndex - 1]) })
+
                         }
                     })
                     return;
@@ -162,7 +192,6 @@ const handleStorageChange = async (changes, areaName) => {
             })
         }
 
-        console.log(changes)
         // 它俩只能一起改
             if (changes.normalColor !== undefined && changes.activeColor !== undefined) {
 
@@ -170,14 +199,6 @@ const handleStorageChange = async (changes, areaName) => {
                 const newNormal = changes.normalColor.newValue;
                 const oldActive = changes.activeColor.oldValue;
                 const newActive = changes.activeColor.newValue;
-                console.log('second', `::highlight(search-results) {
-    background-color: ${oldNormal};
-    color: black;
-}
-::highlight(search-results-active) {
-    background-color: ${oldActive};
-    color: black;
-}`)
 
                 await chrome.scripting.removeCSS({
                     target: { tabId: currentTab.id, allFrames: true },
