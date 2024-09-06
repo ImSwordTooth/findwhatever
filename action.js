@@ -19,7 +19,12 @@
             await chrome?.runtime?.sendMessage({ // chrome.scripting 只能在 background.js 里使用，所以不直接在这写了
                 action: 'openAction'
             });
+            const selection = window.getSelection().toString()
+            if (selection) {
+                await chrome.storage.sync.set({ searchValue: window.getSelection().toString() });
+            }
             start()
+            document.getElementById('swe_searchInput').focus()
         }
     } else {
         start()

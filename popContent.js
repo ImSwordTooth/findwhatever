@@ -227,15 +227,7 @@ const start = async () => {
 
     // 仅在主界面进行一些 dom 的操作，frame 内的只搜索
     if (!isFrame) {
-        // 获取用户选中的文本，有就立即填进去
-        const selection = window.getSelection().toString();
-        if (selection) {
-            searchInput.value = selection;
-            chrome.storage.sync.set({ searchValue: selection })
-            setting.searchValue = selection;
-        } else if (setting.searchValue) {
-            searchInput.value = setting.searchValue;
-        }
+        searchInput.value = setting.searchValue;
         if (setting.isMatchCase) {
             matchCaseButton.classList.add('active')
         } else {
