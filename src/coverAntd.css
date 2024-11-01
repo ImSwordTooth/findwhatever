@@ -1,0 +1,38 @@
+.ant-tabs-tab + .ant-tabs-tab {
+	margin: 0 0 0 16px!important;
+}
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+	text-shadow: none!important;
+}
+
+.ant-tabs-top > .ant-tabs-nav {
+	margin-bottom: 4px!important;
+}
+
+.ant-tabs-small > .ant-tabs-nav .ant-tabs-tab {
+	padding: 4px 0 6px !important;
+}
+
+.ant-tooltip-inner {
+	min-height: unset !important;
+}
+
+.ant-tooltip-arrow {
+	width: 16px !important;
+	height: 16px !important;
+}
+
+.ant-btn-circle {
+	min-width: unset !important;
+}
+.ant-btn {
+	line-height: unset !important;
+	padding: unset !important;
+}
+.ant-btn-text:active path {
+	fill: #3aa9e3!important;
+}
+
+.ant-tabs > .ant-tabs-nav .ant-tabs-nav-more {
+	padding: 0 16px !important;
+}

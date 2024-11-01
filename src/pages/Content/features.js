@@ -4,7 +4,7 @@ import { destroyPopup } from "./index";
 export const reCheckTree = () => {
     window.treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, (node) => {
         // 父元素是 svg、script、script 的时候，不置入范围
-        if (['svg', 'STYLE', 'SCRIPT'].includes(node.parentNode.nodeName)) {
+        if (['svg', 'STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
             return NodeFilter.FILTER_REJECT
         } else {
             return NodeFilter.FILTER_ACCEPT
@@ -15,7 +15,9 @@ export const reCheckTree = () => {
     window.currentNode = window.treeWalker.nextNode();
     while (window.currentNode) {
         if (window.currentNode.textContent && !/^\s+$/g.test(window.currentNode.textContent)) { // 如果一个元素的有内容，并且内容全都是空白，跳过之
-            window.allNodes.push({ el: window.currentNode, text: window.currentNode.textContent })
+			if (isElementVisible(window.currentNode.parentElement) !== '隐藏中') {
+				window.allNodes.push({ el: window.currentNode, text: window.currentNode.textContent })
+			}
         }
         window.currentNode = window.treeWalker.nextNode();
     }
@@ -114,4 +116,22 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 	}, cb ? cb : () => {})
 }
 
+export const isElementVisible = (el) => {
+	const rect = el.getBoundingClientRect();
+	if (rect.width === 0 && rect.height === 0) {
+		return '隐藏中'
+	} else {
+		const centerX = rect.left + rect.width / 2;
+		const centerY = rect.top + rect.height / 2;
+		const topElement = document.elementFromPoint(centerX, centerY);
+		if (topElement && el !== topElement && !el.contains(topElement) && !topElement.contains(el)) {
+			return '被遮盖'
+		}
+	}
+	return '';
+}
+
 window.__swe_doSearchOutside = doSearchOutside
+
+// 获取元素的隐藏状态，返回一个描述元素不可见的原因的字符串，如果不为空，说明元素不可见
+window.__swe_isElementVisible = isElementVisible

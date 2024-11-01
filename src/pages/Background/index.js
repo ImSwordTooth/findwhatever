@@ -1,7 +1,8 @@
 let resultSum = []
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
-    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(f => f.url !== 'about:blank'); // 获取当前标签页下的所有 iframe，去除无效的
+    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(f => f.url.indexOf('http') > -1); // 获取当前标签页下的所有 iframe，去除无效的
+	console.log(frames)
     resultSum = []
     await chrome.storage.session.set({ resultSum: [], frames }) // 重置查找总数，并设置 frames
     for (let i of frames.sort((a, b) => a.frameId > b.frameId ? -1 : 1 )) {
@@ -40,11 +41,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			resultSum.unshift(resultSum.splice(index, 1)[0])
 		}
 
-		const finalSession = { resultSum, force: Math.random() + 1 }
+		const finalSession = { resultSum }
 
 		chrome.storage.session.get(['activeResult'], (res) => {
 			if (isAuto) {
 			    finalSession.activeResult = res.activeResult
+				finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
 			} else {
 			    finalSession.activeResult = 0;
 			}
@@ -52,6 +54,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			sendResponse({ current: finalSession.activeResult, total: resultSum })
 		})
 		return true;
+	}
+
+	if (action === 'search') {
+		chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(([currentTab]) => {
+			chrome.scripting.executeScript({
+				target: {tabId: currentTab.id, allFrames: true},
+				func: async () => {
+					window.__swe_doSearchOutside(false, (response) => {
+						if (window.isFrame) {
+							window.parent.postMessage({ type: 'swe_updateSearchResult', data: response }, '*')
+						} else {
+							window.postMessage({ type: 'swe_updateSearchResult', data: response }, '*')
+						}
+					})
+				}
+			})
+		})
+
+		return true
 	}
 
 	if (action === 'closeAction') {
@@ -88,64 +109,58 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 const handleStorageChange = async (changes, areaName) => {
-    const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     if (areaName === 'session') {
         if (changes.activeResult || changes.force) {
+			const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+			if (!currentTab){
+				return
+			}
             const { resultSum, activeResult: activeResultFromStorage } = await chrome.storage.session.get(['resultSum', 'activeResult']);
             const activeResult = changes.activeResult ? changes.activeResult.newValue : activeResultFromStorage
-            await chrome.scripting.executeScript({
-                target: {tabId: currentTab.id, allFrames: true},
-                func: () => {
-                    CSS.highlights.delete('search-results-active')
-                }
-            })
 
-            if (activeResult === 0) {
-                return;
-            }
+			let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
+			frames = frames.filter(f => f.url.indexOf('http') > -1)
 
-            let temp = 0;
-            for (let i in resultSum) {
-                temp += resultSum[i].sum;
-                if (activeResult <= temp) {
-                    await chrome.scripting.executeScript({
-                        target: { tabId: currentTab.id, frameIds: [Number(resultSum[i].frameId)] },
-                        args: [activeResult - temp + resultSum[i].sum],
-                        func: (realIndex) => {
-                            CSS.highlights.set('search-results-active', new Highlight(rangesFlat[realIndex - 1]))
-                            let parents = [filteredRangeList[realIndex - 1]];
-                            let currentDom = filteredRangeList[realIndex - 1].parentElement;
-                            while (currentDom) {
-                                parents.unshift(currentDom);
-                                currentDom = currentDom.parentElement;
-                            }
-                            for (let dom of parents) {
-                                dom.scrollIntoView({ behavior: 'instant', block: 'center' })
-                            }
-                            chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList[realIndex - 1]) })
+			for (let i in frames) {
+				await chrome.scripting.executeScript({
+					target: {tabId: currentTab.id, frameIds: [frames[i].frameId]},
+					func: () => {
+						CSS.highlights.delete('search-results-active')
+					}
+				})
+			}
 
-                        }
-                    })
-                    return;
-                }
-            }
-        }
-    }
+			if (activeResult === 0) {
+				return;
+			}
 
-    if (areaName === 'sync') {
-        if (
-            changes.searchValue !== undefined ||
-            changes.isMatchCase !== undefined ||
-            changes.isWord !== undefined ||
-            changes.isReg !== undefined ||
-            changes.isLive !== undefined
-        ) {
-            await chrome.scripting.executeScript({
-                target: {tabId: currentTab.id, allFrames: true},
-                func: async () => {
-					window.__swe_doSearchOutside()
-                }
-            })
+			let temp = 0;
+			for (let i in resultSum) {
+				temp += resultSum[i].sum;
+				if (activeResult <= temp) {
+					chrome.scripting.executeScript({
+						target: { tabId: currentTab.id, frameIds: [Number(resultSum[i].frameId)] },
+						args: [activeResult - temp + resultSum[i].sum],
+						func: (realIndex) => {
+							CSS.highlights.set('search-results-active', new Highlight(window.rangesFlat[realIndex - 1]))
+							let parents = [filteredRangeList[realIndex - 1]];
+							let currentDom = filteredRangeList[realIndex - 1].parentElement;
+							while (currentDom) {
+								parents.unshift(currentDom);
+								currentDom = currentDom.parentElement;
+							}
+							for (let dom of parents) {
+								if (dom.tagName === 'DETAILS') {
+									dom.setAttribute('open', true)
+								}
+								dom.scrollIntoView({ behavior: 'instant', block: 'center' })
+							}
+							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList[realIndex - 1]) })
+						}
+					})
+					break;
+				}
+			}
         }
     }
 }
@@ -154,28 +169,33 @@ chrome.storage.onChanged.addListener(handleStorageChange)
 
 chrome.tabs.onActivated.addListener(async () => {
     const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (currentTab.url.indexOf('http') !== 0) {
+    if (currentTab.url.indexOf('http') < 0) {
         return;
     }
-    const frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
+    let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
+	frames = frames.filter(f => f.url.indexOf('http') > -1)
     resultSum = []
     await chrome.storage.session.set({ resultSum: [], frames })
 
     const res = await chrome.scripting.executeScript({
         target: { tabId: currentTab.id, frameIds: [0] },
         func: async () => {
-            return !!document.getElementById('searchWhateverPopup')
+            return !!document.getElementById('__swe_container')
         }
     })
 
     if (res[0].result) {
-        for (let i of frames) {
-            await chrome.scripting.executeScript({
-                target: { tabId: currentTab.id, frameIds: [i.frameId] },
-                func: async () => {
-                    start();
-                }
-            })
-        }
+		chrome.scripting.executeScript({
+			target: {tabId: currentTab.id, allFrames: true},
+			func: async () => {
+				window.__swe_doSearchOutside(false, (response) => {
+					if (window.isFrame) {
+						window.parent.postMessage({ type: 'swe_updateSearchResult', data: response }, '*')
+					} else {
+						window.postMessage({ type: 'swe_updateSearchResult', data: response }, '*')
+					}
+				})
+			}
+		})
     }
 })

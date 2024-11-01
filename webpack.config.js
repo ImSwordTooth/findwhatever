@@ -3,11 +3,9 @@ var webpack = require('webpack'),
   fileSystem = require('fs-extra'),
   env = require('./utils/env'),
   CopyWebpackPlugin = require('copy-webpack-plugin'),
-  HtmlWebpackPlugin = require('html-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
 var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-var ReactRefreshTypeScript = require('react-refresh-typescript');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
@@ -58,9 +56,9 @@ var options = {
         test: /\.(css|scss)$/,
         // in the `src` directory
         use: [
-          {
-            loader: 'style-loader',
-          },
+          // {
+          //   loader: 'style-loader',
+          // },
           {
             loader: 'css-loader',
           },
@@ -72,6 +70,27 @@ var options = {
           },
         ],
       },
+		{
+			test: /\.less$/,
+			use: [
+				{
+					loader: 'css-loader',
+				},
+				{
+					loader: 'less-loader',
+					options: {
+						lessOptions: {
+							modifyVars: {
+								'primary-color': '#12171a',
+								'font-size-base': '12px',
+								'border-radius-base': '6px',
+							},
+							javascriptEnabled: true
+						}
+					},
+				},
+			],
+		},
       {
         test: new RegExp('.(' + fileExtensions.join('|') + ')$'),
         type: 'asset/resource',
@@ -101,23 +120,6 @@ var options = {
         test: /\.html$/,
         loader: 'html-loader',
         exclude: /node_modules/,
-      },
-      {
-        test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              getCustomTransformers: () => ({
-                before: [isDevelopment && ReactRefreshTypeScript()].filter(
-                  Boolean
-                ),
-              }),
-              transpileOnly: isDevelopment,
-            },
-          },
-        ],
       },
       {
         test: /\.(js|jsx)$/,
