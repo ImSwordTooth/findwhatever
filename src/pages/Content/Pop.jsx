@@ -26,7 +26,6 @@ export const Pop = (props) => {
 	const [ current, setCurrent ] = useState(0) // 当前结果的下标
 	const [ total, setTotal ] = useState([]) // 当前结果，格式为 { sum, frameId }
 	const [ tabIndex, setTabIndex ] = useState('0') // tab 的key，值为 frame 的 id，默认为 0
-	const [ isComposing, setIsComposing ] = useState(false) // 是否在使用中文输入法
 
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
@@ -85,16 +84,19 @@ export const Pop = (props) => {
 	}, [isLive]);
 
 	useEffect(() => {
-		chrome?.runtime?.sendMessage({
-			action: 'search',
-			data: {
-				searchValue,
-				isWord,
-				isMatchCase,
-				isReg,
-				isLive
-			}
+		chrome.storage.sync.set({ searchValue, isWord, isMatchCase, isReg, isLive }, () => {
+			chrome?.runtime?.sendMessage({
+				action: 'search',
+				data: {
+					searchValue,
+					isWord,
+					isMatchCase,
+					isReg,
+					isLive
+				}
+			})
 		})
+
 	}, [searchValue, isWord, isMatchCase, isReg, isLive]);
 
 	const handleMessage = (e) => {
@@ -138,13 +140,8 @@ export const Pop = (props) => {
 	}
 
 	const handleSearchValueChange = (e) => {
-		if (isComposing) {
-			return
-		}
 		const value = e.target.value.trim()
-		chrome.storage.sync.set({ searchValue: value }).then(() => {
-			setSearchValue(value)
-		})
+		setSearchValue(value)
 	}
 
 	const handleEnter = e => {
@@ -155,27 +152,19 @@ export const Pop = (props) => {
 
 	const handleIsMatchCaseChange = () => {
 		const value = !isMatchCase
-		chrome.storage.sync.set({ isMatchCase: value }).then(() => {
-			setIsMatchCase(value)
-		})
+		setIsMatchCase(value)
 	}
 	const handleIsWordChange = () => {
 		const value = !isWord
-		chrome.storage.sync.set({ isWord: value }).then(() => {
-			setIsWord(value)
-		})
+		setIsWord(value)
 	}
 	const handleIsRegChange = () => {
 		const value = !isReg
-		chrome.storage.sync.set({ isReg: value }).then(() => {
-			setIsReg(value)
-		})
+		setIsReg(value)
 	}
 	const handleIsLiveChange = () => {
 		const value = !isLive
-		chrome.storage.sync.set({ isLive: value }).then(() => {
-			setIsLive(value)
-		})
+		setIsLive(value)
 	}
 
 	const doSearch = async (isAuto = false) => {
@@ -224,7 +213,7 @@ export const Pop = (props) => {
 					})
 				}).flat()
 			} catch (e) {
-				console.error('正则表达式不合法：', e)
+				// 正则表达式不合法
 				window.rangesFlat = []
 			}
 		} else {
@@ -318,14 +307,6 @@ export const Pop = (props) => {
 		})
 	}
 
-	const startChineseFind = (e) => {
-		setIsComposing(false)
-		chrome.storage.sync.set({ searchValue: e.target.value }).then(() => {
-			setSearchValue(e.target.value)
-			searchInputRef.current.focus()
-		})
-	}
-
 	const i18n = (text) => {
 		if (isChinese.current) {
 			return text
@@ -411,13 +392,10 @@ export const Pop = (props) => {
 						ref={searchInputRef}
 						id="swe_searchInput"
 						autoFocus
-						placeholder={i18n('输入文本以查找1' + isComposing.toString())}
+						placeholder={i18n('输入文本以查找')}
 						value={searchValue}
 						onChange={handleSearchValueChange}
 						onKeyDown={handleEnter}
-						onCompositionStart={() => setIsComposing(true)}
-						onCompositionUpdate={() => setIsComposing(true)}
-						onCompositionEnd={startChineseFind}
 					>
 						<div className="flex items-center bg-white rounded-lg p-0.5 absolute right-1 top-[6px]">
 							{

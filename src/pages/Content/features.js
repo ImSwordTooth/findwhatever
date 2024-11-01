@@ -71,7 +71,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 			try {
 				reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg`);
 			} catch (e) {
-				console.error('正则表达式不合法：', e)
+				// 正则表达式不合法
 				return []
 			}
 
