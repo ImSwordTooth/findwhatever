@@ -26,35 +26,6 @@
 	setTimeout(() => {
 		document.body.appendChild(frame)
 	}, 2000)
-
-	const inp = document.getElementById('xx')
-	let isComposing = false
-
-	inp.addEventListener("compositionstart", (event) => {
-		isComposing = true
-		console.log(`开始`);
-	});
-
-	inp.addEventListener("compositionend", (event) => {
-		isComposing = false
-		console.log(`结束`);
-		console.log(event)
-		search(inp.value)
-	})
-
-	inp.oninput = () => {
-		if (isComposing) {
-			return
-		}
-
-		search(inp.value)
-	}
-
-
-	function search() {
-		console.log('sousuo')
-	}
-
 </script>
 </body>
 </html>

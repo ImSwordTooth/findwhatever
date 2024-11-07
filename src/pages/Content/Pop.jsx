@@ -5,17 +5,16 @@ import { Tabs, Tooltip, Button } from 'antd'
 
 import '../../output.css'
 
-export const Pop = (props) => {
+export const Pop = () => {
 	const [ containerStyle, setContainerStyle ] = useState({
 		position: 'fixed',
-		top: props.top ? `${props.top}px` : '10%',
-		right: props.right ? `${props.right}px` : '10px',
 		backgroundColor: '#ffffff',
 		boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3)',
 		zIndex: '10000',
 		padding: '18px 12px 10px',
 		borderRadius: '12px'
 	})
+
 	const [ frames, setFrames ] = useState([])
 	const [ visibleStatus, setVisibleStatus ] = useState('') // 当前搜索结果的可见性，有三个值，''||'隐藏中'||'被遮盖'
 	const [ searchValue, setSearchValue ] = useState('') // 搜索词
@@ -37,7 +36,7 @@ export const Pop = (props) => {
 			chrome.storage.onChanged.addListener(handleSessionChange)
 			const [ sessionStorage, syncStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
-				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive'])
+				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'top', 'right'])
 			])
 			setFrames(sessionStorage.frames)
 			setSearchValue(syncStorage.searchValue)
@@ -45,6 +44,12 @@ export const Pop = (props) => {
 			setIsWord(syncStorage.isWord)
 			setIsReg(syncStorage.isReg)
 			setIsLive(syncStorage.isLive)
+
+			setContainerStyle({
+				...containerStyle,
+				top: syncStorage.top ? `${syncStorage.top}px` : '10%',
+				right: syncStorage.right? `${syncStorage.right}px` : '10%'
+			})
 
 			window.__swe_observer = new MutationObserver((mutationsList, observer) => {
 				// 遍历 mutationsList 数组，处理每个变化
@@ -118,6 +123,7 @@ export const Pop = (props) => {
 		downEvent.preventDefault();
 		const { top, right } = popContainerRef.current.getBoundingClientRect()
 		const { clientX: startX, clientY: startY } = downEvent
+		let endX, endY
 
 		const handleMove = (e) => {
 			e.preventDefault()
@@ -127,12 +133,14 @@ export const Pop = (props) => {
 				top: top + (clientY - startY) + 'px',
 				right: window.innerWidth - (right + (clientX - startX)) + 'px'
 			})
+			endX = clientX
+			endY = clientY
 		}
 
 		const handleUp = async () => {
 			document.removeEventListener('mousemove', handleMove)
 			document.removeEventListener('mouseup', handleUp)
-			await chrome.storage.sync.set({ top: parseFloat(containerStyle.top), right: parseFloat(containerStyle.right) })
+			await chrome.storage.sync.set({ top: parseFloat( top + (endY - startY)), right: parseFloat(window.innerWidth - (right + (endX - startX))) })
 		}
 
 		document.addEventListener('mousemove', handleMove)
@@ -336,7 +344,7 @@ export const Pop = (props) => {
 
 	return (
 		<div id="searchWhateverPopup" style={containerStyle} ref={popContainerRef}>
-			<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10">
+			<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
 				<div className="w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100" onMouseDown={startMove}/>
 			</div>
 			<div className="flex items-center justify-between -mt-0.5 h-7 border-b-1 border-[#f5f5f5] mb-1">
@@ -408,7 +416,7 @@ export const Pop = (props) => {
 										d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm165.4 618.2l-66-.3L512 563.4l-99.3 118.4-66.1.3c-4.4 0-8-3.5-8-8 0-1.9.7-3.7 1.9-5.2l130.1-155L340.5 359a8.32 8.32 0 01-1.9-5.2c0-4.4 3.6-8 8-8l66.1.3L512 464.6l99.3-118.4 66-.3c4.4 0 8 3.5 8 8 0 1.9-.7 3.7-1.9 5.2L553.5 514l130 155c1.2 1.5 1.9 3.3 1.9 5.2 0 4.4-3.6 8-8 8z"></path>
 								</svg>
 							}
-							<Button type="text" className="w-5 !h-5 min-w-5 cursor-pointer rounded-[6px]"
+							<Button type="text" className="w-5 !h-5 min-w-5 cursor-pointer rounded-[6px] !inline-flex items-center justify-center"
 									onClick={goPrev}>
 								<svg t="1729650340592" className="w-3.5 h-3.5 peer/svg" viewBox="0 0 1024 1024"
 									 version="1.1"
@@ -418,7 +426,7 @@ export const Pop = (props) => {
 										p-id="1467"></path>
 								</svg>
 							</Button>
-							<Button type="text" className="w-5 !h-5 min-w-5 ml-1 cursor-pointer rounded-[6px]"
+							<Button type="text" className="w-5 !h-5 min-w-5 ml-1 cursor-pointer rounded-[6px] !inline-flex items-center justify-center"
 									onClick={goNext}>
 								<svg t="1729650383779" className="w-3.5 h-3.5" viewBox="0 0 1024 1024" version="1.1"
 									 xmlns="http://www.w3.org/2000/svg" p-id="2570" width="32" height="32">
@@ -435,10 +443,10 @@ export const Pop = (props) => {
 								title={<div className="scale-90 origin-left">{i18n('大小写敏感')}</div>}
 							>
 								<button
-									className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 ${isMatchCase ? 'activeButton' : ''}`}
+									className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 px-[0px] ${isMatchCase ? 'activeButton' : ''}`}
 									onClick={handleIsMatchCaseChange}
 								>
-									<span className="text-xs">Cc</span>
+									<span className="text-xs select-none">Cc</span>
 									<BottomGradient/>
 								</button>
 							</Tooltip>
@@ -449,10 +457,10 @@ export const Pop = (props) => {
 								title={<div className="scale-90 origin-left">{i18n('匹配单词')}</div>}
 							>
 								<button
-									className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 ${isWord ? 'activeButton' : ''}`}
+									className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 px-[0px] ${isWord ? 'activeButton' : ''}`}
 									onClick={handleIsWordChange}
 								>
-									<span className="text-xs">W</span>
+									<span className="text-xs select-none">W</span>
 									<BottomGradient/>
 								</button>
 							</Tooltip>
@@ -463,10 +471,10 @@ export const Pop = (props) => {
 								title={<div className="scale-90 origin-left">{i18n('正则表达式')}</div>}
 							>
 								<button
-									className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 ${isReg ? 'activeButton' : ''}`}
+									className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 px-[0px] ${isReg ? 'activeButton' : ''}`}
 									onClick={handleIsRegChange}
 								>
-									<span className="text-xs">.*</span>
+									<span className="text-xs select-none">.*</span>
 									<BottomGradient/>
 								</button>
 							</Tooltip>

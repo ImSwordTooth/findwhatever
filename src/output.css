@@ -409,13 +409,8 @@ button {
   right: 0px;
 }
 
-.inset-x-10 {
-  left: 2.5rem;
-  right: 2.5rem;
-}
-
-.-bottom-px {
-  bottom: -1px;
+.-left-\[18px\] {
+  left: -18px;
 }
 
 .bottom-0 {
@@ -427,7 +422,7 @@ button {
 }
 
 .left-3 {
-  left: 0.75rem;
+  left: 12px;
 }
 
 .right-0 {
@@ -435,7 +430,11 @@ button {
 }
 
 .right-1 {
-  right: 0.25rem;
+  right: 4px;
+}
+
+.right-\[5px\] {
+  right: 5px;
 }
 
 .top-0 {
@@ -450,14 +449,6 @@ button {
   top: 7px;
 }
 
-.right-\[5px\] {
-  right: 5px;
-}
-
-.-left-\[18px\] {
-  left: -18px;
-}
-
 .z-10 {
   z-index: 10;
 }
@@ -467,8 +458,8 @@ button {
 }
 
 .mx-1\.5 {
-  margin-left: 0.375rem;
-  margin-right: 0.375rem;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 .mx-auto {
@@ -476,40 +467,32 @@ button {
   margin-right: auto;
 }
 
+.\!mr-\[4px\] {
+  margin-right: 4px !important;
+}
+
 .-mt-0\.5 {
-  margin-top: -0.125rem;
+  margin-top: -2px;
 }
 
 .mb-1 {
-  margin-bottom: 0.25rem;
+  margin-bottom: 4px;
 }
 
 .ml-0\.5 {
-  margin-left: 0.125rem;
+  margin-left: 2px;
 }
 
 .ml-1 {
-  margin-left: 0.25rem;
+  margin-left: 4px;
 }
 
 .ml-2 {
-  margin-left: 0.5rem;
+  margin-left: 8px;
 }
 
 .mr-1 {
-  margin-right: 0.25rem;
-}
-
-.mr-5 {
-  margin-right: 1.25rem;
-}
-
-.\!mr-5 {
-  margin-right: 1.25rem !important;
-}
-
-.\!mr-\[14px\] {
-  margin-right: 14px !important;
+  margin-right: 4px;
 }
 
 .box-content {
@@ -528,36 +511,44 @@ button {
   display: flex;
 }
 
+.\!inline-flex {
+  display: inline-flex !important;
+}
+
 .inline-flex {
   display: inline-flex;
 }
 
 .\!h-5 {
-  height: 1.25rem !important;
+  height: 20px !important;
 }
 
 .\!h-6 {
-  height: 1.5rem !important;
+  height: 24px !important;
 }
 
 .h-2\.5 {
-  height: 0.625rem;
+  height: 10px;
+}
+
+.h-3 {
+  height: 12px;
 }
 
 .h-3\.5 {
-  height: 0.875rem;
+  height: 14px;
 }
 
 .h-4 {
-  height: 1rem;
+  height: 16px;
 }
 
 .h-5 {
-  height: 1.25rem;
+  height: 20px;
 }
 
 .h-7 {
-  height: 1.75rem;
+  height: 28px;
 }
 
 .h-\[13px\] {
@@ -572,36 +563,32 @@ button {
   height: 3px;
 }
 
-.h-px {
-  height: 1px;
-}
-
-.h-3 {
-  height: 0.75rem;
-}
-
-.w-1\/2 {
-  width: 50%;
-}
-
 .w-2\.5 {
-  width: 0.625rem;
+  width: 10px;
+}
+
+.w-3 {
+  width: 12px;
 }
 
 .w-3\.5 {
-  width: 0.875rem;
+  width: 14px;
 }
 
 .w-4 {
-  width: 1rem;
+  width: 16px;
 }
 
 .w-5 {
-  width: 1.25rem;
+  width: 20px;
 }
 
 .w-6 {
-  width: 1.5rem;
+  width: 24px;
+}
+
+.w-\[110px\] {
+  width: 110px;
 }
 
 .w-\[1px\] {
@@ -612,6 +599,10 @@ button {
   width: 244px;
 }
 
+.w-\[262px\] {
+  width: 262px;
+}
+
 .w-\[50px\] {
   width: 50px;
 }
@@ -620,32 +611,12 @@ button {
   width: 100%;
 }
 
-.w-\[262px\] {
-  width: 262px;
-}
-
-.w-3 {
-  width: 0.75rem;
-}
-
-.min-w-0 {
-  min-width: 0px;
-}
-
 .min-w-2\.5 {
-  min-width: 0.625rem;
-}
-
-.min-w-5 {
-  min-width: 1.25rem;
+  min-width: 10px;
 }
 
 .min-w-\[340px\] {
   min-width: 340px;
-}
-
-.flex-1 {
-  flex: 1 1 0%;
 }
 
 .origin-left {
@@ -690,6 +661,10 @@ button {
   align-items: baseline;
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -699,7 +674,7 @@ button {
 }
 
 .rounded {
-  border-radius: 0.25rem;
+  border-radius: 4px;
 }
 
 .rounded-\[6px\] {
@@ -711,11 +686,11 @@ button {
 }
 
 .rounded-lg {
-  border-radius: 0.5rem;
+  border-radius: 8px;
 }
 
 .rounded-md {
-  border-radius: 0.375rem;
+  border-radius: 6px;
 }
 
 .border-none {
@@ -777,16 +752,16 @@ button {
 }
 
 .p-0\.5 {
-  padding: 0.125rem;
+  padding: 2px;
 }
 
 .p-\[2px\] {
   padding: 2px;
 }
 
-.px-1 {
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
+.px-\[0px\] {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 .px-\[5px\] {
@@ -795,8 +770,8 @@ button {
 }
 
 .py-1 {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .py-\[1px\] {
@@ -804,16 +779,12 @@ button {
   padding-bottom: 1px;
 }
 
-.pl-0 {
-  padding-left: 0px;
-}
-
 .pl-8 {
-  padding-left: 2rem;
+  padding-left: 32px;
 }
 
 .pr-3 {
-  padding-right: 0.75rem;
+  padding-right: 12px;
 }
 
 .text-left {
@@ -825,8 +796,8 @@ button {
 }
 
 .text-xs {
-  font-size: 0.75rem;
-  line-height: 1rem;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .leading-\[14px\] {
@@ -852,16 +823,16 @@ button {
   opacity: 0;
 }
 
+.opacity-25 {
+  opacity: 0.25;
+}
+
 .opacity-30 {
   opacity: 0.3;
 }
 
 .opacity-60 {
   opacity: 0.6;
-}
-
-.opacity-25 {
-  opacity: 0.25;
 }
 
 .blur-sm {
@@ -904,8 +875,8 @@ button {
 }
 
 .file\:text-sm::file-selector-button {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: 14px;
+  line-height: 20px;
 }
 
 .file\:font-medium::file-selector-button {
@@ -920,10 +891,6 @@ button {
 .placeholder\:text-neutral-400::placeholder {
   --tw-text-opacity: 1;
   color: rgb(163 163 163 / var(--tw-text-opacity));
-}
-
-.hover\:w-20:hover {
-  width: 5rem;
 }
 
 .hover\:opacity-100:hover {

@@ -1,8 +1,7 @@
 let resultSum = []
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
-    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(f => f.url.indexOf('http') > -1); // 获取当前标签页下的所有 iframe，去除无效的
-	console.log(frames)
+    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
     resultSum = []
     await chrome.storage.session.set({ resultSum: [], frames }) // 重置查找总数，并设置 frames
     for (let i of frames.sort((a, b) => a.frameId > b.frameId ? -1 : 1 )) {
