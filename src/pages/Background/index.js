@@ -1,8 +1,10 @@
 let resultSum = []
+let activeTabIdHistoryList = ['',''] // 当前活跃的标签页的id的历史记录，chrome api 不提供旧的标签页信息，只能获取新的，所以自己保存一下。[0] 是旧的， [1] 是新的
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
     const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
     resultSum = []
+	activeTabIdHistoryList[1] = tab.id
     await chrome.storage.session.set({ resultSum: [], frames }) // 重置查找总数，并设置 frames
     for (let i of frames.sort((a, b) => a.frameId > b.frameId ? -1 : 1 )) {
         // 插入脚本
@@ -49,6 +51,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			} else {
 			    finalSession.activeResult = 0;
 			}
+			console.log('存了', finalSession)
 			chrome.storage.session.set(finalSession);
 			sendResponse({ current: finalSession.activeResult, total: resultSum })
 		})
@@ -166,6 +169,10 @@ chrome.storage.onChanged.addListener(handleStorageChange)
 
 chrome.tabs.onActivated.addListener(async () => {
     const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+	if (activeTabIdHistoryList[1]) {
+		activeTabIdHistoryList[0] = activeTabIdHistoryList[1]
+	}
+	activeTabIdHistoryList[1] = currentTab.id
     if (currentTab.url.indexOf('http') < 0) {
         return;
     }
@@ -173,6 +180,16 @@ chrome.tabs.onActivated.addListener(async () => {
 	frames = frames.filter(f => f.url.indexOf('http') > -1)
     resultSum = []
     await chrome.storage.session.set({ resultSum: [], frames })
+
+	// 停用旧的标签页的isLive
+	if (activeTabIdHistoryList[0]) {
+		await chrome.scripting.executeScript({
+			target: { tabId: activeTabIdHistoryList[0], allFrames: true },
+			func: async () => {
+				window.__swe_observer.disconnect()
+			}
+		})
+	}
 
     const res = await chrome.scripting.executeScript({
         target: { tabId: currentTab.id, frameIds: [0] },
@@ -185,11 +202,12 @@ chrome.tabs.onActivated.addListener(async () => {
 		chrome.scripting.executeScript({
 			target: {tabId: currentTab.id, allFrames: true},
 			func: async () => {
+				window.observerAllExceptMe()
 				window.__swe_doSearchOutside(false, (response) => {
 					if (window.isFrame) {
-						window.parent.postMessage({ type: 'swe_updateSearchResult', data: response }, '*')
+						window.parent.postMessage({ type: 'swe_updateSettings', data: response }, '*')
 					} else {
-						window.postMessage({ type: 'swe_updateSearchResult', data: response }, '*')
+						window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
 					}
 				})
 			}

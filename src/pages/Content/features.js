@@ -34,6 +34,9 @@ export const closePop = () => {
 }
 
 export const observerAllExceptMe = () => {
+	if (!document) {
+		return
+	}
 	for (let child of document.body.children) {
 		if (child.tagName === 'SCRIPT' || child.id === '__swe_container') {
 			continue
@@ -135,3 +138,5 @@ window.__swe_doSearchOutside = doSearchOutside
 
 // 获取元素的隐藏状态，返回一个描述元素不可见的原因的字符串，如果不为空，说明元素不可见
 window.__swe_isElementVisible = isElementVisible
+
+window.observerAllExceptMe = observerAllExceptMe

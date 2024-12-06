@@ -104,10 +104,24 @@ export const Pop = () => {
 
 	}, [searchValue, isWord, isMatchCase, isReg, isLive]);
 
-	const handleMessage = (e) => {
+	const handleMessage = async (e) => {
 		if (e.data.type === 'swe_updateSearchResult') {
 			setCurrent(e.data.data.current)
 			setTotal(e.data.data.total)
+
+
+		}
+		if (e.data.type === 'swe_updateSettings') {
+			const [ sessionStorage, syncStorage ] = await Promise.all([
+				chrome.storage.session.get(['frames']),
+				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'top', 'right'])
+			])
+			setFrames(sessionStorage.frames)
+			setSearchValue(syncStorage.searchValue)
+			setIsMatchCase(syncStorage.isMatchCase)
+			setIsWord(syncStorage.isWord)
+			setIsReg(syncStorage.isReg)
+			setIsLive(syncStorage.isLive)
 		}
 	}
 
@@ -153,6 +167,7 @@ export const Pop = () => {
 	}
 
 	const handleEnter = e => {
+		e.stopPropagation()
 		if (e.key === 'Enter') {
 			goNext()
 		}
