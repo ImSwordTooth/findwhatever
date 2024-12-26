@@ -168,8 +168,16 @@ export const Pop = () => {
 
 	const handleEnter = e => {
 		e.stopPropagation()
+
 		if (e.key === 'Enter') {
-			goNext()
+			if (e.shiftKey) {
+				goPrev()
+			} else {
+				goNext()
+			}
+		}
+		if (e.key === 'Escape') {
+			closePop()
 		}
 	}
 

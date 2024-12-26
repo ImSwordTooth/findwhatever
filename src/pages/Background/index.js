@@ -51,7 +51,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			} else {
 			    finalSession.activeResult = 0;
 			}
-			console.log('存了', finalSession)
 			chrome.storage.session.set(finalSession);
 			sendResponse({ current: finalSession.activeResult, total: resultSum })
 		})
@@ -119,7 +118,7 @@ const handleStorageChange = async (changes, areaName) => {
             const activeResult = changes.activeResult ? changes.activeResult.newValue : activeResultFromStorage
 
 			let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
-			frames = frames.filter(f => f.url.indexOf('http') > -1)
+			frames = frames.filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1)
 
 			for (let i in frames) {
 				await chrome.scripting.executeScript({
@@ -177,7 +176,7 @@ chrome.tabs.onActivated.addListener(async () => {
         return;
     }
     let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
-	frames = frames.filter(f => f.url.indexOf('http') > -1)
+	frames = frames.filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1)
     resultSum = []
     await chrome.storage.session.set({ resultSum: [], frames })
 

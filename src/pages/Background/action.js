@@ -1,6 +1,12 @@
 import { reCheckTree, doSearchOutside, closePop } from '../Content/features'
 import { createOrUpdatePopup } from '../Content/index'
 window.isFrame = window !== window.top;
+window.handleCloseByEsc = (e) => {
+	if (!window.isFrame && e.key === 'Escape') {
+		closePop()
+		document.removeEventListener('keydown', window.handleCloseByEsc)
+	}
+}
 
 (async function () {
     // 每次点击的时候才开始创建 dom 查找树，否则会 dom 节点过旧
@@ -18,6 +24,7 @@ window.isFrame = window !== window.top;
             if (selection) {
                 await chrome.storage.sync.set({ searchValue: window.getSelection().toString() });
             }
+			document.addEventListener('keydown', window.handleCloseByEsc)
         }
     } else {
 		doSearchOutside()

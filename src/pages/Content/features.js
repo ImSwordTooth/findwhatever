@@ -25,6 +25,7 @@ export const reCheckTree = () => {
 
 export const closePop = () => {
 	window.__swe_observer.disconnect()
+	document.removeEventListener('keydown', window.handleCloseByEsc)
 	CSS.highlights.clear()
 	destroyPopup()
 	chrome.storage.session.set({ resultSum: [], frames: [] })
