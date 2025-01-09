@@ -495,6 +495,10 @@ button {
   margin-right: 4px;
 }
 
+.ml-\[1px\] {
+  margin-left: 1px;
+}
+
 .box-content {
   box-sizing: content-box;
 }
@@ -619,6 +623,10 @@ button {
   min-width: 340px;
 }
 
+.shrink-0 {
+  flex-shrink: 0;
+}
+
 .origin-left {
   transform-origin: left;
 }
@@ -645,6 +653,10 @@ button {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-grab {
+  cursor: grab;
 }
 
 .select-none {
@@ -858,6 +870,12 @@ button {
   transition-duration: 150ms;
 }
 
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .duration-300 {
   transition-duration: 300ms;
 }
@@ -893,6 +911,20 @@ button {
   color: rgb(163 163 163 / var(--tw-text-opacity));
 }
 
+.hover\:cursor-grabbing:hover {
+  cursor: grabbing;
+}
+
+.hover\:text-\[\#1687d7\]:hover {
+  --tw-text-opacity: 1;
+  color: rgb(22 135 215 / var(--tw-text-opacity));
+}
+
+.hover\:text-\[\#3aa9e3\]:hover {
+  --tw-text-opacity: 1;
+  color: rgb(58 169 227 / var(--tw-text-opacity));
+}
+
 .hover\:opacity-100:hover {
   opacity: 1;
 }
@@ -919,6 +951,10 @@ button {
 .focus-visible\:ring-\[\#e5e5e5\]:focus-visible {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(229 229 229 / var(--tw-ring-opacity));
+}
+
+.active\:cursor-grabbing:active {
+  cursor: grabbing;
 }
 
 .disabled\:cursor-not-allowed:disabled {

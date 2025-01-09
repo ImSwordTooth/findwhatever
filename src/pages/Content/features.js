@@ -55,6 +55,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 	CSS.highlights.clear() // 清除所有高亮
 
 	const { searchValue, isMatchCase, isWord, isReg } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive'])
+	const matchText = []
 
 	if (searchValue) { // 如果有搜索词
 		window.filteredRangeList = [] // 清除之前搜索到的匹配结果的 DOM 集合
@@ -89,6 +90,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 					execResLength = res.indices[0][1] - res.indices[0][0]
 					indices.push(startPosition + index)
 					startPosition += index + execResLength
+					matchText.push(res[0])
 				} else {
 					break
 				}
@@ -115,6 +117,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 		data: {
 			isFrame: window.isFrame,
 			resultNum: window.rangesFlat.length,
+			matchText,
 			isAuto
 		}
 	}, cb ? cb : () => {})

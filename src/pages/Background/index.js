@@ -29,8 +29,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		if (sender.tab.active) { // 只取当前 active 的标签页，保存查找总数
 			if (currentResultIndex > -1) {
 				resultSum[currentResultIndex].sum = data.resultNum
+				resultSum[currentResultIndex].matchText = data.matchText
 			} else {
-				resultSum.push({ sum: data.resultNum, frameId: sender.frameId })
+				resultSum.push({ sum: data.resultNum, frameId: sender.frameId, matchText: data.matchText })
 			}
 		} else { // 不在当前标签页的，删掉
 			resultSum.splice(currentResultIndex, 1)
@@ -172,9 +173,9 @@ chrome.tabs.onActivated.addListener(async () => {
 		activeTabIdHistoryList[0] = activeTabIdHistoryList[1]
 	}
 	activeTabIdHistoryList[1] = currentTab.id
-    if (currentTab.url.indexOf('http') < 0) {
-        return;
-    }
+	if (currentTab.url.indexOf('http') < 0) {
+		return;
+	}
     let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
 	frames = frames.filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1)
     resultSum = []
@@ -198,18 +199,20 @@ chrome.tabs.onActivated.addListener(async () => {
     })
 
     if (res[0].result) {
-		chrome.scripting.executeScript({
-			target: {tabId: currentTab.id, allFrames: true},
-			func: async () => {
-				window.observerAllExceptMe()
-				window.__swe_doSearchOutside(false, (response) => {
-					if (window.isFrame) {
-						window.parent.postMessage({ type: 'swe_updateSettings', data: response }, '*')
-					} else {
-						window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
-					}
-				})
-			}
-		})
+		for (let i in frames) {
+			chrome.scripting.executeScript({
+				target: {tabId: currentTab.id, frameIds: [frames[i].frameId]},
+				func: async () => {
+					window.__swe_doSearchOutside(false, (response) => {
+						if (window.isFrame) {
+							window.parent.postMessage({ type: 'swe_updateSettings', data: response }, '*')
+						} else {
+							window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
+						}
+					})
+					window.observerAllExceptMe()
+				}
+			})
+		}
     }
 })
