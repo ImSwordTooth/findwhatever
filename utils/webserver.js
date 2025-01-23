@@ -32,6 +32,7 @@ var server = new WebpackDevServer(
     liveReload: false,
     client: {
       webSocketTransport: 'ws',
+		webSocketURL: 'ws://localhost:3000',
     },
     webSocketServer: 'ws',
     host: 'localhost',
@@ -40,7 +41,7 @@ var server = new WebpackDevServer(
       directory: path.join(__dirname, '../build'),
     },
     devMiddleware: {
-      publicPath: `http://localhost:${env.PORT}/`,
+      publicPath: `http://localhost:${env.PORT}`,
       writeToDisk: true,
     },
     headers: {

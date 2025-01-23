@@ -491,12 +491,12 @@ button {
   margin-left: 8px;
 }
 
-.mr-1 {
-  margin-right: 4px;
-}
-
 .ml-\[1px\] {
   margin-left: 1px;
+}
+
+.mr-1 {
+  margin-right: 4px;
 }
 
 .box-content {
@@ -643,6 +643,10 @@ button {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.cursor-grab {
+  cursor: grab;
+}
+
 .cursor-grabbing {
   cursor: grabbing;
 }
@@ -653,10 +657,6 @@ button {
 
 .cursor-pointer {
   cursor: pointer;
-}
-
-.cursor-grab {
-  cursor: grab;
 }
 
 .select-none {
@@ -909,15 +909,6 @@ button {
 .placeholder\:text-neutral-400::placeholder {
   --tw-text-opacity: 1;
   color: rgb(163 163 163 / var(--tw-text-opacity));
-}
-
-.hover\:cursor-grabbing:hover {
-  cursor: grabbing;
-}
-
-.hover\:text-\[\#1687d7\]:hover {
-  --tw-text-opacity: 1;
-  color: rgb(22 135 215 / var(--tw-text-opacity));
 }
 
 .hover\:text-\[\#3aa9e3\]:hover {

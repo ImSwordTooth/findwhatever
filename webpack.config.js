@@ -56,9 +56,6 @@ var options = {
         test: /\.(css|scss)$/,
         // in the `src` directory
         use: [
-          // {
-          //   loader: 'style-loader',
-          // },
           {
             loader: 'css-loader',
           },
