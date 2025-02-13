@@ -1,10 +1,12 @@
 let resultSum = []
 let activeTabIdHistoryList = ['',''] // 当前活跃的标签页的id的历史记录，chrome api 不提供旧的标签页信息，只能获取新的，所以自己保存一下。[0] 是旧的， [1] 是新的
+let pageFrames = [] // 当前页面中的 frames
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
     const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
     resultSum = []
 	activeTabIdHistoryList[1] = tab.id
+	pageFrames = frames
     await chrome.storage.session.set({ resultSum: [], frames }) // 重置查找总数，并设置 frames
     for (let i of frames.sort((a, b) => a.frameId > b.frameId ? -1 : 1 )) {
         // 插入脚本
@@ -47,10 +49,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 		chrome.storage.session.get(['activeResult'], (res) => {
 			if (isAuto) {
-			    finalSession.activeResult = res.activeResult
+				finalSession.activeResult = res.activeResult
 				finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
 			} else {
-			    finalSession.activeResult = 0;
+				finalSession.activeResult = 0;
 			}
 			chrome.storage.session.set(finalSession);
 			sendResponse({ current: finalSession.activeResult, total: resultSum })
@@ -59,9 +61,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 
 	if (action === 'search') {
-		chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(([currentTab]) => {
+		for (let i in pageFrames) {
 			chrome.scripting.executeScript({
-				target: {tabId: currentTab.id, allFrames: true},
+				target: {tabId: activeTabIdHistoryList[1], frameIds: [pageFrames[i].frameId]},
 				func: async () => {
 					window.__swe_doSearchOutside(false, (response) => {
 						if (window.isFrame) {
@@ -72,14 +74,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					})
 				}
 			})
-		})
+		}
 	}
 
 	if (action === 'closeAction') {
-		chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(([currentTab]) => {
-			chrome.scripting.removeCSS({
-				target: { tabId: currentTab.id, allFrames: true },
-				css: `::highlight(search-results) {
+		chrome.scripting.removeCSS({
+			target: { tabId: activeTabIdHistoryList[1], allFrames: true },
+			css: `::highlight(search-results) {
     background-color: #ffff37;
     color: black;
 }
@@ -87,15 +88,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     background-color: #ff8b3a;
     color: black;
 }`
-			})
 		})
 	}
 
 	if (action === 'openAction') {
-		chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(([currentTab]) => {
-			chrome.scripting.insertCSS({
-				target: { tabId: currentTab.id, allFrames: true },
-				css: `::highlight(search-results) {
+		chrome.scripting.insertCSS({
+			target: { tabId: activeTabIdHistoryList[1], allFrames: true },
+			css: `::highlight(search-results) {
     background-color: #ffff37;
     color: black;
 }
@@ -103,7 +102,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     background-color: #ff8b3a;
     color: black;
 }`
-			})
 		})
 	}
 });
@@ -111,19 +109,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 const handleStorageChange = async (changes, areaName) => {
     if (areaName === 'session') {
         if (changes.activeResult || changes.force) {
-			const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-			if (!currentTab){
-				return
-			}
             const { resultSum, activeResult: activeResultFromStorage } = await chrome.storage.session.get(['resultSum', 'activeResult']);
             const activeResult = changes.activeResult ? changes.activeResult.newValue : activeResultFromStorage
 
-			let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
-			frames = frames.filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1)
-
-			for (let i in frames) {
+			for (let i in pageFrames) {
 				await chrome.scripting.executeScript({
-					target: {tabId: currentTab.id, frameIds: [frames[i].frameId]},
+					target: {tabId: activeTabIdHistoryList[1], frameIds: [pageFrames[i].frameId]},
 					func: () => {
 						CSS.highlights.delete('search-results-active')
 					}
@@ -139,9 +130,12 @@ const handleStorageChange = async (changes, areaName) => {
 				temp += resultSum[i].sum;
 				if (activeResult <= temp) {
 					chrome.scripting.executeScript({
-						target: { tabId: currentTab.id, frameIds: [Number(resultSum[i].frameId)] },
+						target: { tabId: activeTabIdHistoryList[1], frameIds: [Number(resultSum[i].frameId)] },
 						args: [activeResult - temp + resultSum[i].sum],
 						func: (realIndex) => {
+							if (!window.rangesFlat) {
+								return
+							}
 							CSS.highlights.set('search-results-active', new Highlight(window.rangesFlat[realIndex - 1]))
 							let parents = [filteredRangeList[realIndex - 1]];
 							let currentDom = filteredRangeList[realIndex - 1].parentElement;
@@ -179,6 +173,7 @@ chrome.tabs.onActivated.addListener(async () => {
     let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
 	frames = frames.filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1)
     resultSum = []
+	pageFrames = frames
     await chrome.storage.session.set({ resultSum: [], frames })
 
 	// 停用旧的标签页的isLive

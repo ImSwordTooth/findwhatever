@@ -2,25 +2,50 @@ import { destroyPopup } from "./index";
 
 // 生成匹配节点树
 export const reCheckTree = () => {
-    window.treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, (node) => {
-        // 父元素是 svg、script、script 的时候，不置入范围
-        if (['svg', 'STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
-            return NodeFilter.FILTER_REJECT
-        } else {
-            return NodeFilter.FILTER_ACCEPT
-        }
-    })
+	const createTreeWalkerWithShadowDOM = (root) => {
+		return document.createTreeWalker(root, NodeFilter.SHOW_TEXT, (node) => {
+			// 父元素是 svg、script、script 的时候，不置入范围
+			if (['svg', 'STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
+				return NodeFilter.FILTER_REJECT
+			} else {
+				return NodeFilter.FILTER_ACCEPT
+			}
+		})
+	}
+
+	function* walkTextNodes(node) {
+		const treeWalker = createTreeWalkerWithShadowDOM(node)
+
+		if (node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
+			yield* walkTextNodes(node.shadowRoot)
+		}
+
+		if (node.children?.length > 0) {
+			for (const child of node.children) {
+				yield* walkTextNodes(child)
+			}
+		} else {
+			while (treeWalker.nextNode()) {
+				yield treeWalker.currentNode
+			}
+		}
+	}
 
     window.allNodes = [];
-    window.currentNode = window.treeWalker.nextNode();
-    while (window.currentNode) {
-        if (window.currentNode.textContent && !/^\s+$/g.test(window.currentNode.textContent)) { // 如果一个元素的有内容，并且内容全都是空白，跳过之
-			if (isElementVisible(window.currentNode.parentElement) !== '隐藏中') {
-				window.allNodes.push({ el: window.currentNode, text: window.currentNode.textContent })
+	return new Promise(resolve => {
+
+		const genReturn = walkTextNodes(document.body)
+		let genReturnNext = genReturn.next()
+		while (!genReturnNext.done) {
+			if (genReturnNext.value.textContent && !/^\s+$/g.test(genReturnNext.value.textContent)) { // 如果一个元素的有内容，并且内容全都是空白，跳过之
+				if (isElementVisible(genReturnNext.value.parentElement) !== '隐藏中') {
+					window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
+				}
 			}
-        }
-        window.currentNode = window.treeWalker.nextNode();
-    }
+			genReturnNext = genReturn.next()
+		}
+		resolve()
+	})
 }
 
 export const closePop = () => {
@@ -57,7 +82,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 	const { searchValue, isMatchCase, isWord, isReg } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive'])
 	const matchText = []
 
-	if (searchValue) { // 如果有搜索词
+	if (searchValue && window.allNodes) { // 如果有搜索词
 		window.filteredRangeList = [] // 清除之前搜索到的匹配结果的 DOM 集合
 		window.rangesFlat = window.allNodes.map(({ el, text }) => {
 			const indices = []

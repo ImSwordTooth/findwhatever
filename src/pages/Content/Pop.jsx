@@ -61,11 +61,13 @@ export const Pop = () => {
 				// 	console.log(mutation.target); // 输出发生变化的节点
 				// }
 
-				reCheckTree() // 重新生成节点树
-				doSearchOutside(true, (response) => {
-					setCurrent(response.current)
-					setTotal(response.total)
-				}) // 然后执行搜索
+				// 重新生成节点树
+				reCheckTree().then(() => {
+					doSearchOutside(true, (response) => {
+						setCurrent(response.current)
+						setTotal(response.total)
+					}) // 然后执行搜索
+				})
 			})
 
 			// 启动后立即进行一次搜索
@@ -111,8 +113,6 @@ export const Pop = () => {
 		if (e.data.type === 'swe_updateSearchResult') {
 			setCurrent(e.data.data.current)
 			setTotal(e.data.data.total)
-
-
 		}
 		if (e.data.type === 'swe_updateSettings') {
 			const [ sessionStorage, syncStorage ] = await Promise.all([
@@ -206,7 +206,7 @@ export const Pop = () => {
 		CSS.highlights.clear() // 清除所有高亮
 		const matchText = []
 
-		if (searchValue) { // 如果有搜索词
+		if (searchValue && window.allNodes) { // 如果有搜索词
 			window.filteredRangeList = [] // 清除之前搜索到的匹配结果的 DOM 集合
 			// 根据筛选项，设置正则表达式
 			let regContent = searchValue
@@ -424,7 +424,7 @@ export const Pop = () => {
 					  getPopupContainer={e => e.parentElement}
 				>
 				</Tabs>
-				<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] w-[110px] justify-end">
+				<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
 					{
 						visibleStatus &&
 						<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 absolute right-[22px] top-[5px]">
