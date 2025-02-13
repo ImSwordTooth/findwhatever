@@ -449,8 +449,32 @@ button {
   top: 7px;
 }
 
+.right-\[20px\] {
+  right: 20px;
+}
+
+.right-\[12px\] {
+  right: 12px;
+}
+
+.right-\[27px\] {
+  right: 27px;
+}
+
+.top-\[5px\] {
+  top: 5px;
+}
+
+.right-\[22px\] {
+  right: 22px;
+}
+
 .z-10 {
   z-index: 10;
+}
+
+.z-30 {
+  z-index: 30;
 }
 
 .m-auto {
@@ -659,6 +683,10 @@ button {
   cursor: pointer;
 }
 
+.cursor-none {
+  cursor: none;
+}
+
 .select-none {
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -845,6 +873,10 @@ button {
 
 .opacity-60 {
   opacity: 0.6;
+}
+
+.opacity-80 {
+  opacity: 0.8;
 }
 
 .blur-sm {

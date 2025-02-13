@@ -29,7 +29,7 @@
 	line-height: unset !important;
 	padding: unset !important;
 }
-.ant-btn-text:active path {
+.ant-btn-text:not(.ant-btn-dangerous):active path {
 	fill: #3aa9e3!important;
 }
 

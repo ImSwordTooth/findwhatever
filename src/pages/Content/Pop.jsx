@@ -9,10 +9,11 @@ export const Pop = () => {
 	const [ containerStyle, setContainerStyle ] = useState({
 		position: 'fixed',
 		backgroundColor: '#ffffff',
-		boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3)',
+		boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3),0px 0px 16px 1px rgba(233,233,233,0.58) ',
 		zIndex: '10000',
 		padding: '18px 12px 10px',
-		borderRadius: '12px'
+		borderRadius: '12px',
+		transition: 'opacity ease .3s',
 	})
 
 	const [ frames, setFrames ] = useState([])
@@ -25,6 +26,8 @@ export const Pop = () => {
 	const [ current, setCurrent ] = useState(0) // 当前结果的下标
 	const [ total, setTotal ] = useState([]) // 当前结果，格式为 { sum, frameId }
 	const [ tabIndex, setTabIndex ] = useState('0') // tab 的key，值为 frame 的 id，默认为 0
+	const [ isHidePanel, setIsHidePanel ] = useState(false) // 是否把面板半透明
+	const [ isHidePanelTemporarily, setIsHidePanelTemporarily ] = useState(false) // 是否临时把面板半透明
 
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
@@ -372,6 +375,20 @@ export const Pop = () => {
 		document.body.removeChild(tag)
 	}
 
+	const hidePanelTemporarily = () => {
+		if (!isHidePanel) {
+			setIsHidePanelTemporarily(true)
+		}
+	}
+
+	const showPanelTemporarily = () => {
+		if (!isHidePanel) {
+			setIsHidePanelTemporarily(false)
+		}
+	}
+
+	const toggleHidePanel = () => setIsHidePanel(!isHidePanel)
+
 	const BottomGradient = () => {
 		return (
 			<>
@@ -382,7 +399,7 @@ export const Pop = () => {
 	};
 
 	return (
-		<div id="searchWhateverPopup" style={containerStyle} ref={popContainerRef}>
+		<div id="searchWhateverPopup" style={{...containerStyle, opacity: isHidePanel ? 0.3 : (isHidePanelTemporarily ? 0.3 : 1)}} ref={popContainerRef}>
 			<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
 				<div className="w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100" onMouseDown={startMove}/>
 			</div>
@@ -410,7 +427,7 @@ export const Pop = () => {
 				<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] w-[110px] justify-end">
 					{
 						visibleStatus &&
-						<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 absolute right-[5px] top-[7px]">
+						<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 absolute right-[22px] top-[5px]">
 							<svg className="mr-1 w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1"
 								 xmlns="http://www.w3.org/2000/svg" width="200"
 								 height="200">
@@ -422,15 +439,32 @@ export const Pop = () => {
 								className="inline-block scale-[0.8] origin-left text-xs cursor-grabbing text-[#a0a0a0]">{i18n(visibleStatus)}</div>
 						</div>
 					}
-					<div className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[#3aa9e3] transition-colors" onClick={copyResult}>
+					<div className="flex items-center text-xs text-[#a0a0a0] cursor-grab opacity-80 absolute right-[12px] top-[6px] active:cursor-grabbing z-30" onMouseEnter={hidePanelTemporarily} onMouseLeave={showPanelTemporarily} onClick={toggleHidePanel}>
+						<svg className="w-3 h-3" viewBox="0 0 1194 1024" version="1.1"
+							 xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+							<path
+								d="M597.333333 964.266667c-190.577778 0-366.933333-102.4-520.533333-301.511111-25.6-31.288889-25.6-76.8 0-108.088889C230.4 358.4 406.755556 256 597.333333 256c190.577778 0 366.933333 102.4 520.533334 301.511111 25.6 31.288889 25.6 76.8 0 108.088889-153.6 199.111111-329.955556 298.666667-520.533334 298.666667zM597.333333 312.888889c-173.511111 0-332.8 93.866667-477.866666 278.755555-8.533333 11.377778-8.533333 25.6 0 39.822223C261.688889 816.355556 423.822222 910.222222 597.333333 910.222222c173.511111 0 332.8-93.866667 477.866667-278.755555 8.533333-11.377778 8.533333-25.6 0-39.822223C930.133333 406.755556 770.844444 312.888889 597.333333 312.888889z"
+								fill="#388CFF"></path>
+							<path
+								d="M597.333333 768c-93.866667 0-170.666667-76.8-170.666666-170.666667s76.8-170.666667 170.666666-170.666666 170.666667 76.8 170.666667 170.666666-76.8 170.666667-170.666667 170.666667z m0-284.444444c-62.577778 0-113.777778 51.2-113.777777 113.777777s51.2 113.777778 113.777777 113.777778 113.777778-51.2 113.777778-113.777778-51.2-113.777778-113.777778-113.777777z"
+								fill="#388CFF"></path>
+							<path
+								d="M597.333333 56.888889c17.066667 0 28.444444 11.377778 28.444445 28.444444v170.666667c0 17.066667-11.377778 28.444444-28.444445 28.444444s-28.444444-11.377778-28.444444-28.444444V85.333333c0-17.066667 11.377778-28.444444 28.444444-28.444444zM1075.2 233.244444c11.377778 11.377778 11.377778 28.444444 0 39.822223l-119.466667 119.466666c-11.377778 11.377778-28.444444 11.377778-39.822222 0-11.377778-11.377778-11.377778-28.444444 0-39.822222l119.466667-119.466667c11.377778-11.377778 28.444444-11.377778 39.822222 0zM119.466667 233.244444c11.377778-11.377778 28.444444-11.377778 39.822222 0l119.466667 119.466667c11.377778 11.377778 11.377778 28.444444 0 39.822222-11.377778 11.377778-28.444444 11.377778-39.822223 0L119.466667 273.066667c-11.377778-11.377778-11.377778-28.444444 0-39.822223z"
+								fill="#388CFF"></path>
+						</svg>
+					</div>
+					<div
+						className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[#3aa9e3] transition-colors"
+						onClick={copyResult}>
 						{i18n('查找结果')}
-						<svg className="w-2.5 h-2.5 ml-[1px]" fill="#3aa9e3" viewBox="64 64 896 896" version="1.1" xmlns="http://www.w3.org/2000/svg">
+						<svg className="w-2.5 h-2.5 ml-[1px]" fill="#3aa9e3" viewBox="64 64 896 896" version="1.1"
+							 xmlns="http://www.w3.org/2000/svg">
 							<path
 								d="M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"></path>
 						</svg>
 					</div>
 					：<span id="__swe_current"
-											 className="mr-1 ml-0.5 inline-block min-w-2.5 text-right">{current}</span> / <span
+						   className="mr-1 ml-0.5 inline-block min-w-2.5 text-right">{current}</span> / <span
 					className="ml-1 inline-block min-w-2.5 text-left"
 					id="__swe_total">{total.map(a => a.sum).reduce((a, b) => a + b, 0)}</span>
 				</div>
