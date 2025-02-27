@@ -39,12 +39,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			resultSum.splice(currentResultIndex, 1)
 		}
 
+		// 按照 frames 的顺序排序
+		resultSum.sort((a, b) => pageFrames.findIndex(p => p.frameId === b.frameId) - pageFrames.findIndex(p => p.frameId === a.frameId))
 		// 保证【当前页】的总是在第一位
 		const index = resultSum.findIndex(r => r.frameId === 0);
 		if (index > 0) {
 			resultSum.unshift(resultSum.splice(index, 1)[0])
 		}
-
 		const finalSession = { resultSum }
 
 		chrome.storage.session.get(['activeResult'], (res) => {

@@ -433,12 +433,20 @@ button {
   right: 4px;
 }
 
-.right-\[5px\] {
-  right: 5px;
+.right-\[12px\] {
+  right: 12px;
+}
+
+.right-\[22px\] {
+  right: 22px;
 }
 
 .top-0 {
   top: 0px;
+}
+
+.top-\[5px\] {
+  top: 5px;
 }
 
 .top-\[6px\] {
@@ -447,26 +455,6 @@ button {
 
 .top-\[7px\] {
   top: 7px;
-}
-
-.right-\[20px\] {
-  right: 20px;
-}
-
-.right-\[12px\] {
-  right: 12px;
-}
-
-.right-\[27px\] {
-  right: 27px;
-}
-
-.top-\[5px\] {
-  top: 5px;
-}
-
-.right-\[22px\] {
-  right: 22px;
 }
 
 .z-10 {
@@ -615,10 +603,6 @@ button {
   width: 24px;
 }
 
-.w-\[110px\] {
-  width: 110px;
-}
-
 .w-\[1px\] {
   width: 1px;
 }
@@ -681,10 +665,6 @@ button {
 
 .cursor-pointer {
   cursor: pointer;
-}
-
-.cursor-none {
-  cursor: none;
 }
 
 .select-none {
