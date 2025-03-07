@@ -36,3 +36,10 @@
 .ant-tabs > .ant-tabs-nav .ant-tabs-nav-more {
 	padding: 0 16px !important;
 }
+
+.ant-dropdown-menu-item {
+	padding: 2px 6px!important;
+}
+.ant-dropdown-menu-title-content {
+	transform: scale(0.9)!important;
+}

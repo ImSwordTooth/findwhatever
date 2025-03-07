@@ -1,6 +1,6 @@
 {
   "name": "Find whatever - regex & auto re-find",
-  "version": "1.4.2",
+  "version": "2.0.0",
   "description": "Enhance your browser's find capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
   "license": "MIT",
   "repository": {
@@ -19,6 +19,7 @@
     "framer-motion": "^11.11.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-rnd": "^10.5.2",
     "react-shadow": "^20.5.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"

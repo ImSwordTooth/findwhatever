@@ -57,6 +57,21 @@ export const closePop = () => {
 	chrome?.runtime?.sendMessage({
 		action: 'closeAction'
 	})
+	chrome.storage.sync.get(['recent', 'searchValue']).then(({ recent, searchValue }) => {
+		const newRecent = recent.slice()
+		if (!newRecent.includes(searchValue)) { // 没有就直接新增
+			newRecent.unshift(searchValue)
+			if (newRecent.length > 50) { // 不超过50条
+				newRecent.shift()
+			}
+		} else { // 有就提到最新
+			const index = newRecent.findIndex(r => r === searchValue);
+			if (index > 0) {
+				newRecent.unshift(newRecent.splice(index, 1)[0])
+			}
+		}
+		chrome.storage.sync.set({ recent: newRecent })
+	})
 }
 
 export const observerAllExceptMe = () => {
@@ -149,6 +164,9 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 }
 
 export const isElementVisible = (el) => {
+	if (!el) {
+		return ''
+	}
 	const rect = el.getBoundingClientRect();
 	if (rect.width === 0 && rect.height === 0) {
 		return '隐藏中'

@@ -12,7 +12,7 @@ const root = createRoot(dom)
 
 export const createOrUpdatePopup = (props) => {
 	root.render(
-		<ShadowRoot.div>
+		<ShadowRoot.div mode="closed">
 			<Pop {...props} />
 			<style type="text/css">{styles[0][1].toString()}</style>
 			<style type="text/css">{antdStyle[0][1].toString()}</style>

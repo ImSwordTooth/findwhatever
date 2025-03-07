@@ -18,6 +18,26 @@
 		}
 	}
 
+	.smallScroll {
+		&::-webkit-scrollbar {
+			width: 4px;
+			height: 4px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background-color: rgba(239, 239, 239, 0.5);
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: rgb(203, 203, 203);
+			border-radius: 4px;
+		}
+
+		&::-webkit-scrollbar-corner {
+			background-color: rgba(239, 239, 239, 0.5);
+		}
+	}
+
 	@keyframes rotateInf {
 		0% {
 			transform: rotate(0deg);
