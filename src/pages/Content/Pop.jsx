@@ -447,6 +447,7 @@ export const Pop = () => {
 				onDragStop={handleDragStop}
 				position={{ x, y }}
 				bounds='window'
+				enableResizing={false}
 			>
 				<div id="searchWhateverPopup" ref={popContainerRef}>
 					<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">

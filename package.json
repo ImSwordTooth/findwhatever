@@ -1,6 +1,6 @@
 {
   "name": "Find whatever - regex & auto re-find",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Enhance your browser's find capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
   "license": "MIT",
   "repository": {
