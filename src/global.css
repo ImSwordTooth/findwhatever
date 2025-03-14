@@ -46,6 +46,10 @@
 			transform: rotate(360deg);
 		}
 	}
+
+	.sketch-picker * {
+		box-sizing: unset!important;
+	}
 }
 
 @layer base {

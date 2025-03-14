@@ -364,6 +364,40 @@ button {
   box-sizing: border-box;
 }
 
+.container {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1536px;
+  }
+}
+
 #searchWhateverPopup {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 }
@@ -403,6 +437,10 @@ button {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.sketch-picker * {
+  box-sizing: unset!important;
 }
 
 .visible {
@@ -544,8 +582,16 @@ button {
   margin-left: 1px;
 }
 
+.ml-\[20px\] {
+  margin-left: 20px;
+}
+
 .mr-1 {
   margin-right: 4px;
+}
+
+.mt-\[20px\] {
+  margin-top: 20px;
 }
 
 .box-content {
@@ -680,6 +726,10 @@ button {
   width: 262px;
 }
 
+.w-\[400px\] {
+  width: 400px;
+}
+
 .w-\[50px\] {
   width: 50px;
 }
@@ -702,6 +752,10 @@ button {
 
 .max-w-10 {
   max-width: 2.5rem;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
 }
 
 .shrink-0 {
@@ -796,8 +850,16 @@ button {
   white-space: nowrap;
 }
 
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+}
+
 .rounded {
   border-radius: 4px;
+}
+
+.rounded-2xl {
+  border-radius: 16px;
 }
 
 .rounded-\[6px\] {
@@ -833,6 +895,11 @@ button {
 .bg-\[\#dfdfdf\] {
   --tw-bg-opacity: 1;
   background-color: rgb(223 223 223 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#f1f1f1\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(241 241 241 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#f4f4f4\] {
@@ -882,8 +949,16 @@ button {
   padding: 4px;
 }
 
+.p-\[12px\] {
+  padding: 12px;
+}
+
 .p-\[2px\] {
   padding: 2px;
+}
+
+.p-\[40px\] {
+  padding: 40px;
 }
 
 .px-\[0px\] {
@@ -977,6 +1052,10 @@ button {
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
+.underline {
+  text-decoration-line: underline;
 }
 
 .opacity-0 {
