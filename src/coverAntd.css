@@ -43,3 +43,10 @@
 .ant-dropdown-menu-title-content {
 	transform: scale(0.9)!important;
 }
+
+.ant-popover-inner-content {
+	padding: 0 !important;
+}
+.ant-popconfirm .ant-popover-inner-content {
+	padding: 12px 16px!important;
+}

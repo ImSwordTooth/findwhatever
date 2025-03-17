@@ -79,31 +79,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 
 	if (action === 'closeAction') {
-		chrome.scripting.removeCSS({
-			target: { tabId: activeTabIdHistoryList[1], allFrames: true },
-			css: `::highlight(search-results) {
-    background-color: #ffff37;
-    color: black;
-}
-::highlight(search-results-active) {
-    background-color: #ff8b3a;
-    color: black;
-}`
+		chrome.storage.sync.get('styleText', (res) => {
+			chrome.scripting.removeCSS({
+				target: { tabId: activeTabIdHistoryList[1], allFrames: true },
+				css: res.styleText
+			})
 		})
 	}
 
 	if (action === 'openAction') {
-		chrome.scripting.insertCSS({
-			target: { tabId: activeTabIdHistoryList[1], allFrames: true },
-			css: `::highlight(search-results) {
-    background-color: #ffff37;
-    color: black;
-}
-::highlight(search-results-active) {
-    background-color: #ff8b3a;
-    color: black;
-}`
+		chrome.storage.sync.get('styleText', (res) => {
+			chrome.scripting.insertCSS({
+				target: { tabId: activeTabIdHistoryList[1], allFrames: true },
+				css: res.styleText
+			})
 		})
+	}
+
+	if (action === 'openOptionsPage') {
+		chrome.runtime.openOptionsPage()
 	}
 });
 

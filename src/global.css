@@ -38,6 +38,44 @@
 		}
 	}
 
+	.setting-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: 13px;
+		padding: 4px 12px;
+		background-color: #f1f1f1;
+		height: 34px;
+
+		&:hover {
+			background-color: #e5e5e5;
+		}
+
+		.color-picker {
+			display: flex;
+			align-items: center;
+			font-family: monospace;
+			border: solid 1px #dedede;
+			padding: 2px 4px 2px 3px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 12px;
+			transition: border-color 0.3s;
+
+			&:hover {
+				border-color: #909090;
+			}
+
+			.color-block {
+				width: 18px;
+				height: 18px;
+				border-radius: 2px;
+				margin-right: 4px;
+			}
+		}
+
+	}
+
 	@keyframes rotateInf {
 		0% {
 			transform: rotate(0deg);

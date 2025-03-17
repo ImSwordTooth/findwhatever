@@ -14,19 +14,23 @@ export const reCheckTree = () => {
 	}
 
 	function* walkTextNodes(node) {
-		const treeWalker = createTreeWalkerWithShadowDOM(node)
-
-		if (node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
-			yield* walkTextNodes(node.shadowRoot)
-		}
-
-		if (node.children?.length > 0) {
-			for (const child of node.children) {
-				yield* walkTextNodes(child)
-			}
+		if (node.nodeName === '#text') {
+			yield node
 		} else {
-			while (treeWalker.nextNode()) {
-				yield treeWalker.currentNode
+			const treeWalker = createTreeWalkerWithShadowDOM(node)
+
+			if (node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
+				yield* walkTextNodes(node.shadowRoot)
+			}
+
+			if (node.childNodes?.length > 0) {
+				for (const child of node.childNodes) {
+					yield* walkTextNodes(child)
+				}
+			} else {
+				while (treeWalker.nextNode()) {
+					yield treeWalker.currentNode
+				}
 			}
 		}
 	}
@@ -138,7 +142,13 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 			return indices.map(index => {
 				const range = new Range()
-				window.filteredRangeList.push(el.parentElement)
+				if (el.parentElement) {
+					window.filteredRangeList.push(el.parentElement)
+				} else {
+					if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
+						window.filteredRangeList.push(el.parentNode.host)
+					}
+				}
 				range.setStart(el, index)
 				range.setEnd(el, index + execResLength)
 				return range

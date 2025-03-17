@@ -214,7 +214,13 @@ export const Pop = () => {
 
 					return indices.map(index => {
 						const range = new Range()
-						window.filteredRangeList.push(el.parentElement)
+						if (el.parentElement) {
+							window.filteredRangeList.push(el.parentElement)
+						} else {
+							if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
+								window.filteredRangeList.push(el.parentNode.host)
+							}
+						}
 						range.setStart(el, index)
 						range.setEnd(el, index + execResLength)
 						return range
@@ -428,6 +434,10 @@ export const Pop = () => {
 		setRecent([])
 	}
 
+	const openSetting = () => {
+		chrome?.runtime?.sendMessage({ action: 'openOptionsPage' })
+	}
+
 	const BottomGradient = () => {
 		return (
 			<>
@@ -478,7 +488,7 @@ export const Pop = () => {
 						<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
 							{
 								visibleStatus &&
-								<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 absolute right-[22px] top-[5px]">
+								<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 absolute right-[42px] top-[5px]">
 									<svg className="mr-1 w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1"
 										 xmlns="http://www.w3.org/2000/svg" width="200"
 										 height="200">
@@ -490,7 +500,7 @@ export const Pop = () => {
 										className="inline-block scale-[0.8] origin-left text-xs cursor-grabbing text-[#a0a0a0]">{i18n(visibleStatus)}</div>
 								</div>
 							}
-							<div className="flex items-center text-xs text-[#a0a0a0] cursor-grab opacity-80 absolute right-[12px] top-[6px] active:cursor-grabbing z-30" onMouseEnter={hidePanelTemporarily} onMouseLeave={showPanelTemporarily} onClick={toggleHidePanel}>
+							<div className="flex items-center text-xs text-[#a0a0a0] cursor-grab opacity-80 absolute right-[30px] top-[6px] active:cursor-grabbing z-30" onMouseEnter={hidePanelTemporarily} onMouseLeave={showPanelTemporarily} onClick={toggleHidePanel}>
 								<svg className="w-3 h-3" viewBox="0 0 1194 1024" version="1.1"
 									 xmlns="http://www.w3.org/2000/svg" width="200" height="200">
 									<path
@@ -504,19 +514,31 @@ export const Pop = () => {
 										fill="#388CFF"></path>
 								</svg>
 							</div>
+							<div className="flex items-center text-xs text-[#a0a0a0] cursor-pointer opacity-80 absolute right-[12px] top-[6px] z-30" onClick={openSetting}>
+								<svg className="w-3 h-3" t="1742198752009" viewBox="0 0 1024 1024" version="1.1"
+									 xmlns="http://www.w3.org/2000/svg" p-id="2483" width="200" height="200">
+									<path
+										d="M512.25928 704c-108.8 0-192-83.2-192-192s83.2-192 192-192 192 83.2 192 192-83.2 192-192 192z m0-320c-70.4 0-128 57.6-128 128s57.6 128 128 128 128-57.6 128-128-57.6-128-128-128z"
+										fill="#333333" p-id="2484"></path>
+									<path
+										d="M640.25928 1024H384.25928c-19.2 0-32-12.8-32-32v-121.6c-25.6-12.8-51.2-25.6-70.4-38.4l-102.4 64c-12.8 6.4-32 6.4-44.8-12.8l-128-224C-6.14072 640 0.25928 620.8 19.45928 614.4l102.4-64v-76.8l-102.4-64C0.25928 403.2-6.14072 384 6.65928 364.8l128-224c6.4-12.8 25.6-19.2 44.8-6.4l102.4 64c19.2-12.8 44.8-32 70.4-38.4V32c0-19.2 12.8-32 32-32h256c19.2 0 32 12.8 32 32v121.6c25.6 12.8 51.2 25.6 70.4 38.4l102.4-64c12.8-6.4 32-6.4 44.8 12.8l128 224c12.8 19.2 6.4 38.4-12.8 44.8l-102.4 64v76.8l102.4 64c12.8 6.4 19.2 25.6 12.8 44.8l-128 224c-6.4 12.8-25.6 19.2-44.8 12.8l-102.4-64c-19.2 12.8-44.8 32-70.4 38.4V992c0 19.2-12.8 32-32 32z m-224-64h192v-108.8c0-12.8 6.4-25.6 19.2-32 32-12.8 64-32 89.6-51.2 12.8-6.4 25.6-6.4 38.4 0l96 57.6 96-166.4-96-57.6c-12.8-12.8-19.2-25.6-12.8-38.4 0-19.2 6.4-32 6.4-51.2s0-32-6.4-51.2c0-12.8 6.4-25.6 12.8-32l96-57.6-96-166.4-96 57.6c-12.8 6.4-25.6 6.4-38.4 0-25.6-19.2-57.6-38.4-89.6-51.2-12.8-12.8-19.2-25.6-19.2-38.4V64H416.25928v108.8c0 12.8-6.4 25.6-19.2 32-32 12.8-64 32-89.6 51.2-12.8 6.4-25.6 6.4-38.4 0l-96-51.2-96 166.4 96 57.6c12.8 6.4 19.2 19.2 12.8 32 0 19.2-6.4 32-6.4 51.2 0 19.2 0 32 6.4 51.2 6.4 12.8 0 25.6-12.8 32l-96 57.6 96 166.4 96-57.6c12.8-6.4 25.6-6.4 38.4 0 25.6 19.2 57.6 38.4 89.6 51.2 12.8 6.4 19.2 19.2 19.2 32V960z"
+										fill="#333333" p-id="2485"></path>
+								</svg>
+							</div>
 							<div
 								className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[#3aa9e3] transition-colors"
 								onClick={copyResult}>
 								{i18n('查找结果')}
-								<svg className="w-2.5 h-2.5 ml-[1px]" fill="#3aa9e3" viewBox="64 64 896 896" version="1.1"
+								<svg className="w-2.5 h-2.5 ml-[1px]" fill="#3aa9e3" viewBox="64 64 896 896"
+									 version="1.1"
 									 xmlns="http://www.w3.org/2000/svg">
 									<path
 										d="M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"></path>
 								</svg>
 							</div>
 							：<span id="__swe_current"
-								   className="mr-1 ml-0.5 inline-block min-w-2.5 text-right">{current}</span> / <span
-							className="ml-1 inline-block min-w-2.5 text-left"
+								   className="mr-1 ml-0.5 inline-block min-w-2.5 text-right shrink-0">{current}</span> / <span
+							className="ml-1 inline-block min-w-2.5 text-left shrink-0"
 							id="__swe_total">{total.map(a => a.sum).reduce((a, b) => a + b, 0)}</span>
 						</div>
 					</div>
@@ -527,12 +549,16 @@ export const Pop = () => {
 								placement='bottomLeft'
 								trigger={['hover']}
 								align={{offset: [-8, 0]}}
-								menu={{items: recent.map((r, i) => ({
+								menu={{
+									items: recent.map((r, i) => ({
 										key: i,
 										label:
 											<div className="relative pr-[32px] group">
-												<div className="w-20 h-5 text-ellipsis whitespace-nowrap overflow-hidden" onClick={(e) => fillSearchValue(e, r)}>{r}</div>
-												<div className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
+												<div
+													className="w-20 h-5 text-ellipsis whitespace-nowrap overflow-hidden"
+													onClick={(e) => fillSearchValue(e, r)}>{r}</div>
+												<div
+													className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
 													<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={(e) => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('填入并开启正则模式')}</div>}>
 														<div
 															onClick={(e) => fillSearchValue(e, r, true)}
