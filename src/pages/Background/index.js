@@ -150,8 +150,8 @@ const handleStorageChange = async (changes, areaName) => {
 								return
 							}
 							CSS.highlights.set('search-results-active', new Highlight(window.rangesFlat[realIndex - 1]))
-							let parents = [filteredRangeList[realIndex - 1]];
-							let currentDom = filteredRangeList[realIndex - 1].parentElement;
+							let parents = [filteredRangeList.value[realIndex - 1]];
+							let currentDom = filteredRangeList.value[realIndex - 1].parentElement;
 							while (currentDom) {
 								parents.unshift(currentDom);
 								currentDom = currentDom.parentElement;
@@ -162,7 +162,7 @@ const handleStorageChange = async (changes, areaName) => {
 								}
 								dom.scrollIntoView({ behavior: 'instant', block: 'center' })
 							}
-							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList[realIndex - 1]) })
+							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList.value[realIndex - 1]) })
 						}
 					})
 					break;

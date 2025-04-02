@@ -11,6 +11,13 @@ dom.id = '__swe_container'
 const root = createRoot(dom)
 
 export const createOrUpdatePopup = (props) => {
+	window.filteredRangeList = new Proxy({ value: '' }, {
+		set (target, prop, value) {
+			target[prop] = value
+			window.dispatchEvent(new CustomEvent('filteredRangeListChange', { detail: value }))
+			return true
+		}
+	})
 	root.render(
 		<ShadowRoot.div mode="closed">
 			<Pop {...props} />

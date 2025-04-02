@@ -1,6 +1,6 @@
 import React, {useRef} from 'react'
 import {Button, Divider, Dropdown, Menu, Tabs, Tooltip} from "antd";
-import {Input} from "../../components/Input";
+import {Input} from "../../../components/Input";
 
 export const FakePanel = () => {
 

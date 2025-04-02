@@ -5,6 +5,7 @@ import { Tabs, Tooltip, Button, Dropdown, Divider, Menu } from 'antd'
 import { Rnd } from 'react-rnd'
 
 import '../../output.css'
+import {CustomScrollBar} from "./CustomScrollBar";
 
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
@@ -178,7 +179,7 @@ export const Pop = () => {
 		const matchText = []
 
 		if (searchValue && window.allNodes) { // 如果有搜索词
-			window.filteredRangeList = [] // 清除之前搜索到的匹配结果的 DOM 集合
+			window.filteredRangeList.value = [] // 清除之前搜索到的匹配结果的 DOM 集合
 			// 根据筛选项，设置正则表达式
 			let regContent = searchValue
 			if (!isReg) {
@@ -215,10 +216,10 @@ export const Pop = () => {
 					return indices.map(index => {
 						const range = new Range()
 						if (el.parentElement) {
-							window.filteredRangeList.push(el.parentElement)
+							window.filteredRangeList.value.push(el.parentElement)
 						} else {
 							if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
-								window.filteredRangeList.push(el.parentNode.host)
+								window.filteredRangeList.value.push(el.parentNode.host)
 							}
 						}
 						range.setStart(el, index)
@@ -818,6 +819,7 @@ export const Pop = () => {
 				</div>
 			</Rnd>
 		}
+		<CustomScrollBar current={current} />
 	</div>
 
 	)

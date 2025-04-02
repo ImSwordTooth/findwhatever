@@ -569,6 +569,10 @@ button {
   top: 7px;
 }
 
+.right-\[16px\] {
+  right: 16px;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -651,6 +655,22 @@ button {
   margin-top: 40px;
 }
 
+.mr-2 {
+  margin-right: 8px;
+}
+
+.mb-\[20px\] {
+  margin-bottom: 20px;
+}
+
+.mr-\[40px\] {
+  margin-right: 40px;
+}
+
+.ml-\[40px\] {
+  margin-left: 40px;
+}
+
 .box-content {
   box-sizing: content-box;
 }
@@ -731,6 +751,46 @@ button {
   height: 8px;
 }
 
+.h-\[100\%\] {
+  height: 100%;
+}
+
+.h-\[2px\] {
+  height: 2px;
+}
+
+.h-\[40px\] {
+  height: 40px;
+}
+
+.h-\[56px\] {
+  height: 56px;
+}
+
+.h-\[48px\] {
+  height: 48px;
+}
+
+.h-\[20px\] {
+  height: 20px;
+}
+
+.h-\[24px\] {
+  height: 24px;
+}
+
+.h-\[2000px\] {
+  height: 2000px;
+}
+
+.h-\[400px\] {
+  height: 400px;
+}
+
+.h-6 {
+  height: 24px;
+}
+
 .max-h-\[160px\] {
   max-height: 160px;
 }
@@ -803,6 +863,42 @@ button {
   width: 100%;
 }
 
+.w-\[40px\] {
+  width: 40px;
+}
+
+.w-\[56px\] {
+  width: 56px;
+}
+
+.w-\[48px\] {
+  width: 48px;
+}
+
+.w-\[250px\] {
+  width: 250px;
+}
+
+.w-\[10px\] {
+  width: 10px;
+}
+
+.w-\[200px\] {
+  width: 200px;
+}
+
+.w-\[4px\] {
+  width: 4px;
+}
+
+.w-\[24px\] {
+  width: 24px;
+}
+
+.w-\[20px\] {
+  width: 20px;
+}
+
 .min-w-2\.5 {
   min-width: 10px;
 }
@@ -849,6 +945,12 @@ button {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.scale-100 {
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .cursor-grab {
   cursor: grab;
 }
@@ -869,6 +971,10 @@ button {
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
+}
+
+.flex-col {
+  flex-direction: column;
 }
 
 .items-center {
@@ -943,6 +1049,14 @@ button {
   border-radius: 12px;
 }
 
+.border {
+  border-width: 1px;
+}
+
+.border-r {
+  border-right-width: 1px;
+}
+
 .border-none {
   border-style: none;
 }
@@ -950,6 +1064,11 @@ button {
 .border-\[\#f5f5f5\] {
   --tw-border-opacity: 1;
   border-color: rgb(245 245 245 / var(--tw-border-opacity));
+}
+
+.border-\[\#f1f1f1\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(241 241 241 / var(--tw-border-opacity));
 }
 
 .bg-\[\#888888\] {
@@ -980,6 +1099,21 @@ button {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#ff0000\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 0 0 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#FFFF37\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 55 / var(--tw-bg-opacity));
+}
+
+.bg-\[red\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 0 0 / var(--tw-bg-opacity));
 }
 
 .bg-gradient-to-r {
@@ -1024,6 +1158,10 @@ button {
 
 .p-\[40px\] {
   padding: 40px;
+}
+
+.p-3 {
+  padding: 12px;
 }
 
 .px-\[0px\] {
@@ -1082,6 +1220,10 @@ button {
   text-align: right;
 }
 
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 .text-\[14px\] {
   font-size: 14px;
 }
@@ -1089,6 +1231,20 @@ button {
 .text-xs {
   font-size: 12px;
   line-height: 16px;
+}
+
+.text-2xl {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.text-\[16px\] {
+  font-size: 16px;
+}
+
+.text-sm {
+  font-size: 14px;
+  line-height: 20px;
 }
 
 .font-bold {
@@ -1117,6 +1273,11 @@ button {
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
+.text-\[\#888888\] {
+  --tw-text-opacity: 1;
+  color: rgb(136 136 136 / var(--tw-text-opacity));
 }
 
 .underline {
