@@ -191,6 +191,63 @@ export const isElementVisible = (el) => {
 	return '';
 }
 
+/**
+ * 防抖函数
+ * @param {Function} fn - 需要防抖的函数
+ * @param {number} wait - 防抖等待时间（毫秒）
+ * @param {boolean} immediate - 是否立即执行（默认为 false）
+ * @returns {Function} 防抖后的函数
+ */
+export function debounce(fn, wait = 300, immediate = false) {
+	let timeout; // 用于存储定时器的引用
+
+	return function (...args) {
+		console.log(args)
+		const context = this; // 保存函数的上下文
+
+		// 清除已存在的定时器
+		if (timeout) clearTimeout(timeout);
+
+		// 如果设置了 immediate，并且没有定时器在运行，则立即执行
+		if (immediate && !timeout) {
+			const callNow = !timeout;
+			if (callNow) fn.apply(context, args);
+		}
+
+		// 设置新的定时器
+		timeout = setTimeout(() => {
+			if (!immediate) {
+				fn.apply(context, args); // 如果没有设置 immediate，则在等待时间后执行
+			}
+			timeout = null; // 清空定时器引用
+		}, wait);
+	};
+}
+
+export const i18n = (text) => {
+	const isChinese = navigator.language === 'zh' || navigator.language === 'zh-CN'
+	if (isChinese) {
+		return text
+	}
+	switch (text) {
+		case '当前页': return 'Page'
+		case '查找结果': return 'Result'
+		case '输入文本以查找': return 'Enter text to find'
+		case '大小写敏感': return 'Match Case'
+		case '匹配单词': return 'Words'
+		case '正则表达式': return 'Regex'
+		case '实时监测 DOM 变化': return 'Listen for DOM changes in real time'
+		case '在不适合实时监测的情况下请临时关闭此功能': return 'Please temporarily disable this function when it is not suitable for real-time monitoring'
+		case '隐藏中': return 'Hidden'
+		case '被遮盖': return 'Be covered'
+		case '最近': return 'Recent'
+		case '固定': return 'Fixed'
+		case '填入并开启正则模式': return 'Fill in and enable regular mode'
+		case '固定之': return 'Fix'
+		case '取消固定': return 'Cancel fix'
+	}
+}
+
 window.__swe_doSearchOutside = doSearchOutside
 
 // 获取元素的隐藏状态，返回一个描述元素不可见的原因的字符串，如果不为空，说明元素不可见

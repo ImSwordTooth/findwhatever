@@ -1,10 +1,14 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, {useRef, useState, useEffect, useMemo} from 'react'
 import { Input } from '../../components/Input'
-import { reCheckTree, closePop, observerAllExceptMe, doSearchOutside } from './features'
-import { Tabs, Tooltip, Button, Dropdown, Divider, Menu } from 'antd'
+import { reCheckTree, closePop, observerAllExceptMe, doSearchOutside, i18n } from './features'
+import { debounce } from 'lodash'
+import { Tooltip, Button } from 'antd'
 import { Rnd } from 'react-rnd'
-
 import '../../output.css'
+import {FrameList} from "./Parts/FrameList";
+import {FindResult} from "./Parts/FindResult";
+import {RecentList} from "./Parts/RecentList";
+import {ExtraArea} from "./Parts/ExtraArea";
 
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
@@ -20,14 +24,13 @@ export const Pop = () => {
 	const [ isHidePanel, setIsHidePanel ] = useState(false) // 是否把面板半透明
 	const [ isHidePanelTemporarily, setIsHidePanelTemporarily ] = useState(false) // 是否临时把面板半透明
 	const [ isReady, setIsReady ] = useState(false)
-	const [ recent, setRecent ] = useState([])
+	const [ recentList, setRecentList ] = useState([])
 	const [ fixList, setFixList ] = useState([])
 	const [ x, setX ] = useState(parseInt(window.innerWidth * 0.9 - 400))
 	const [ y, setY ] = useState(parseInt(window.innerHeight * 0.1))
 
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
-	const isChinese = useRef(navigator.language === 'zh' || navigator.language === 'zh-CN')
 
 	useEffect(() => {
 
@@ -45,7 +48,7 @@ export const Pop = () => {
 			setIsLive(syncStorage.isLive)
 			setX(syncStorage.x || parseInt(window.innerWidth * 0.9 - 400))
 			setY(syncStorage.y || parseInt(window.innerHeight * 0.1))
-			setRecent(syncStorage.recent || [])
+			setRecentList(syncStorage.recent || [])
 			setFixList(syncStorage.fix || [])
 			setIsReady(true)
 
@@ -66,7 +69,7 @@ export const Pop = () => {
 			})
 
 			// 启动后立即进行一次搜索
-			doSearch()
+			doSearchOutside()
 		}
 
 		window.addEventListener('message', handleMessage)
@@ -89,8 +92,8 @@ export const Pop = () => {
 	}, [isLive]);
 
 	useEffect(() => {
-		chrome.storage.sync.set({ recent, fix: fixList })
-	}, [recent, fixList]);
+		chrome.storage.sync.set({ recent: recentList, fix: fixList })
+	}, [recentList, fixList]);
 
 	useEffect(() => {
 		chrome.storage.sync.set({ searchValue, isWord, isMatchCase, isReg, isLive }, () => {
@@ -141,6 +144,10 @@ export const Pop = () => {
 		setSearchValue(value)
 	}
 
+	const debounceHandleSearchValueChange = useMemo(() => {
+		return debounce(handleSearchValueChange, 300)
+	}, [])
+
 	const handleEnter = e => {
 		e.stopPropagation()
 
@@ -171,85 +178,6 @@ export const Pop = () => {
 	const handleIsLiveChange = () => {
 		const value = !isLive
 		setIsLive(value)
-	}
-
-	const doSearch = async (isAuto = false) => {
-		CSS.highlights.clear() // 清除所有高亮
-		const matchText = []
-
-		if (searchValue && window.allNodes) { // 如果有搜索词
-			window.filteredRangeList = [] // 清除之前搜索到的匹配结果的 DOM 集合
-			// 根据筛选项，设置正则表达式
-			let regContent = searchValue
-			if (!isReg) {
-				regContent = regContent.replace(/([^a-zA-Z0-9_ \n])/g, '\\$1')
-			}
-			if (isWord) {
-				regContent = `\\b${regContent}\\b`
-			}
-			let execResLength = searchValue.length // 匹配结果的长度，一般情况下等于字符串长度，如果是正则，就得是正则结果的长度
-			let reg
-			try {
-				reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg`);
-
-				window.rangesFlat = window.allNodes.map(({ el, text }) => {
-					const indices = []
-					let startPosition = 0
-
-					while (startPosition < text.length) {
-						let index
-						reg.lastIndex = 0
-						const res = reg.exec(text.substring(startPosition))
-
-						if (res) {
-							index = res.indices[0][0]
-							execResLength = res.indices[0][1] - res.indices[0][0]
-							indices.push(startPosition + index)
-							startPosition += index + execResLength
-							matchText.push(res[0])
-						} else {
-							break
-						}
-					}
-
-					return indices.map(index => {
-						const range = new Range()
-						if (el.parentElement) {
-							window.filteredRangeList.push(el.parentElement)
-						} else {
-							if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
-								window.filteredRangeList.push(el.parentNode.host)
-							}
-						}
-						range.setStart(el, index)
-						range.setEnd(el, index + execResLength)
-						return range
-					})
-				}).flat()
-			} catch (e) {
-				// 正则表达式不合法
-				window.rangesFlat = []
-			}
-		} else {
-			window.rangesFlat = []
-		}
-
-		const searchResultsHighlight = new Highlight(...rangesFlat)
-		CSS.highlights.set('search-results', searchResultsHighlight)
-
-		// 向背景脚本发送消息以获取当前标签信息
-		chrome?.runtime?.sendMessage({
-			action: 'saveResult',
-			data: {
-				isFrame: window.isFrame,
-				resultNum: window.rangesFlat.length,
-				matchText,
-				isAuto
-			}
-		}, response => {
-			setCurrent(response.current)
-			setTotal(response.total)
-		})
 	}
 
 	const goPrev = async () => {
@@ -301,77 +229,12 @@ export const Pop = () => {
 		})
 	}
 
-	const handleTabChange = async (frameid) => {
-		const { resultSum } = await chrome.storage.session.get(['resultSum'])
-		setTabIndex(frameid)
-
-		let currentNum = 0;
-		for (let item of resultSum) {
-			if (item.frameId !== +frameid) {
-				currentNum += item.sum;
-			} else {
-				break;
-			}
-		}
-		await chrome.storage.session.set({ activeResult: currentNum + 1})
-		setCurrent(currentNum + 1)
-	}
-
 	const clearInput = () => {
 		chrome.storage.sync.set({ searchValue: '' }).then(() => {
 			setSearchValue('')
 			searchInputRef.current.focus()
 		})
 	}
-
-	const i18n = (text) => {
-		if (isChinese.current) {
-			return text
-		}
-		switch (text) {
-			case '当前页': return 'Page'
-			case '查找结果': return 'Result'
-			case '输入文本以查找': return 'Enter text to find'
-			case '大小写敏感': return 'Match Case'
-			case '匹配单词': return 'Words'
-			case '正则表达式': return 'Regex'
-			case '实时监测 DOM 变化': return 'Listen for DOM changes in real time'
-			case '在不适合实时监测的情况下请临时关闭此功能': return 'Please temporarily disable this function when it is not suitable for real-time monitoring'
-			case '隐藏中': return 'Hidden'
-			case '被遮盖': return 'Be covered'
-			case '最近': return 'Recent'
-			case '固定': return 'Fixed'
-			case '填入并开启正则模式': return 'Fill in and enable regular mode'
-			case '固定之': return 'Fix'
-			case '取消固定': return 'Cancel fix'
-		}
-	}
-
-	const copyResult = async () => {
-		const { resultSum } = await chrome.storage.session.get(['resultSum'])
-
-		const tag = document.createElement('textarea')
-		tag.setAttribute('id', 'swe_TempInput')
-		tag.value = resultSum.map(r => r.matchText.join('\r\n')).join('\r\n')
-		document.body.appendChild(tag);
-		tag.select();
-		document.execCommand('copy');
-		document.body.removeChild(tag)
-	}
-
-	const hidePanelTemporarily = () => {
-		if (!isHidePanel) {
-			setIsHidePanelTemporarily(true)
-		}
-	}
-
-	const showPanelTemporarily = () => {
-		if (!isHidePanel) {
-			setIsHidePanelTemporarily(false)
-		}
-	}
-
-	const toggleHidePanel = () => setIsHidePanel(!isHidePanel)
 
 	const handleDragStop = (e, d) => {
 		setX(d.x)
@@ -383,7 +246,7 @@ export const Pop = () => {
 		if (!searchValue) {
 			return
 		}
-		const newRecent = recent.slice()
+		const newRecent = recentList.slice()
 		if (!newRecent.includes(searchValue)) { // 没有就直接新增
 			newRecent.unshift(searchValue)
 			if (newRecent.length > 50) { // 不超过50条
@@ -395,7 +258,7 @@ export const Pop = () => {
 				newRecent.unshift(newRecent.splice(index, 1)[0])
 			}
 		}
-		setRecent(newRecent)
+		setRecentList(newRecent)
 	}
 
 	const fillSearchValue = (e, text, isReg = undefined) => {
@@ -404,38 +267,6 @@ export const Pop = () => {
 		if (isReg) {
 			setIsReg(true)
 		}
-	}
-
-	const addToFix = (e, text) => {
-		e.stopPropagation()
-		const newFixList = fixList.slice()
-
-		if (newFixList.includes(text)) {
-			const index = newFixList.findIndex(r => r === text);
-			if (index > 0) {
-				newFixList.unshift(newFixList.splice(index, 1)[0])
-			}
-		} else {
-			newFixList.unshift(text)
-		}
-		setFixList(newFixList)
-	}
-
-	const cancelToFix = (e, text) => {
-		e.stopPropagation()
-		const newFixList = fixList.slice()
-
-		const index = newFixList.findIndex(r => r === text);
-		newFixList.splice(index, 1)
-		setFixList(newFixList)
-	}
-
-	const clearRecent = () => {
-		setRecent([])
-	}
-
-	const openSetting = () => {
-		chrome?.runtime?.sendMessage({ action: 'openOptionsPage' })
 	}
 
 	const BottomGradient = () => {
@@ -461,215 +292,18 @@ export const Pop = () => {
 			>
 				<div id="searchWhateverPopup" ref={popContainerRef}>
 					<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
-						{/*<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100"/>*/}
 						<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100"/>
 					</div>
 					<div className="flex items-center justify-between -mt-0.5 h-7 border-b-1 border-[#f5f5f5] mb-1">
-						<Tabs className="w-[262px] !mr-[4px]" activeKey={tabIndex} items={frames.map((f, index) => {
-							return {
-								disabled: total.find(a => a.frameId === f.frameId) && total.find(a => a.frameId === f.frameId).sum === 0,
-								key: f.frameId.toString(),
-								label: (
-									<div className="flex items-baseline select-none">
-										{index === 0 ? i18n('当前页') : `iframe${index}`}
-										<div
-											className="bg-[#f4f4f4] py-[1px] px-[5px] rounded-[7px] ml-0.5 h-[13px] leading-[14px] box-content">
-											{total.find(a => a.frameId === f.frameId) ? total.find(a => a.frameId === f.frameId).sum : 0}
-										</div>
-									</div>
-								)
-							}
-						})}
-							  onChange={handleTabChange}
-							  size={'small'}
-							  getPopupContainer={e => e.parentElement}
-						>
-						</Tabs>
+						<FrameList tabIndex={tabIndex} frames={frames} total={total} updateCurrent={setCurrent} updateTabIndex={setTabIndex} />
 						<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
-							{
-								visibleStatus &&
-								<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 absolute right-[42px] top-[5px]">
-									<svg className="mr-1 w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1"
-										 xmlns="http://www.w3.org/2000/svg" width="200"
-										 height="200">
-										<path
-											d="M764.394366 588.97307c-93.111887 0-170.503211 64.930254-190.69476 151.667381-47.118423-20.148282-90.861972-14.552338-123.399212-0.562479C429.546366 653.340845 352.155042 588.97307 259.605634 588.97307c-108.255549 0-196.305127 87.862085-196.305127 195.886874C63.300507 892.87031 151.350085 980.732394 259.605634 980.732394c103.207662 0 186.771831-79.468169 194.61769-180.209577 16.831099-11.754366 61.151549-33.575662 115.553352 1.124958C578.747493 901.826704 661.749183 980.732394 764.394366 980.732394c108.255549 0 196.305127-87.862085 196.305127-195.87245 0-108.024789-88.049577-195.886873-196.305127-195.886874z m-504.788732 55.959437c77.405746 0 140.215887 62.694761 140.215887 139.927437 0 77.232676-62.810141 139.898592-140.215887 139.898591-77.405746 0-140.215887-62.665915-140.215888-139.898591 0-77.232676 62.810141-139.927437 140.215888-139.927437z m504.788732 0c77.405746 0 140.215887 62.694761 140.215888 139.927437 0 77.232676-62.810141 139.898592-140.215888 139.898591-77.405746 0-140.215887-62.665915-140.215887-139.898591 0-77.232676 62.810141-139.927437 140.215887-139.927437zM1016.788732 475.943662H7.211268v57.690141h1009.577464v-57.690141zM697.675718 77.016338c-11.538028-26.249014-41.334986-40.094648-69.011831-30.907493L512 85.294873l-117.226366-39.186028-2.769127-0.836507c-27.806648-7.687211-57.026704 7.355493-67.338817 34.426592L196.78107 418.253521h630.43786L698.771831 79.69893l-1.096113-2.682592z"
-											fill="#a0a0a0"/>
-									</svg>
-									<div
-										className="inline-block scale-[0.8] origin-left text-xs cursor-grabbing text-[#a0a0a0]">{i18n(visibleStatus)}</div>
-								</div>
-							}
-							<div className="flex items-center text-xs text-[#a0a0a0] cursor-grab opacity-80 absolute right-[30px] top-[6px] active:cursor-grabbing z-30" onMouseEnter={hidePanelTemporarily} onMouseLeave={showPanelTemporarily} onClick={toggleHidePanel}>
-								<svg className="w-3 h-3" viewBox="0 0 1194 1024" version="1.1"
-									 xmlns="http://www.w3.org/2000/svg" width="200" height="200">
-									<path
-										d="M597.333333 964.266667c-190.577778 0-366.933333-102.4-520.533333-301.511111-25.6-31.288889-25.6-76.8 0-108.088889C230.4 358.4 406.755556 256 597.333333 256c190.577778 0 366.933333 102.4 520.533334 301.511111 25.6 31.288889 25.6 76.8 0 108.088889-153.6 199.111111-329.955556 298.666667-520.533334 298.666667zM597.333333 312.888889c-173.511111 0-332.8 93.866667-477.866666 278.755555-8.533333 11.377778-8.533333 25.6 0 39.822223C261.688889 816.355556 423.822222 910.222222 597.333333 910.222222c173.511111 0 332.8-93.866667 477.866667-278.755555 8.533333-11.377778 8.533333-25.6 0-39.822223C930.133333 406.755556 770.844444 312.888889 597.333333 312.888889z"
-										fill="#388CFF"></path>
-									<path
-										d="M597.333333 768c-93.866667 0-170.666667-76.8-170.666666-170.666667s76.8-170.666667 170.666666-170.666666 170.666667 76.8 170.666667 170.666666-76.8 170.666667-170.666667 170.666667z m0-284.444444c-62.577778 0-113.777778 51.2-113.777777 113.777777s51.2 113.777778 113.777777 113.777778 113.777778-51.2 113.777778-113.777778-51.2-113.777778-113.777778-113.777777z"
-										fill="#388CFF"></path>
-									<path
-										d="M597.333333 56.888889c17.066667 0 28.444444 11.377778 28.444445 28.444444v170.666667c0 17.066667-11.377778 28.444444-28.444445 28.444444s-28.444444-11.377778-28.444444-28.444444V85.333333c0-17.066667 11.377778-28.444444 28.444444-28.444444zM1075.2 233.244444c11.377778 11.377778 11.377778 28.444444 0 39.822223l-119.466667 119.466666c-11.377778 11.377778-28.444444 11.377778-39.822222 0-11.377778-11.377778-11.377778-28.444444 0-39.822222l119.466667-119.466667c11.377778-11.377778 28.444444-11.377778 39.822222 0zM119.466667 233.244444c11.377778-11.377778 28.444444-11.377778 39.822222 0l119.466667 119.466667c11.377778 11.377778 11.377778 28.444444 0 39.822222-11.377778 11.377778-28.444444 11.377778-39.822223 0L119.466667 273.066667c-11.377778-11.377778-11.377778-28.444444 0-39.822223z"
-										fill="#388CFF"></path>
-								</svg>
-							</div>
-							<div className="flex items-center text-xs text-[#a0a0a0] cursor-pointer opacity-80 absolute right-[12px] top-[6px] z-30" onClick={openSetting}>
-								<svg className="w-3 h-3" t="1742198752009" viewBox="0 0 1024 1024" version="1.1"
-									 xmlns="http://www.w3.org/2000/svg" p-id="2483" width="200" height="200">
-									<path
-										d="M512.25928 704c-108.8 0-192-83.2-192-192s83.2-192 192-192 192 83.2 192 192-83.2 192-192 192z m0-320c-70.4 0-128 57.6-128 128s57.6 128 128 128 128-57.6 128-128-57.6-128-128-128z"
-										fill="#333333" p-id="2484"></path>
-									<path
-										d="M640.25928 1024H384.25928c-19.2 0-32-12.8-32-32v-121.6c-25.6-12.8-51.2-25.6-70.4-38.4l-102.4 64c-12.8 6.4-32 6.4-44.8-12.8l-128-224C-6.14072 640 0.25928 620.8 19.45928 614.4l102.4-64v-76.8l-102.4-64C0.25928 403.2-6.14072 384 6.65928 364.8l128-224c6.4-12.8 25.6-19.2 44.8-6.4l102.4 64c19.2-12.8 44.8-32 70.4-38.4V32c0-19.2 12.8-32 32-32h256c19.2 0 32 12.8 32 32v121.6c25.6 12.8 51.2 25.6 70.4 38.4l102.4-64c12.8-6.4 32-6.4 44.8 12.8l128 224c12.8 19.2 6.4 38.4-12.8 44.8l-102.4 64v76.8l102.4 64c12.8 6.4 19.2 25.6 12.8 44.8l-128 224c-6.4 12.8-25.6 19.2-44.8 12.8l-102.4-64c-19.2 12.8-44.8 32-70.4 38.4V992c0 19.2-12.8 32-32 32z m-224-64h192v-108.8c0-12.8 6.4-25.6 19.2-32 32-12.8 64-32 89.6-51.2 12.8-6.4 25.6-6.4 38.4 0l96 57.6 96-166.4-96-57.6c-12.8-12.8-19.2-25.6-12.8-38.4 0-19.2 6.4-32 6.4-51.2s0-32-6.4-51.2c0-12.8 6.4-25.6 12.8-32l96-57.6-96-166.4-96 57.6c-12.8 6.4-25.6 6.4-38.4 0-25.6-19.2-57.6-38.4-89.6-51.2-12.8-12.8-19.2-25.6-19.2-38.4V64H416.25928v108.8c0 12.8-6.4 25.6-19.2 32-32 12.8-64 32-89.6 51.2-12.8 6.4-25.6 6.4-38.4 0l-96-51.2-96 166.4 96 57.6c12.8 6.4 19.2 19.2 12.8 32 0 19.2-6.4 32-6.4 51.2 0 19.2 0 32 6.4 51.2 6.4 12.8 0 25.6-12.8 32l-96 57.6 96 166.4 96-57.6c12.8-6.4 25.6-6.4 38.4 0 25.6 19.2 57.6 38.4 89.6 51.2 12.8 6.4 19.2 19.2 19.2 32V960z"
-										fill="#333333" p-id="2485"></path>
-								</svg>
-							</div>
-							<div
-								className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[#3aa9e3] transition-colors"
-								onClick={copyResult}>
-								{i18n('查找结果')}
-								<svg className="w-2.5 h-2.5 ml-[1px]" fill="#3aa9e3" viewBox="64 64 896 896"
-									 version="1.1"
-									 xmlns="http://www.w3.org/2000/svg">
-									<path
-										d="M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"></path>
-								</svg>
-							</div>
-							：<span id="__swe_current"
-								   className="mr-1 ml-0.5 inline-block min-w-2.5 text-right shrink-0">{current}</span> / <span
-							className="ml-1 inline-block min-w-2.5 text-left shrink-0"
-							id="__swe_total">{total.map(a => a.sum).reduce((a, b) => a + b, 0)}</span>
+							<FindResult total={total} current={current}/>
 						</div>
+						<ExtraArea isHidePanel={isHidePanel} isHidePanelTemporarily={isHidePanelTemporarily} updateIsHidePanel={setIsHidePanel} updateIsHidePanelTemporarily={setIsHidePanelTemporarily} />
 					</div>
 					<div className="flex items-center w-full">
 						<div className="swe_search relative">
-							<Dropdown
-								arrow={true}
-								placement='bottomLeft'
-								trigger={['hover']}
-								align={{offset: [-8, 0]}}
-								menu={{
-									items: recent.map((r, i) => ({
-										key: i,
-										label:
-											<div className="relative pr-[32px] group">
-												<div
-													className="w-20 h-5 text-ellipsis whitespace-nowrap overflow-hidden"
-													onClick={(e) => fillSearchValue(e, r)}>{r}</div>
-												<div
-													className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
-													<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={(e) => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('填入并开启正则模式')}</div>}>
-														<div
-															onClick={(e) => fillSearchValue(e, r, true)}
-															className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2]">.*
-														</div>
-													</Tooltip>
-
-													<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={(e) => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('固定之')}</div>}>
-														<div
-															onClick={(e) => addToFix(e, r)}
-															className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] group/fix ">
-															<svg className="w-3 h-3 group-hover/fix:fill-[#50a3d2]"
-																 viewBox="0 0 1024 1024" version="1.1"
-																 xmlns="http://www.w3.org/2000/svg" p-id="8003"
-																 width="200" height="200" fill="#3B3B3B">
-																<path
-																	d="M1008.618567 392.01748l-383.019709-383.019709C606.447872-10.153214 574.529563 2.61411 568.145902 34.532419l-6.383662 57.452956-6.383662 70.22028c0 12.767324-6.383662 19.150985-12.767324 25.534647L236.195487 404.784804c-6.383662 6.383662-12.767324 6.383662-25.534647 6.383662h-12.767324l-57.452956-6.383662c-31.918309 0-51.069295 38.301971-25.534647 57.452956l44.685632 44.685633 127.673237 127.673236L0 1024l383.019709-287.264782 172.358869 172.358869c25.534647 25.534647 63.836618 6.383662 57.452956-25.534647l-6.383662-57.452956v-12.767324c0-6.383662 0-19.150985 6.383662-25.534647L829.876036 481.388746c6.383662-6.383662 12.767324-12.767324 25.534647-12.767324l70.22028-6.383662 57.452957-6.383662c38.301971-6.383662 51.069295-38.301971 25.534647-63.836618z m-255.346473 31.918309l-217.044501 306.415767s0 6.383662-6.383662 6.383662L287.264782 494.156069s6.383662 0 6.383662-6.383662l306.415767-217.044501c31.918309-19.150985 51.069295-51.069295 57.452956-89.371266l178.742531 178.742531c-31.918309 12.767324-63.836618 31.918309-82.987604 63.836618z"
-																	p-id="8004"></path>
-															</svg>
-														</div>
-													</Tooltip>
-
-												</div>
-
-											</div>
-									}))
-								}}
-								dropdownRender={(menu) => (
-									<div style={{
-										background: '#ffffff',
-										boxShadow: '0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
-										borderRadius: '6px'
-									}}>
-										{
-											fixList.length > 0 &&
-											<>
-												<div className="scale-[0.9] origin-bottom font-bold pt-1">{i18n('固定')}</div>
-												<Menu
-													style={{boxShadow: 'none'}}
-													items={fixList.map((r, i) => ({
-														key: i,
-														label:
-															<div className="relative pr-[32px] group">
-																<div className="max-w-10 h-5 text-ellipsis whitespace-nowrap overflow-hidden" onClick={(e) => fillSearchValue(e, r)}>{r}</div>
-																<div
-																	className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
-																	<Tooltip arrowPointAtCenter={true} placement="top"
-																			 getPopupContainer={(e) => popContainerRef.current}
-																			 align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('填入并开启正则模式')}</div>}>
-																		<div
-																			onClick={(e) => fillSearchValue(e, r, true)}
-																			className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2]">.*
-																		</div>
-																	</Tooltip>
-
-																	<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={(e) => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('取消固定')}</div>}>
-																		<div
-																			onClick={(e) => cancelToFix(e, r)}
-																			className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[rgba(216,30,6,0.1)] ">
-																			<svg className="w-3 h-3"
-																				 viewBox="0 0 1024 1024" version="1.1"
-																				 xmlns="http://www.w3.org/2000/svg" p-id="8148"
-																				 width="200" height="200" fill="#d81e06">
-																				<path
-																					d="M837.618696 480.385109l-99.816294 141.022507-78.18943-67.056074 94.249616-133.216362q32.63225-46.197028 87.019333-55.666779L658.589216 183.239681q-9.405766 54.387083-55.602795 87.019332L452.494163 376.793711 372.12925 307.946063 543.736493 186.438921a34.167885 34.167885 0 0 0 14.268611-24.122271l7.998101-71.79095 0.063985-0.767817 6.590434-59.121959a34.167885 34.167885 0 0 1 58.162187-20.411152l383.013034 383.013034a34.23187 34.23187 0 0 1-20.475137 58.226171l-59.057974 6.52645-0.767817 0.12797-71.79095 7.934116a34.167885 34.167885 0 0 0-24.122271 14.268611zM32.881821 164.620103a47.988603 47.988603 0 1 1 62.449168-72.814707l895.787251 767.817644a47.988603 47.988603 0 1 1-62.449168 72.814706l-895.787251-767.817643z m354.155888 569.208813L562.036147 908.827354a34.167885 34.167885 0 0 0 58.226171-27.321512l-5.438708-60.017745-0.511879-5.502694-0.447893-5.118784a34.167885 34.167885 0 0 1 6.142541-22.90656l43.637636-61.68135L585.3906 659.286619l-49.140329 69.487497-3.711119 5.502693-242.69436-242.69436q2.815331-1.791575 5.502693-3.711118l49.332284-34.871718L264.378841 384.151964l-28.281284 19.963259a34.167885 34.167885 0 0 1-22.842575 6.142541l-5.118784-0.447894-5.566678-0.511878-60.017746-5.438709a34.167885 34.167885 0 0 0-27.257526 58.226172l174.998438 174.998438L0.121602 1024l386.916107-290.171084z"
-																				></path>
-																			</svg>
-																		</div>
-																	</Tooltip>
-																</div>
-															</div>
-													}))}
-												/>
-												<Divider style={{margin: 0}}/>
-											</>
-										}
-										<div className="flex items-center justify-between pt-1 pr-[10px] pl-[1px]">
-											<div className="scale-[0.9] w-[108px] origin-bottom font-bold">{i18n('最近')}</div>
-											<svg className="w-3.5 h-3.5 cursor-pointer" onClick={clearRecent} viewBox="0 0 1024 1024"
-												 version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9345"
-												 width="200" height="200">
-												<path
-													d="M764 208H656v-56H368v56H152v56h80v580a28 28 0 0 0 28 28h504a28 28 0 0 0 28-28V264h80v-56H764zM736 816H288V264h448v552z"
-													fill="" p-id="9346"></path>
-												<path d="M392 368h56v360h-56zM576 368h56v360h-56z" fill=""
-													  p-id="9347"></path>
-											</svg>
-										</div>
-										<div className="smallScroll max-h-[160px] overflow-auto overscroll-contain">
-											{
-												recent.length > 0
-													? React.cloneElement(menu, {style: {boxShadow: 'none'}})
-													: <div className="text-xs h-5 text-center scale-90 text-[#cccccc]">暂无数据</div>
-											}
-										</div>
-									</div>
-								)}
-								getPopupContainer={() => {
-									return popContainerRef.current
-								}}
-							>
-								<svg
-									className="absolute left-[5px] top-0 bottom-0 p-1 box-content m-auto w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[#50a3d2]"
-									viewBox="0 0 1024 1024" version="1.1"
-									xmlns="http://www.w3.org/2000/svg" p-id="3578" width="32" height="32"
-									fill="#272636">
-									<path
-										d="M924.352 844.256l-163.968-163.968c44.992-62.912 71.808-139.648 71.808-222.72 0-211.776-172.224-384-384-384s-384 172.224-384 384 172.224 384 384 384c82.56 0 158.912-26.432 221.568-70.912l164.16 164.16c12.416 12.416 38.592 15.04 51.072 2.624l45.248-45.248c12.416-12.544 6.592-35.392-5.888-47.936zM128.128 457.568c0-176.448 143.552-320 320-320s320 143.552 320 320-143.552 320-320 320-320-143.552-320-320z"
-										p-id="3579"></path>
-								</svg>
-							</Dropdown>
+							<RecentList recentList={recentList} fixList={fixList} updateFixList={setFixList} updateRecentList={setRecentList} fillSearchValue={fillSearchValue} popupContainer={popContainerRef.current} />
 							<svg className="absolute w-[8px] h-[8px] left-[24px] top-[14px] z-10"
 								 viewBox="0 0 1024 1024" version="1.1"
 								 xmlns="http://www.w3.org/2000/svg" p-id="7932" width="200" height="200">
@@ -801,16 +435,10 @@ export const Pop = () => {
 							</Input>
 						</div>
 						<div className="flex items-center">
-							<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer"
-									onClick={closePop}>
-								<svg className="icon w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1"
-									 xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-									<path
-										d="M12.47232 12.51328C26.74688-1.76128 49.5104-2.90816 65.15712 9.84064l2.93888 2.70336L1009.664 955.37152c14.96064 14.80704 15.62624 38.76864 1.51552 54.38464-14.12096 15.616-38.02112 17.3568-54.26176 3.95264l-2.9696-2.70336L12.41088 68.17792c-15.34976-15.39072-15.31904-40.30464 0.06144-55.66464z m0 0"
-										fill="red"/>
-									<path
-										d="M1009.67424 12.51328c-14.2848-14.27456-37.04832-15.42144-52.69504-2.67264l-2.99008 2.70336L12.41088 955.37152c-14.96064 14.80704-15.62624 38.76864-1.51552 54.38464 14.12096 15.616 38.02112 17.3568 54.25152 3.95264l2.9696-2.70336 941.568-942.82752c15.34976-15.38048 15.32928-40.30464-0.0512-55.66464h0.04096z m0 0"
-										fill="red"/>
+							<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer" onClick={closePop}>
+								<svg className="icon w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+									<path d="M12.47232 12.51328C26.74688-1.76128 49.5104-2.90816 65.15712 9.84064l2.93888 2.70336L1009.664 955.37152c14.96064 14.80704 15.62624 38.76864 1.51552 54.38464-14.12096 15.616-38.02112 17.3568-54.26176 3.95264l-2.9696-2.70336L12.41088 68.17792c-15.34976-15.39072-15.31904-40.30464 0.06144-55.66464z m0 0" fill="red"/>
+									<path d="M1009.67424 12.51328c-14.2848-14.27456-37.04832-15.42144-52.69504-2.67264l-2.99008 2.70336L12.41088 955.37152c-14.96064 14.80704-15.62624 38.76864-1.51552 54.38464 14.12096 15.616 38.02112 17.3568 54.25152 3.95264l2.9696-2.70336 941.568-942.82752c15.34976-15.38048 15.32928-40.30464-0.0512-55.66464h0.04096z m0 0" fill="red"/>
 								</svg>
 							</Button>
 						</div>
