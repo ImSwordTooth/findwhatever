@@ -1,18 +1,17 @@
-import React, {useRef, useState, useEffect, useMemo} from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Input } from '../../components/Input'
-import { reCheckTree, closePop, observerAllExceptMe, doSearchOutside, i18n } from './features'
-import { debounce } from 'lodash'
-import { Tooltip, Button } from 'antd'
+import { reCheckTree, closePop, observerAllExceptMe, doSearchOutside, i18n, useDebounce } from './features'
+import { Tooltip, Button, Spin } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
 import { Rnd } from 'react-rnd'
 import '../../output.css'
-import {FrameList} from "./Parts/FrameList";
-import {FindResult} from "./Parts/FindResult";
-import {RecentList} from "./Parts/RecentList";
-import {ExtraArea} from "./Parts/ExtraArea";
+import { FrameList } from "./Parts/FrameList";
+import { FindResult } from "./Parts/FindResult";
+import { RecentList } from "./Parts/RecentList";
+import { ExtraArea } from "./Parts/ExtraArea";
 
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
-	const [ visibleStatus, setVisibleStatus ] = useState('') // 当前搜索结果的可见性，有三个值，''||'隐藏中'||'被遮盖'
 	const [ searchValue, setSearchValue ] = useState('') // 搜索词
 	const [ isMatchCase, setIsMatchCase ] = useState(false) // 是否大小写敏感
 	const [ isWord, setIsWord ] = useState(false) // 是否为整个单词
@@ -29,13 +28,14 @@ export const Pop = () => {
 	const [ x, setX ] = useState(parseInt(window.innerWidth * 0.9 - 400))
 	const [ y, setY ] = useState(parseInt(window.innerHeight * 0.1))
 
+	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? 1000 : 200)
+
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
 
 	useEffect(() => {
 
 		const init = async () => {
-			chrome.storage.onChanged.addListener(handleSessionChange)
 			const [ sessionStorage, syncStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
 				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix'])
@@ -77,7 +77,6 @@ export const Pop = () => {
 		init()
 
 		return () => {
-			chrome.storage.onChanged.removeListener(handleSessionChange)
 			window.removeEventListener('message', handleMessage)
 		}
 	}, []);
@@ -96,7 +95,7 @@ export const Pop = () => {
 	}, [recentList, fixList]);
 
 	useEffect(() => {
-		chrome.storage.sync.set({ searchValue, isWord, isMatchCase, isReg, isLive }, () => {
+		chrome.storage.sync.set({ isWord, isMatchCase, isReg, isLive }, () => {
 			chrome?.runtime?.sendMessage({
 				action: 'search',
 				data: {
@@ -109,7 +108,23 @@ export const Pop = () => {
 			})
 		})
 
-	}, [searchValue, isWord, isMatchCase, isReg, isLive]);
+	}, [isWord, isMatchCase, isReg, isLive]);
+
+	useEffect(() => {
+		chrome.storage.sync.set({ searchValue: debouncedValue }, () => {
+			chrome?.runtime?.sendMessage({
+				action: 'search',
+				data: {
+					searchValue: debouncedValue,
+					isWord,
+					isMatchCase,
+					isReg,
+					isLive
+				}
+			})
+		})
+
+	}, [debouncedValue]);
 
 	const handleMessage = async (e) => {
 		if (e.data.type === 'swe_updateSearchResult') {
@@ -130,23 +145,11 @@ export const Pop = () => {
 		}
 	}
 
-	const handleSessionChange = async (changes, areaName) => {
-		if (areaName === 'session') {
-			if (!window.isFrame && changes.visibleStatus !== undefined) {
-				setVisibleStatus(changes.visibleStatus.newValue)
-			}
-		}
-	}
-
 	const handleSearchValueChange = (e) => {
 		e.stopPropagation()
 		const value = e.target.value
 		setSearchValue(value)
 	}
-
-	const debounceHandleSearchValueChange = useMemo(() => {
-		return debounce(handleSearchValueChange, 300)
-	}, [])
 
 	const handleEnter = e => {
 		e.stopPropagation()
@@ -323,6 +326,10 @@ export const Pop = () => {
 							>
 								<div className="flex items-center bg-white rounded-lg p-0.5 absolute right-1 top-[6px]">
 									{
+										isReg && !isDebounceOk &&
+										<div className="absolute -left-[36px] top-0"><Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 12 }} spin />} /></div>
+									}
+									{
 										searchValue &&
 										<svg
 											className="absolute -left-[18px] w-3 h-3 opacity-25 hover:opacity-45 cursor-pointer"
@@ -360,7 +367,7 @@ export const Pop = () => {
 										arrowPointAtCenter={true}
 										placement="bottom"
 										getPopupContainer={(e) => e.parentElement}
-										title={<div className="scale-90 origin-left">{i18n('大小写敏感')}</div>}
+										title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('大小写敏感')}</div>}
 									>
 										<button
 											className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 px-[0px] ${isMatchCase ? 'activeButton' : ''}`}
@@ -374,7 +381,7 @@ export const Pop = () => {
 										arrowPointAtCenter={true}
 										placement="bottom"
 										getPopupContainer={(e) => e.parentElement}
-										title={<div className="scale-90 origin-left">{i18n('匹配单词')}</div>}
+										title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('匹配单词')}</div>}
 									>
 										<button
 											className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 px-[0px] ${isWord ? 'activeButton' : ''}`}
@@ -388,7 +395,12 @@ export const Pop = () => {
 										arrowPointAtCenter={true}
 										placement="bottom"
 										getPopupContainer={(e) => e.parentElement}
-										title={<div className="scale-90 origin-left">{i18n('正则表达式')}</div>}
+										title={
+										<div className="scale-90" style={{ padding: '4px 0' }}>
+											<div>{i18n('正则表达式')}</div>
+											<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续 1 秒')}</div>
+										</div>
+										}
 									>
 										<button
 											className={`relative cursor-pointer group/btn justify-center flex w-5 h-5 items-center text-black rounded-[6px] dark:bg-zinc-900 bg-white ml-1 px-[0px] ${isReg ? 'activeButton' : ''}`}
@@ -403,9 +415,9 @@ export const Pop = () => {
 										placement="bottomRight"
 										getPopupContainer={(e) => e.parentElement}
 										title={(
-											<div className="text-xs w-[244px] scale-90 origin-left">
+											<div className="scale-90" style={{ padding: '4px 0' }}>
 												<div>{i18n('实时监测 DOM 变化')}</div>
-												<div>{i18n('在不适合实时监测的情况下请临时关闭此功能')}</div>
+												<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('在不适合实时监测的情况下请临时关闭此功能')}</div>
 											</div>
 										)}
 										align={{offset: [20, 0]}}

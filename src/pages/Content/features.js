@@ -1,4 +1,5 @@
 import { destroyPopup } from "./index";
+import { useState, useRef, useEffect } from 'react'
 
 // 生成匹配节点树
 export const reCheckTree = () => {
@@ -191,41 +192,9 @@ export const isElementVisible = (el) => {
 	return '';
 }
 
-/**
- * 防抖函数
- * @param {Function} fn - 需要防抖的函数
- * @param {number} wait - 防抖等待时间（毫秒）
- * @param {boolean} immediate - 是否立即执行（默认为 false）
- * @returns {Function} 防抖后的函数
- */
-export function debounce(fn, wait = 300, immediate = false) {
-	let timeout; // 用于存储定时器的引用
-
-	return function (...args) {
-		console.log(args)
-		const context = this; // 保存函数的上下文
-
-		// 清除已存在的定时器
-		if (timeout) clearTimeout(timeout);
-
-		// 如果设置了 immediate，并且没有定时器在运行，则立即执行
-		if (immediate && !timeout) {
-			const callNow = !timeout;
-			if (callNow) fn.apply(context, args);
-		}
-
-		// 设置新的定时器
-		timeout = setTimeout(() => {
-			if (!immediate) {
-				fn.apply(context, args); // 如果没有设置 immediate，则在等待时间后执行
-			}
-			timeout = null; // 清空定时器引用
-		}, wait);
-	};
-}
-
 export const i18n = (text) => {
 	const isChinese = navigator.language === 'zh' || navigator.language === 'zh-CN'
+	// const isChinese = false
 	if (isChinese) {
 		return text
 	}
@@ -245,8 +214,34 @@ export const i18n = (text) => {
 		case '填入并开启正则模式': return 'Fill in and enable regular mode'
 		case '固定之': return 'Fix'
 		case '取消固定': return 'Cancel fix'
+		case '为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续 1 秒': return 'To avoid the input of regular expressions from freezing, the input debounce will be continuous for 1 second after enabling this option'
 	}
 }
+
+// 自定义防抖 Hook
+export const useDebounce = (value, delay) => {
+	const [debouncedValue, setDebouncedValue] = useState(value);
+	const [ isDebounceOk, setIsDebounceOK ] = useState(false)
+	const timerRef = useRef(null);
+
+	useEffect(() => {
+		if (timerRef.current) {
+			setIsDebounceOK(true)
+			clearTimeout(timerRef.current);
+		}
+		setIsDebounceOK(false)
+		timerRef.current = setTimeout(() => {
+			setIsDebounceOK(true)
+			setDebouncedValue(value);
+		}, delay);
+
+		return () => {
+			clearTimeout(timerRef.current);
+		};
+	}, [value, delay]);
+
+	return { debouncedValue, isDebounceOk };
+};
 
 window.__swe_doSearchOutside = doSearchOutside
 

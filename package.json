@@ -1,6 +1,6 @@
 {
   "name": "Find whatever - regex & auto re-find",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Enhance your browser's find capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
   "license": "MIT",
   "repository": {
@@ -13,12 +13,12 @@
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
     "antd": "^4.x",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.11.9",
     "html-webpack-plugin": "^5.6.3",
-    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",

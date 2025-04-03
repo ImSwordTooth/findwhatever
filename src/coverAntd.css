@@ -15,6 +15,7 @@
 
 .ant-tooltip-inner {
 	min-height: unset !important;
+	padding: 0!important;
 }
 
 .ant-tooltip-arrow {
