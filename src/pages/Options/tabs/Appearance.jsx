@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import { FakePanel } from './fakePanel'
 import {Checkbox, Popover, Slider, Select, Button, message, Popconfirm} from 'antd'
 import { SketchPicker } from 'react-color'
-import { i18n } from '../i18n'
+import { i18n } from '../../i18n'
 
 export const Appearance = () => {
 	const [ bgColor, setBgColor ] = useState('#ffff37')
@@ -23,7 +23,6 @@ export const Appearance = () => {
 	const [ underlineColorActive, setUnderlineColorActive ] = useState('#000000')
 
 	const textRef = useRef(null)
-	const isChinese = useRef(navigator.language === 'zh' || navigator.language === 'zh-CN')
 
 	const text = '   孔乙己是站着喝酒而穿长衫的唯一的人。\n   他身材很高大；青白脸色，皱纹间时常夹些伤痕；一部乱蓬蓬的花白的胡子。\n   穿的虽然是长衫，可是又脏又破，似乎十多年没有补，也没有洗。\n   他对人说话，总是满口之乎者也，教人半懂不懂的。因为他姓孔，别人便从描红纸上的‘上大人孔乙己’这半懂不懂的话里，替他取下一个绰号，叫作孔乙己。'
 

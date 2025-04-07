@@ -1,7 +1,7 @@
 import React from 'react'
 import {Tabs} from "antd";
 import PropTypes from 'prop-types'
-import { i18n } from '../features'
+import { i18n } from '../../i18n'
 
 export const FrameList = (props) => {
 	const { frames, total, tabIndex, updateCurrent, updateTabIndex } = props

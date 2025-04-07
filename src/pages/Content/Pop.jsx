@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Input } from '../../components/Input'
-import { reCheckTree, closePop, observerAllExceptMe, doSearchOutside, i18n, useDebounce } from './features'
+import { reCheckTree, closePop, observerAllExceptMe, doSearchOutside, useDebounce } from './features'
+import { i18n } from '../i18n'
 import { Tooltip, Button, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Rnd } from 'react-rnd'
@@ -9,7 +10,6 @@ import { FrameList } from "./Parts/FrameList";
 import { FindResult } from "./Parts/FindResult";
 import { RecentList } from "./Parts/RecentList";
 import { ExtraArea } from "./Parts/ExtraArea";
-import {CustomScrollBar} from "./CustomScrollBar";
 
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
@@ -28,8 +28,10 @@ export const Pop = () => {
 	const [ fixList, setFixList ] = useState([])
 	const [ x, setX ] = useState(parseInt(window.innerWidth * 0.9 - 400))
 	const [ y, setY ] = useState(parseInt(window.innerHeight * 0.1))
+	const [ debounceDuration, setDebounceDuration ] = useState(200)
+	const [ regexDebounceDuration, setRegexDebounceDuration ] = useState(1000)
 
-	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? 1000 : 200)
+	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration)
 
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
@@ -39,7 +41,7 @@ export const Pop = () => {
 		const init = async () => {
 			const [ sessionStorage, syncStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
-				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix'])
+				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix', 'featureObject'])
 			])
 			setFrames(sessionStorage.frames)
 			setSearchValue(syncStorage.searchValue)
@@ -51,6 +53,8 @@ export const Pop = () => {
 			setY(syncStorage.y || parseInt(window.innerHeight * 0.1))
 			setRecentList(syncStorage.recent || [])
 			setFixList(syncStorage.fix || [])
+			setDebounceDuration(syncStorage.featureObject?.debounceDuration || 200)
+			setRegexDebounceDuration(syncStorage.featureObject?.regexDebounceDuration || 1000)
 			setIsReady(true)
 
 			window.__swe_observer = new MutationObserver((mutationsList, observer) => {
@@ -459,8 +463,6 @@ export const Pop = () => {
 				</div>
 			</Rnd>
 		}
-		<CustomScrollBar current={current} />
 	</div>
-
 	)
 }

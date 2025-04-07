@@ -1,5 +1,5 @@
 import React from 'react'
-import {i18n} from "../features";
+import {i18n} from "../../i18n";
 import Proptypes from 'prop-types'
 
 export const FindResult = (props) => {

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Divider, Dropdown, Menu, Tooltip} from "antd";
-import {i18n} from "../features";
+import {i18n} from "../../i18n";
 import PropTypes from "prop-types";
 
 export const RecentList = (props) => {
@@ -142,7 +142,7 @@ export const RecentList = (props) => {
 						{
 							recentList.length > 0
 								? React.cloneElement(menu, {style: {boxShadow: 'none'}})
-								: <div className="text-xs h-5 text-center scale-90 text-[#cccccc]">暂无数据</div>
+								: <div className="text-xs h-5 text-center scale-90 text-[#cccccc]">{i18n('暂无数据')}</div>
 						}
 					</div>
 				</div>
