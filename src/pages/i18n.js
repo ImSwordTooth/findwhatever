@@ -27,7 +27,7 @@ export const i18n = (text) => {
 		case '外观': return 'Appearance'
 		case '功能': return 'Functionality'
 
-		case '高亮样式': return 'Highlight Style'
+		case '高亮样式': return 'Highlight style'
 		case '背景色': return 'Highlight color'
 		case '字体颜色': return 'Text color'
 		case '是否启用下划线': return 'Enable underline'
