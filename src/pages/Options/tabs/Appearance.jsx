@@ -126,7 +126,7 @@ export const Appearance = () => {
 		setUnderlineStyleActive('solid')
 		setUnderlineColorActive('#000000')
 		chrome.storage.sync.remove(['styleObject', 'styleText'])
-		message.success('重置成功')
+		message.success(i18n('重置成功'))
 	}
 
 	const save = () => {
@@ -151,7 +151,7 @@ export const Appearance = () => {
 			}
 		`
 		}, () => {
-			message.success('保存成功')
+			message.success(i18n('保存成功'))
 		})
 	}
 

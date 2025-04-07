@@ -25,7 +25,7 @@ export const Feature = () => {
 		setDebounceDuration(200)
 		setRegexDebounceDuration(1000)
 		chrome.storage.sync.remove('featureObject')
-		message.success('重置成功')
+		message.success(i18n('重置成功'))
 	}
 
 	const save = () => {
