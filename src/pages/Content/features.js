@@ -1,5 +1,6 @@
 import { destroyPopup } from "./index";
 import { useState, useRef, useEffect } from 'react'
+import { i18n } from '../i18n'
 
 // 生成匹配节点树
 export const reCheckTree = () => {
@@ -43,7 +44,7 @@ export const reCheckTree = () => {
 		let genReturnNext = genReturn.next()
 		while (!genReturnNext.done) {
 			if (genReturnNext.value.textContent && !/^\s+$/g.test(genReturnNext.value.textContent)) { // 如果一个元素的有内容，并且内容全都是空白，跳过之
-				if (isElementVisible(genReturnNext.value.parentElement) !== '隐藏中') {
+				if (isElementVisible(genReturnNext.value.parentElement) !== i18n('隐藏中')) {
 					window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
 				}
 			}
@@ -180,13 +181,13 @@ export const isElementVisible = (el) => {
 	}
 	const rect = el.getBoundingClientRect();
 	if (rect.width === 0 && rect.height === 0) {
-		return '隐藏中'
+		return i18n('隐藏中')
 	} else {
 		const centerX = rect.left + rect.width / 2;
 		const centerY = rect.top + rect.height / 2;
 		const topElement = document.elementFromPoint(centerX, centerY);
 		if (topElement && el !== topElement && !el.contains(topElement) && !topElement.contains(el)) {
-			return '被遮盖'
+			return i18n('被遮盖')
 		}
 	}
 	return '';
