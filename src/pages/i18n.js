@@ -1,5 +1,6 @@
 export const i18n = (text) => {
 	const isChinese = navigator.language === 'zh' || navigator.language === 'zh-CN'
+	// const isChinese = false
 
 	if (isChinese) {
 		return text
@@ -7,7 +8,7 @@ export const i18n = (text) => {
 	switch (text) {
 		case '当前页': return 'Page'
 		case '查找结果': return 'Results'
-		case '输入文本以查找': return 'Start typing to search...'
+		case '输入文本以查找...': return 'Start typing to search...'
 		case '大小写敏感': return 'Match case'
 		case '匹配单词': return 'Words'
 		case '正则表达式': return 'Regex'
@@ -21,7 +22,7 @@ export const i18n = (text) => {
 		case '固定之': return 'Pin'
 		case '取消固定': return 'Unpin'
 		case '暂无数据': return 'Empty'
-		case '为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续 1 秒': return 'To avoid the regular expressions from freezing the page, the search will automatically be aborted after 1 second'
+		case '为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒': return 'To avoid the regular expressions from freezing the page, the search will automatically be aborted after a few seconds'
 
 		case '设置项': return 'SETTINGS'
 		case '外观': return 'Appearance'
@@ -42,7 +43,7 @@ export const i18n = (text) => {
 
 		case '重置本页': return 'Revert to default settings'
 		case '确定重置吗？': return 'Are you sure you want to revert your settings to the default settings?'
-		case '确定': return 'Revert to default settings'
+		case '确定': return 'Yes'
 		case '取消': return 'Cancel'
 		case '重置成功': return 'Reverted successfully'
 

@@ -35,7 +35,7 @@ export const Feature = () => {
 				regexDebounceDuration
 			},
 		}, () => {
-			message.success('保存成功')
+			message.success(i18n('保存成功'))
 		})
 	}
 
@@ -58,16 +58,16 @@ export const Feature = () => {
 					</div>
 				</div>
 
-				<div className="flex items-center w-[400px] mt-[40px]">
+				<div className="flex items-center w-[450px] mt-[40px]">
 					<Popconfirm
 						title={i18n('确定重置吗？')}
 						onConfirm={reset}
 						okText={i18n('确定')}
 						cancelText={i18n('取消')}
-						okButtonProps={{ style: { width: '45px' } }}
-						cancelButtonProps={{ style: { width: '45px' } }}
+						okButtonProps={{ style: { width: '90px' } }}
+						cancelButtonProps={{ style: { width: '50px' } }}
 					>
-						<Button className="w-[120px] mr-[12px]">{i18n('重置本页')}</Button>
+						<Button className="w-[160px] flex-shrink-0 mr-[12px]">{i18n('重置本页')}</Button>
 					</Popconfirm>
 					<Button className="flex-1" type="primary" onClick={save}>{i18n('保存本页')}</Button>
 				</div>

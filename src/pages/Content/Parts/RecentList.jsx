@@ -50,14 +50,14 @@ export const RecentList = (props) => {
 								onClick={(e) => fillSearchValue(e, r)}>{r}</div>
 							<div
 								className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
-								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('填入并开启正则模式')}</div>}>
+								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('填入并开启正则模式')}</div>}>
 									<div
 										onClick={(e) => fillSearchValue(e, r, true)}
 										className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2]">.*
 									</div>
 								</Tooltip>
 
-								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('固定之')}</div>}>
+								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('固定之')}</div>}>
 									<div
 										onClick={(e) => addToFix(e, r)}
 										className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] group/fix ">
@@ -98,14 +98,14 @@ export const RecentList = (props) => {
 												className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
 												<Tooltip arrowPointAtCenter={true} placement="top"
 														 getPopupContainer={() => popupContainer}
-														 align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('填入并开启正则模式')}</div>}>
+														 align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('填入并开启正则模式')}</div>}>
 													<div
 														onClick={(e) => fillSearchValue(e, r, true)}
 														className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2]">.*
 													</div>
 												</Tooltip>
 
-												<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 origin-left">{i18n('取消固定')}</div>}>
+												<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('取消固定')}</div>}>
 													<div
 														onClick={(e) => cancelToFix(e, r)}
 														className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[rgba(216,30,6,0.1)] ">

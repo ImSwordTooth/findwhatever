@@ -51,3 +51,6 @@
 .ant-popconfirm .ant-popover-inner-content {
 	padding: 12px 16px!important;
 }
+.ant-select-item-option-selected {
+	color: #fff!important;
+}

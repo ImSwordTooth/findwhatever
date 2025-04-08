@@ -277,15 +277,6 @@ export const Pop = () => {
 		}
 	}
 
-	const BottomGradient = () => {
-		return (
-			<>
-				<span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-				<span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-			</>
-		);
-	};
-
 	return (
 	<div className="fixed z-[10000] top-0 left-0" >
 		{
@@ -332,7 +323,7 @@ export const Pop = () => {
 								<div className="flex items-center bg-white rounded-lg p-0.5 absolute right-1 top-[6px]">
 									{
 										isReg && !isDebounceOk &&
-										<div className="absolute -left-[36px] top-0"><Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 12 }} spin />} /></div>
+										<div className="absolute -left-[36px] -top-[2px]"><Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 12 }} spin />} /></div>
 									}
 									{
 										searchValue &&
@@ -340,7 +331,7 @@ export const Pop = () => {
 											className="absolute -left-[18px] w-3 h-3 opacity-25 hover:opacity-45 cursor-pointer"
 											viewBox="64 64 896 896" focusable="false" data-icon="close-circle"
 											width="1em"
-											height="1em" fill="currentColor" aria-hidden="true" onClick={clearInput}>
+											height="1em" fill="#000000" aria-hidden="true" onClick={clearInput}>
 											<path
 												d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm165.4 618.2l-66-.3L512 563.4l-99.3 118.4-66.1.3c-4.4 0-8-3.5-8-8 0-1.9.7-3.7 1.9-5.2l130.1-155L340.5 359a8.32 8.32 0 01-1.9-5.2c0-4.4 3.6-8 8-8l66.1.3L512 464.6l99.3-118.4 66-.3c4.4 0 8 3.5 8 8 0 1.9-.7 3.7-1.9 5.2L553.5 514l130 155c1.2 1.5 1.9 3.3 1.9 5.2 0 4.4-3.6 8-8 8z"></path>
 										</svg>
@@ -379,7 +370,6 @@ export const Pop = () => {
 											onClick={handleIsMatchCaseChange}
 										>
 											<span className="text-xs select-none">Cc</span>
-											<BottomGradient/>
 										</button>
 									</Tooltip>
 									<Tooltip
@@ -393,7 +383,6 @@ export const Pop = () => {
 											onClick={handleIsWordChange}
 										>
 											<span className="text-xs select-none">W</span>
-											<BottomGradient/>
 										</button>
 									</Tooltip>
 									<Tooltip
@@ -403,7 +392,7 @@ export const Pop = () => {
 										title={
 										<div className="scale-90" style={{ padding: '4px 0' }}>
 											<div>{i18n('正则表达式')}</div>
-											<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续 1 秒')}</div>
+											<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
 										</div>
 										}
 									>
@@ -412,7 +401,6 @@ export const Pop = () => {
 											onClick={handleIsRegChange}
 										>
 											<span className="text-xs select-none">.*</span>
-											<BottomGradient/>
 										</button>
 									</Tooltip>
 									<Tooltip
@@ -425,7 +413,6 @@ export const Pop = () => {
 												<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('在不适合实时监测的情况下请临时关闭此功能')}</div>
 											</div>
 										)}
-										align={{offset: [20, 0]}}
 									>
 										<div
 											className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center cursor-pointer ml-1 ${isLive ? 'activeButton' : ''}`}
