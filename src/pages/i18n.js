@@ -37,6 +37,8 @@ export const i18n = (text) => {
 		case '下划线样式': return 'Underline style'
 		case '下划线颜色': return 'Underline color'
 		case '下划线是否和 search-results 一致': return 'Underline: same as search-results'
+		case '其他': return 'Others'
+		case '临时透明度': return 'Temporary opacity'
 
 		case '非正则模式防抖时长': return 'Search abortion timeout in non-regex mode'
 		case '正则模式防抖时长': return 'Search abortion timeout in regex mode'

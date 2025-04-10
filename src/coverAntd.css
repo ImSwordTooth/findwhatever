@@ -17,6 +17,9 @@
 	min-height: unset !important;
 	padding: 0!important;
 }
+.ant-slider-tooltip .ant-tooltip-inner {
+	padding: 6px 8px!important;
+}
 
 .ant-tooltip-arrow {
 	width: 16px !important;

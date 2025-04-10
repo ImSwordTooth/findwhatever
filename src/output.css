@@ -509,6 +509,10 @@ button {
   right: -4px;
 }
 
+.-top-\[2px\] {
+  top: -2px;
+}
+
 .bottom-0 {
   bottom: 0px;
 }
@@ -571,10 +575,6 @@ button {
 
 .top-\[7px\] {
   top: 7px;
-}
-
-.-top-\[2px\] {
-  top: -2px;
 }
 
 .z-10 {
@@ -799,8 +799,8 @@ button {
   width: 108px;
 }
 
-.w-\[120px\] {
-  width: 120px;
+.w-\[160px\] {
+  width: 160px;
 }
 
 .w-\[18px\] {
@@ -853,14 +853,6 @@ button {
 
 .w-full {
   width: 100%;
-}
-
-.w-\[160px\] {
-  width: 160px;
-}
-
-.w-\[180px\] {
-  width: 180px;
 }
 
 .min-w-2\.5 {

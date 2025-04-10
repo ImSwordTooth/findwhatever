@@ -22,6 +22,8 @@ export const Appearance = () => {
 	const [ underlineStyleActive, setUnderlineStyleActive ] = useState('solid')
 	const [ underlineColorActive, setUnderlineColorActive ] = useState('#000000')
 
+	const [ tempOpacity, setTempOpacity ] = useState(0.3)
+
 	const textRef = useRef(null)
 
 	const text = '   孔乙己是站着喝酒而穿长衫的唯一的人。\n   他身材很高大；青白脸色，皱纹间时常夹些伤痕；一部乱蓬蓬的花白的胡子。\n   穿的虽然是长衫，可是又脏又破，似乎十多年没有补，也没有洗。\n   他对人说话，总是满口之乎者也，教人半懂不懂的。因为他姓孔，别人便从描红纸上的‘上大人孔乙己’这半懂不懂的话里，替他取下一个绰号，叫作孔乙己。'
@@ -98,6 +100,8 @@ export const Appearance = () => {
 		setUnderlineThicknessActive(styleObject.underlineThicknessActive)
 		setUnderlineStyleActive(styleObject.underlineStyleActive)
 		setUnderlineColorActive(styleObject.underlineColorActive)
+
+		setTempOpacity(styleObject.tempOpacity)
 	}
 
 	const colorFormat = (colorObj) => {
@@ -125,6 +129,9 @@ export const Appearance = () => {
 		setUnderlineThicknessActive(2)
 		setUnderlineStyleActive('solid')
 		setUnderlineColorActive('#000000')
+
+		setTempOpacity(0.3)
+
 		chrome.storage.sync.remove(['styleObject', 'styleText'])
 		message.success(i18n('重置成功'))
 	}
@@ -133,7 +140,8 @@ export const Appearance = () => {
 		chrome.storage.sync.set({
 			styleObject: {
 				bgColor, textColor, isOpenUnderline, underlineOffset, underlineThickness, underlineStyle, underlineColor,
-				bgColorActive, textColorActive, isSame, isOpenUnderlineActive, underlineOffsetActive, underlineThicknessActive, underlineStyleActive, underlineColorActive
+				bgColorActive, textColorActive, isSame, isOpenUnderlineActive, underlineOffsetActive, underlineThicknessActive, underlineStyleActive, underlineColorActive,
+				tempOpacity
 			},
 			styleText: `
             ::highlight(search-results) {
@@ -245,7 +253,7 @@ export const Appearance = () => {
 						}
 					</div>
 				</div>
-				<div className="w-[400px]">
+				<div className="w-[400px] mb-[40px]">
 					<h2>search-results-active</h2>
 					<div className="rounded-xl overflow-hidden">
 						<div className="setting-row">
@@ -337,6 +345,33 @@ export const Appearance = () => {
 								}
 							</>
 						}
+					</div>
+				</div>
+
+				<div className="w-[400px]">
+					<h2>其他</h2>
+					<div className="rounded-xl overflow-hidden">
+						<div className="setting-row">
+							<div>
+								<svg className="w-3 h-3 mr-2" viewBox="0 0 1194 1024" version="1.1"
+									 xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+									<path
+										d="M597.333333 964.266667c-190.577778 0-366.933333-102.4-520.533333-301.511111-25.6-31.288889-25.6-76.8 0-108.088889C230.4 358.4 406.755556 256 597.333333 256c190.577778 0 366.933333 102.4 520.533334 301.511111 25.6 31.288889 25.6 76.8 0 108.088889-153.6 199.111111-329.955556 298.666667-520.533334 298.666667zM597.333333 312.888889c-173.511111 0-332.8 93.866667-477.866666 278.755555-8.533333 11.377778-8.533333 25.6 0 39.822223C261.688889 816.355556 423.822222 910.222222 597.333333 910.222222c173.511111 0 332.8-93.866667 477.866667-278.755555 8.533333-11.377778 8.533333-25.6 0-39.822223C930.133333 406.755556 770.844444 312.888889 597.333333 312.888889z"
+										fill="#388CFF"></path>
+									<path
+										d="M597.333333 768c-93.866667 0-170.666667-76.8-170.666666-170.666667s76.8-170.666667 170.666666-170.666666 170.666667 76.8 170.666667 170.666666-76.8 170.666667-170.666667 170.666667z m0-284.444444c-62.577778 0-113.777778 51.2-113.777777 113.777777s51.2 113.777778 113.777777 113.777778 113.777778-51.2 113.777778-113.777778-51.2-113.777778-113.777778-113.777777z"
+										fill="#388CFF"></path>
+									<path
+										d="M597.333333 56.888889c17.066667 0 28.444444 11.377778 28.444445 28.444444v170.666667c0 17.066667-11.377778 28.444444-28.444445 28.444444s-28.444444-11.377778-28.444444-28.444444V85.333333c0-17.066667 11.377778-28.444444 28.444444-28.444444zM1075.2 233.244444c11.377778 11.377778 11.377778 28.444444 0 39.822223l-119.466667 119.466666c-11.377778 11.377778-28.444444 11.377778-39.822222 0-11.377778-11.377778-11.377778-28.444444 0-39.822222l119.466667-119.466667c11.377778-11.377778 28.444444-11.377778 39.822222 0zM119.466667 233.244444c11.377778-11.377778 28.444444-11.377778 39.822222 0l119.466667 119.466667c11.377778 11.377778 11.377778 28.444444 0 39.822222-11.377778 11.377778-28.444444 11.377778-39.822223 0L119.466667 273.066667c-11.377778-11.377778-11.377778-28.444444 0-39.822223z"
+										fill="#388CFF"></path>
+								</svg>
+								{i18n('临时透明度')}
+							</div>
+							<div className="flex items-center">
+								<Slider style={{ width: '120px', margin: 0 }} min={0.1} max={1} step={0.1} value={tempOpacity} onChange={setTempOpacity} />
+								<div className="ml-2">{tempOpacity}</div>
+							</div>
+						</div>
 					</div>
 				</div>
 

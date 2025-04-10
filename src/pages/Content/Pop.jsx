@@ -30,6 +30,7 @@ export const Pop = () => {
 	const [ y, setY ] = useState(parseInt(window.innerHeight * 0.1))
 	const [ debounceDuration, setDebounceDuration ] = useState(200)
 	const [ regexDebounceDuration, setRegexDebounceDuration ] = useState(1000)
+	const [ styleObject, setStyleObject ] = useState({})
 
 	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration)
 
@@ -41,7 +42,7 @@ export const Pop = () => {
 		const init = async () => {
 			const [ sessionStorage, syncStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
-				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix', 'featureObject'])
+				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix', 'featureObject', 'styleObject'])
 			])
 			setFrames(sessionStorage.frames)
 			setSearchValue(syncStorage.searchValue)
@@ -55,6 +56,7 @@ export const Pop = () => {
 			setFixList(syncStorage.fix || [])
 			setDebounceDuration(syncStorage.featureObject?.debounceDuration || 200)
 			setRegexDebounceDuration(syncStorage.featureObject?.regexDebounceDuration || 1000)
+			setStyleObject(syncStorage.styleObject || { tempOpacity: 0.3 })
 			setIsReady(true)
 
 			window.__swe_observer = new MutationObserver((mutationsList, observer) => {
@@ -81,10 +83,30 @@ export const Pop = () => {
 
 		init()
 
+
 		return () => {
 			window.removeEventListener('message', handleMessage)
 		}
 	}, []);
+
+	useEffect(() => {
+		// 防止输入时触发页面的全局快捷键
+
+		const handleKeyDown = (e) => {
+			if (e.target.parentElement?.id === '__swe_container') {
+				e.stopPropagation()
+			}
+		}
+
+		window.addEventListener("keydown", handleKeyDown, true);
+		window.addEventListener("keypress", handleKeyDown, true);
+		window.addEventListener("keyup", handleKeyDown, true);
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown, true);
+			window.removeEventListener("keypress", handleKeyDown, true);
+			window.removeEventListener("keyup", handleKeyDown, true);
+		};
+	}, [])
 
 	// isLive 变更后，更新监听器
 	useEffect(() => {
@@ -151,14 +173,11 @@ export const Pop = () => {
 	}
 
 	const handleSearchValueChange = (e) => {
-		e.stopPropagation()
 		const value = e.target.value
 		setSearchValue(value)
 	}
 
 	const handleEnter = e => {
-		e.stopPropagation()
-
 		if (e.key === 'Enter') {
 			if (e.shiftKey) {
 				goPrev()
@@ -282,7 +301,7 @@ export const Pop = () => {
 		{
 			isReady &&
 			<Rnd
-				style={{ zIndex: 10000, padding:'18px 12px 10px', background: '#fff', borderRadius: '12px',boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3),0px 0px 16px 1px rgba(233,233,233,0.58) ', opacity: isHidePanel ? 0.3 : (isHidePanelTemporarily ? 0.3 : 1)}}
+				style={{ zIndex: 10000, transition: 'opacity 0.3s ease', padding:'18px 12px 10px', background: '#fff', borderRadius: '12px',boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3),0px 0px 16px 1px rgba(233,233,233,0.58) ', opacity: isHidePanel ? styleObject.tempOpacity : (isHidePanelTemporarily ? styleObject.tempOpacity : 1)}}
 				dragHandleClassName="searchWhateverMoveHandler"
 				onDragStop={handleDragStop}
 				position={{ x, y }}
