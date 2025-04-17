@@ -94,7 +94,9 @@ export const Pop = () => {
 
 		const handleKeyDown = (e) => {
 			if (e.target.parentElement?.id === '__swe_container') {
-				e.stopPropagation()
+				if (!['Escape', 'Shift', 'Enter'].includes(e.key)) {
+					e.stopPropagation()
+				}
 			}
 		}
 
