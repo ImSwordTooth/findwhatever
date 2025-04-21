@@ -104,7 +104,10 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 	const matchText = []
 
 	if (searchValue && window.allNodes) { // 如果有搜索词
-		window.filteredRangeList.value = [] // 清除之前搜索到的匹配结果的 DOM 集合
+
+		if (window.filteredRangeList) {
+			window.filteredRangeList.value = [] // 清除之前搜索到的匹配结果的 DOM 集合
+		}
 		window.rangesFlat = window.allNodes.map(({ el, text }) => {
 			const indices = []
 			let startPosition = 0
@@ -145,10 +148,10 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 			return indices.map(index => {
 				const range = new Range()
 				if (el.parentElement) {
-					window.filteredRangeList.value.push(el.parentElement)
+					window.filteredRangeList?.value.push(el.parentElement)
 				} else {
 					if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
-						window.filteredRangeList.value.push(el.parentNode.host)
+						window.filteredRangeList?.value.push(el.parentNode.host)
 					}
 				}
 				range.setStart(el, index)

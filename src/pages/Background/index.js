@@ -144,23 +144,25 @@ const handleStorageChange = async (changes, areaName) => {
 				if (activeResult <= temp) {
 					chrome.scripting.executeScript({
 						target: { tabId: activeTabIdHistoryList[1], frameIds: [Number(resultSum[i].frameId)] },
-						args: [activeResult - temp + resultSum[i].sum],
-						func: (realIndex) => {
+						args: [activeResult - temp + resultSum[i].sum, !changes.force],
+						func: (realIndex, isAuto) => {
 							if (!window.rangesFlat) {
 								return
 							}
 							CSS.highlights.set('search-results-active', new Highlight(window.rangesFlat[realIndex - 1]))
-							let parents = [filteredRangeList.value[realIndex - 1]];
-							let currentDom = filteredRangeList.value[realIndex - 1].parentElement;
-							while (currentDom) {
-								parents.unshift(currentDom);
-								currentDom = currentDom.parentElement;
-							}
-							for (let dom of parents) {
-								if (dom.tagName === 'DETAILS') {
-									dom.setAttribute('open', true)
+							if (isAuto) {
+								let parents = [filteredRangeList.value[realIndex - 1]];
+								let currentDom = filteredRangeList.value[realIndex - 1].parentElement;
+								while (currentDom) {
+									parents.unshift(currentDom);
+									currentDom = currentDom.parentElement;
 								}
-								dom.scrollIntoView({ behavior: 'instant', block: 'center' })
+								for (let dom of parents) {
+									if (dom.tagName === 'DETAILS') {
+										dom.setAttribute('open', true)
+									}
+									dom.scrollIntoView({ behavior: 'instant', block: 'center' })
+								}
 							}
 							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList.value[realIndex - 1]) })
 						}
