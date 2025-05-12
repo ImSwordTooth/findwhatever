@@ -42,6 +42,7 @@ export const i18n = (text) => {
 
 		case '非正则模式防抖时长': return 'Search abortion timeout in non-regex mode'
 		case '正则模式防抖时长': return 'Search abortion timeout in regex mode'
+		case '正则表达式是否启用 Unicode 模式': return 'Whether the regular expression enables Unicode mode'
 
 		case '重置本页': return 'Revert to default settings'
 		case '确定重置吗？': return 'Are you sure you want to revert your settings to the default settings?'
