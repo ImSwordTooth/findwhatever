@@ -100,7 +100,7 @@ export const observerAllExceptMe = () => {
 export const doSearchOutside = async (isAuto = false, cb) => {
 	CSS.highlights.clear() // 清除所有高亮
 
-	const { searchValue, isMatchCase, isWord, isReg } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive'])
+	const { searchValue, isMatchCase, isWord, isReg, featureObject } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'featureObject'])
 	const matchText = []
 
 	if (searchValue && window.allNodes) { // 如果有搜索词
@@ -123,7 +123,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 			let execResLength = searchValue.value // 匹配结果的长度，一般情况下等于字符串长度，如果是正则，就得是正则结果的长度
 			let reg
 			try {
-				reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg`);
+				reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${featureObject?.isOpenUnicode ? 'u' : ''}`);
 			} catch (e) {
 				// 正则表达式不合法
 				return []

@@ -6,6 +6,7 @@ import { i18n } from '../../i18n'
 export const Feature = () => {
 	const [ debounceDuration, setDebounceDuration ] = useState(200)
 	const [ regexDebounceDuration, setRegexDebounceDuration ] = useState(1000)
+	const [ isOpenUnicode, setIsOpenUnicode ] = useState(false)
 
 	useEffect(() => {
 		init()
@@ -19,11 +20,13 @@ export const Feature = () => {
 		}
 		setDebounceDuration(res.featureObject.debounceDuration)
 		setRegexDebounceDuration(res.featureObject.regexDebounceDuration)
+		setIsOpenUnicode(res.featureObject.isOpenUnicode)
 	}
 
 	const reset = () => {
 		setDebounceDuration(200)
 		setRegexDebounceDuration(1000)
+		setIsOpenUnicode(false)
 		chrome.storage.sync.remove('featureObject')
 		message.success(i18n('重置成功'))
 	}
@@ -32,7 +35,8 @@ export const Feature = () => {
 		chrome.storage.sync.set({
 			featureObject: {
 				debounceDuration,
-				regexDebounceDuration
+				regexDebounceDuration,
+				isOpenUnicode
 			},
 		}, () => {
 			message.success(i18n('保存成功'))
@@ -54,6 +58,10 @@ export const Feature = () => {
 						<div className="setting-row">
 							<div>{i18n('正则模式防抖时长')}</div>
 							<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={0} value={regexDebounceDuration} onChange={setRegexDebounceDuration} />
+						</div>
+						<div className="setting-row">
+							<div>{i18n('正则表达式是否启用 Unicode 模式')}</div>
+							<Checkbox checked={isOpenUnicode} onChange={ e => setIsOpenUnicode(e.target.checked) } />
 						</div>
 					</div>
 				</div>
