@@ -8,6 +8,10 @@ import CoverAntdStyle from '../../coverAntd.css'
 
 const dom = document.createElement('div');
 dom.id = '__swe_container'
+dom.style.cssText = `
+	position: relative;
+	z-index: 999999999999999999;
+`
 const root = createRoot(dom)
 
 export const createOrUpdatePopup = (props) => {
