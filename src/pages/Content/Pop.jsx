@@ -59,6 +59,18 @@ export const Pop = () => {
 			setStyleObject(syncStorage.styleObject || { tempOpacity: 0.3 })
 			setIsReady(true)
 
+			if (window.innerHeight < syncStorage.y + 94 || window.innerWidth < syncStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置
+				setX(parseInt(window.innerWidth * 0.9 - 400))
+				setY(parseInt(window.innerHeight * 0.1))
+
+				if (window.screen.height < syncStorage.y + 94 || window.screen.width < syncStorage.x + 400) { // 继续判断，如果在当前设备都不能完全显示，重置位置
+					chrome.storage.sync.remove(['x', 'y'])
+				}
+			} else { // 如果能完全显示，就使用用户上次保存的位置
+				setX(syncStorage.x || parseInt(window.innerWidth * 0.9 - 400))
+				setY(syncStorage.y || parseInt(window.innerHeight * 0.1))
+			}
+
 			window.__swe_observer = new MutationObserver((mutationsList, observer) => {
 				// 遍历 mutationsList 数组，处理每个变化
 				// for (const mutation of mutationsList) {
