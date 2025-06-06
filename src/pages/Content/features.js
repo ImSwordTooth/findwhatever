@@ -148,10 +148,11 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 			return indices.map(index => {
 				const range = new Range()
 				if (el.parentElement) {
-					window.filteredRangeList?.value.push(el.parentElement)
+
+					window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentElement]
 				} else {
 					if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
-						window.filteredRangeList?.value.push(el.parentNode.host)
+						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
 					}
 				}
 				range.setStart(el, index)

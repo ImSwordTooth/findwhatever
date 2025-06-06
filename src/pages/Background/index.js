@@ -4,17 +4,66 @@ let pageFrames = [] // 当前页面中的 frames
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
     const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
-    resultSum = []
 	activeTabIdHistoryList[1] = tab.id
-	pageFrames = frames
-    await chrome.storage.session.set({ resultSum: [], frames }) // 重置查找总数，并设置 frames
-    for (let i of frames.sort((a, b) => a.frameId > b.frameId ? -1 : 1 )) {
-        // 插入脚本
-        await chrome.scripting.executeScript({
-            target: { tabId: tab.id, frameIds: [i.frameId] },
-            files: ['./action.bundle.js']
-        })
+	let visibleFrames = [] // 有内容的 frames
+
+    for (let i of frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 )) {
+		const res = await chrome.scripting.executeScript({
+			target: { tabId: tab.id, frameIds: [i.frameId] },
+			func: () => {
+				function hasVisibleText() {
+					const treeWalker = document.createTreeWalker(
+						document.body,
+						NodeFilter.SHOW_TEXT
+					);
+
+					while (treeWalker.nextNode()) {
+						const text = treeWalker.currentNode.textContent.trim();
+						const parent = treeWalker.currentNode.parentElement; // 检查文本节点是否在可见元素内
+
+						if (text.length > 0 &&
+							parent.tagName !== 'SCRIPT' &&
+							parent.tagName !== 'STYLE' &&
+							parent.tagName !== 'NOSCRIPT') {
+							return true;
+						}
+					}
+					return false;
+				}
+				return hasVisibleText()
+			}
+		})
+
+		if (res[0].result) {
+			visibleFrames.push(i)
+		}
     }
+
+	const index = visibleFrames.findIndex(r => r.frameId === 0);
+	if (index > 0) {
+		visibleFrames.unshift(visibleFrames.splice(index, 1)[0])
+	}
+
+	pageFrames = visibleFrames
+	resultSum = visibleFrames.map((f) => ({  // 提前定义好结构，有助于后续操作
+		frameId: f.frameId,
+		sum: 0,
+		matchText: []
+	}))
+
+	// 重置查找总数，并设置 frames
+	await chrome.storage.session.set({
+		frames: pageFrames,
+		resultSum
+	})
+
+	for (let i of visibleFrames) {
+		// 插入脚本
+		await chrome.scripting.executeScript({
+			target: { tabId: tab.id, frameIds: [i.frameId] },
+			files: ['./action.bundle.js']
+		})
+	}
 })
 
 chrome.runtime.onInstalled.addListener(async () => {
@@ -39,13 +88,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			resultSum.splice(currentResultIndex, 1)
 		}
 
-		// 按照 frames 的顺序排序
-		resultSum.sort((a, b) => pageFrames.findIndex(p => p.frameId === b.frameId) - pageFrames.findIndex(p => p.frameId === a.frameId))
-		// 保证【当前页】的总是在第一位
-		const index = resultSum.findIndex(r => r.frameId === 0);
-		if (index > 0) {
-			resultSum.unshift(resultSum.splice(index, 1)[0])
-		}
 		const finalSession = { resultSum }
 
 		chrome.storage.session.get(['activeResult'], (res) => {

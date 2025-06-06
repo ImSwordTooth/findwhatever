@@ -1,12 +1,21 @@
 import { reCheckTree, doSearchOutside, closePop } from '../Content/features'
-import { createOrUpdatePopup } from '../Content/index'
+import { createOrUpdatePopup } from '../Content/index';
 window.isFrame = window !== window.top;
+
 window.handleCloseByEsc = (e) => {
 	if (!window.isFrame && e.key === 'Escape') {
 		closePop()
 		document.removeEventListener('keydown', window.handleCloseByEsc)
 	}
-}
+};
+
+window.filteredRangeList = new Proxy({ value: [] }, {
+	set (target, prop, value) {
+		target[prop] = value
+		// window.dispatchEvent(new CustomEvent('filteredRangeListChange', { detail: value }))
+		return true
+	}
+});
 
 (async function () {
     // 每次点击的时候才开始创建 dom 查找树，否则会 dom 节点过旧
