@@ -5,7 +5,11 @@ import { i18n } from '../i18n'
 // 生成匹配节点树
 export const reCheckTree = () => {
 	const createTreeWalkerWithShadowDOM = (root) => {
+
+		console.log('sssss', root)
+
 		return document.createTreeWalker(root, NodeFilter.SHOW_TEXT, (node) => {
+			console.log('----',node.parentNode.nodeName)
 			// 父元素是 svg、script、script 的时候，不置入范围
 			if (['svg', 'STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
 				return NodeFilter.FILTER_REJECT
@@ -17,6 +21,7 @@ export const reCheckTree = () => {
 
 	function* walkTextNodes(node) {
 		if (node.nodeName === '#text') {
+			// console.log(node, '#text')
 			yield node
 		} else {
 			const treeWalker = createTreeWalkerWithShadowDOM(node)
@@ -26,7 +31,42 @@ export const reCheckTree = () => {
 			}
 
 			if (node.childNodes?.length > 0) {
-				for (const child of node.childNodes) {
+
+				const arr = ['STRONG','WBR']
+
+				let clonedContainer=node
+
+				let ischanged = false
+
+				// console.log(Array.from(node.childNodes))
+				// console.log(Array.from(node.childNodes).every(child => !child.children || child.children.length === 0))
+
+				// 最后一层，并且有可以 normalize 的部分
+				if (Array.from(node.childNodes).every(child => !child.children || child.children.length === 0) && Array.from(node.childNodes).some(child => arr.includes(child.nodeName))) {
+					clonedContainer = node.cloneNode(true);
+					clonedContainer.core = node
+					clonedContainer.dataset.test = 'node'
+					ischanged = true
+
+					// 在副本上操作：移除所有 <wbr> 标签
+					const wbrElements = clonedContainer.querySelectorAll('wbr');
+					wbrElements.forEach(wbr => wbr.remove());
+
+					// 调用 normalize() 合并文本节点
+					clonedContainer.normalize();
+
+					for (let i=0; i<clonedContainer.childNodes.length; i++) {
+						clonedContainer.childNodes[i].isNormalized = true
+					}
+				}
+
+				if (ischanged) {
+					// console.log('11', clonedContainer)
+					// console.log('22', clonedContainer.childNodes)
+				}
+
+
+				for (const child of clonedContainer.childNodes) {
 					yield* walkTextNodes(child)
 				}
 			} else {
@@ -44,12 +84,14 @@ export const reCheckTree = () => {
 		let genReturnNext = genReturn.next()
 		while (!genReturnNext.done) {
 			if (genReturnNext.value.textContent && !/^\s+$/g.test(genReturnNext.value.textContent)) { // 如果一个元素的有内容，并且内容全都是空白，跳过之
-				if (isElementVisible(genReturnNext.value.parentElement) !== i18n('隐藏中')) {
+				// if (isElementVisible(genReturnNext.value.parentElement) !== i18n('隐藏中')) {
 					window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
-				}
+				// }
 			}
 			genReturnNext = genReturn.next()
 		}
+
+		// console.log(window.allNodes, '===')
 		resolve()
 	})
 }
@@ -64,19 +106,21 @@ export const closePop = () => {
 		action: 'closeAction'
 	})
 	chrome.storage.sync.get(['recent', 'searchValue']).then(({ recent, searchValue }) => {
-		const newRecent = recent.slice()
-		if (!newRecent.includes(searchValue)) { // 没有就直接新增
-			newRecent.unshift(searchValue)
-			if (newRecent.length > 50) { // 不超过50条
-				newRecent.shift()
+		if (searchValue) {
+			const newRecent = recent.slice()
+			if (!newRecent.includes(searchValue)) { // 没有就直接新增
+				newRecent.unshift(searchValue)
+				if (newRecent.length > 50) { // 不超过50条
+					newRecent.shift()
+				}
+			} else { // 有就提到最新
+				const index = newRecent.findIndex(r => r === searchValue);
+				if (index > 0) {
+					newRecent.unshift(newRecent.splice(index, 1)[0])
+				}
 			}
-		} else { // 有就提到最新
-			const index = newRecent.findIndex(r => r === searchValue);
-			if (index > 0) {
-				newRecent.unshift(newRecent.splice(index, 1)[0])
-			}
+			chrome.storage.sync.set({ recent: newRecent })
 		}
-		chrome.storage.sync.set({ recent: newRecent })
 	})
 }
 
@@ -108,6 +152,9 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 		if (window.filteredRangeList) {
 			window.filteredRangeList.value = [] // 清除之前搜索到的匹配结果的 DOM 集合
 		}
+
+		// console.log(window.allNodes, '==============')
+
 		window.rangesFlat = window.allNodes.map(({ el, text }) => {
 			const indices = []
 			let startPosition = 0
@@ -149,14 +196,48 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 				const range = new Range()
 				if (el.parentElement) {
 
-					window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentElement]
+					// window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentElement]
+					window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.core || el.parentElement]
 				} else {
 					if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
 						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
 					}
 				}
-				range.setStart(el, index)
-				range.setEnd(el, index + execResLength)
+
+
+				if (el.parentNode.core) {
+					let startTextLength = 0
+					let endTextLength = 0
+
+					console.log('core', index, execResLength)
+
+					for (let i=0; i<el.parentNode.core.childNodes.length; i++) {
+						startTextLength += el.parentNode.core.childNodes[i].length || 0
+						console.log(startTextLength)
+						if (startTextLength >= index) {
+							console.log('start', el.parentNode.core.childNodes[i], index - (startTextLength - el.parentNode.core.childNodes[i].length || 0))
+							range.setStart(el.parentNode.core.childNodes[i], index - (startTextLength - el.parentNode.core.childNodes[i].length || 0))
+							break
+						}
+					}
+
+					for (let i=0; i<el.parentNode.core.childNodes.length; i++) {
+						endTextLength += el.parentNode.core.childNodes[i].length || 0
+						if (endTextLength >= index + execResLength) {
+							console.log('end', el.parentNode.core.childNodes[i], index + execResLength - (endTextLength - el.parentNode.core.childNodes[i].length || 0))
+							range.setEnd(el.parentNode.core.childNodes[i], index + execResLength - (endTextLength - el.parentNode.core.childNodes[i].length || 0))
+							break
+						}
+					}
+					// range.createContextualFragment(searchValue)
+					// range.setStart(el.parentNode.core.childNodes[0], index)
+					// range.setEnd(el.parentNode.core.childNodes[el.parentNode.core.childNodes.length-1], el.parentNode.core.childNodes[el.parentNode.core.childNodes.length-1].length)
+				} else {
+					range.setStart(el, index)
+					range.setEnd(el, index + execResLength)
+				}
+
+				// console.log('....', window.filteredRangeList.value)
 				return range
 			})
 		}).flat()

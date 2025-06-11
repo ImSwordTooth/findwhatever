@@ -7,8 +7,16 @@
 		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 	}
 
+	.monofont {
+		font-family: 'JetBrainsMono', monospace;
+	}
+
+	.shadowText {
+		text-shadow: 0 1px 3px rgba(156,156,156, 0.4);
+	}
+
 	.activeButton {
-		background-color: #f5f5f5;
+		background-color: rgba(183, 217, 239, 0.16) !important;
 		color: #0788dc!important;
 		font-weight: bold;
 
@@ -18,10 +26,41 @@
 		}
 	}
 
+	.normalButton {
+		position: relative;
+		cursor: pointer;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 20px;
+		height: 20px;
+		color: black;
+		border-radius: 4px;
+		background-color: white;
+		margin-left: 4px;
+		padding: 0;
+		transition: background-color .3s ease;
+	}
+
+	.pageTabStatusBar {
+		position: absolute;
+		bottom: -4px;
+		width: 100%;
+		height: 2px;
+		transition: background-color .1s ease;
+	}
+
+	.framesTabStatusBar {
+		height: 2px;
+		flex: 1;
+		margin-right: 4px;
+		transition: background-color .1s ease;
+	}
+
 	.smallScroll {
 		&::-webkit-scrollbar {
-			width: 4px;
-			height: 4px;
+			width: 4px!important;
+			height: 4px!important;
 		}
 
 		&::-webkit-scrollbar-track {
@@ -88,6 +127,8 @@
 	.sketch-picker * {
 		box-sizing: unset!important;
 	}
+
+
 }
 
 @layer base {
@@ -96,5 +137,10 @@
 	}
 	* {
 		box-sizing: border-box;
+	}
+
+	@font-face {
+		src: url('./assets/JetBrainsMono.ttf');
+		font-family: 'JetBrainsMono';
 	}
 }

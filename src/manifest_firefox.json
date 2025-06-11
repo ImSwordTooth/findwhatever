@@ -1,0 +1,60 @@
+{
+	"manifest_version": 3,
+	"name": "Find whatever - regex & auto re-find",
+	"description": "Enhance your browser's find capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
+	"version": "2.7.0",
+	"icons": {
+		"16": "popup.png",
+		"32": "popup.png",
+		"48": "popup.png",
+		"128": "popup.png"
+	},
+	"author": "2223133607@qq.com",
+	"action": {
+		"default_icon": {
+			"16": "popup.png",
+			"32": "popup.png"
+		}
+	},
+	"permissions": ["storage", "activeTab", "scripting", "webNavigation", "tabs"],
+	"host_permissions": [
+		"*://*/*"
+	],
+	"content_scripts": [
+		{
+			"matches": ["http://*/*", "https://*/*", "<all_urls>"],
+			"js": ["contentScript.bundle.js"],
+			"all_frames": true
+		}
+	],
+	"options_ui": {
+		"page": "options.html",
+		"open_in_tab": true
+	},
+	"background": {
+		"scripts": ["background.bundle.js"]
+	},
+	"externally_connectable": {
+		"matches": ["*://*/*"]
+	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "lihujianchi@gmail.com"
+		}
+	},
+	"commands": {
+		"_execute_action": {
+			"suggested_key": {
+				"windows": "Ctrl+F",
+				"mac": "Command+F",
+				"linux": "Ctrl+F"
+			}
+		}
+	},
+	"web_accessible_resources": [
+		{
+			"resources": [],
+			"matches": []
+		}
+	]
+}

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Divider, Dropdown, Menu, Tooltip} from "antd";
+import {Button, Divider, Dropdown, Menu, Tooltip} from "antd";
 import {i18n} from "../../i18n";
 import PropTypes from "prop-types";
 
@@ -46,7 +46,7 @@ export const RecentList = (props) => {
 					label:
 						<div className="relative pr-[32px] group">
 							<div
-								className="w-20 h-5 text-ellipsis whitespace-nowrap overflow-hidden"
+								className="w-[128px] h-5 text-ellipsis whitespace-nowrap overflow-hidden"
 								onClick={(e) => fillSearchValue(e, r)}>{r}</div>
 							<div
 								className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
@@ -71,9 +71,7 @@ export const RecentList = (props) => {
 										</svg>
 									</div>
 								</Tooltip>
-
 							</div>
-
 						</div>
 				}))
 			}}
@@ -86,7 +84,7 @@ export const RecentList = (props) => {
 					{
 						fixList.length > 0 &&
 						<>
-							<div className="scale-[0.9] origin-bottom font-bold pt-1">{i18n('固定')}</div>
+							<div className="font-bold pl-[10px] pt-[10px] select-none">{i18n('固定')}</div>
 							<Menu
 								style={{boxShadow: 'none'}}
 								items={fixList.map((r, i) => ({
@@ -126,23 +124,22 @@ export const RecentList = (props) => {
 							<Divider style={{margin: 0}}/>
 						</>
 					}
-					<div className="flex items-center justify-between pt-1 pr-[10px] pl-[1px]">
-						<div className="scale-[0.9] w-[108px] origin-bottom font-bold">{i18n('最近')}</div>
-						<svg className="w-3.5 h-3.5 cursor-pointer" onClick={clearRecent} viewBox="0 0 1024 1024"
-							 version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9345"
-							 width="200" height="200">
-							<path
-								d="M764 208H656v-56H368v56H152v56h80v580a28 28 0 0 0 28 28h504a28 28 0 0 0 28-28V264h80v-56H764zM736 816H288V264h448v552z"
-								fill="" p-id="9346"></path>
-							<path d="M392 368h56v360h-56zM576 368h56v360h-56z" fill=""
-								  p-id="9347"></path>
-						</svg>
+					<div className="flex items-center justify-between pl-[10px] pr-[10px] pt-[10px] h-[20px] box-content">
+						<div className="font-bold w-[128px] select-none">{i18n('最近')}</div>
+						<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer !inline-flex items-center justify-center" onClick={clearRecent}>
+							<svg className="w-[16px] h-[16px] cursor-pointer" onClick={clearRecent} viewBox="0 0 1024 1024"
+								 version="1.1" xmlns="http://www.w3.org/2000/svg"
+								 width="200" height="200" fill="#f35a5a">
+								<path d="M764 208H656v-56H368v56H152v56h80v580a28 28 0 0 0 28 28h504a28 28 0 0 0 28-28V264h80v-56H764zM736 816H288V264h448v552z"></path>
+								<path d="M392 368h56v360h-56zM576 368h56v360h-56z"></path>
+							</svg>
+						</Button>
 					</div>
 					<div className="smallScroll max-h-[160px] overflow-auto overscroll-contain">
 						{
 							recentList.length > 0
 								? React.cloneElement(menu, {style: {boxShadow: 'none'}})
-								: <div className="text-xs h-5 text-center scale-90 text-[#cccccc]">{i18n('暂无数据')}</div>
+								: <div className="text-xs h-[30px] text-center scale-90 text-[#cccccc] select-none">{i18n('暂无数据')}</div>
 						}
 					</div>
 				</div>

@@ -52,6 +52,9 @@ module.exports = {
 			4: "16px",
 			8: "32px"
 		},
+		spacing: {
+			'20px': '20px',
+		},
 		margin: {
 			1: '4px',
 			2: '8px',
@@ -64,6 +67,8 @@ module.exports = {
 			1: '4px',
 			8: '32px',
 			3: '12px',
+			4: '16px',
+			5: '20px',
 			'0.5': '2px'
 		},
 		width: {
@@ -84,6 +89,7 @@ module.exports = {
 			5: '20px',
 			6: '24px',
 			7: '28px',
+			'full': '100%'
 		},
 		inset: {
 			0: '0px',

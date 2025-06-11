@@ -22,7 +22,6 @@ var fileExtensions = [
 	'gif',
 	'eot',
 	'otf',
-	'svg',
 	'ttf',
 	'woff',
 	'woff2',
@@ -33,6 +32,8 @@ if (fileSystem.existsSync(secretsPath)) {
 }
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+
+console.log(process.env.npm_lifecycle_event)
 
 var options = {
 	mode: process.env.NODE_ENV || 'development',
@@ -100,22 +101,6 @@ var options = {
 				// },
 			},
 			{
-				test: /\.svg$/,
-				exclude: /node_modules/,
-				use: [
-					{
-						loader: 'svg-sprite-loader',
-						options: {
-							symbolId: 'icon-[name]'
-						}
-					}
-				]
-
-				// options: {
-				//   name: '[name].[ext]',
-				// },
-			},
-			{
 				test: /\.html$/,
 				loader: 'html-loader',
 				exclude: /node_modules/,
@@ -143,7 +128,7 @@ var options = {
 		alias: alias,
 		extensions: fileExtensions
 			.map((extension) => '.' + extension)
-			.concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
+			.concat(['.js', '.jsx', '.ts', '.tsx', '.css', '.svg']),
 	},
 	plugins: [
 		isDevelopment && new ReactRefreshWebpackPlugin(),
@@ -154,8 +139,8 @@ var options = {
 		new CopyWebpackPlugin({
 			patterns: [
 				{
-					from: 'src/manifest.json',
-					to: path.join(__dirname, 'build'),
+					from: process.env.npm_lifecycle_event.includes(':ff') ? 'src/manifest_firefox.json' : 'src/manifest.json',
+					to: path.join(__dirname, 'build/manifest.json'),
 					force: true,
 					transform: function (content, path) {
 						// generates the manifest file using the package.json informations

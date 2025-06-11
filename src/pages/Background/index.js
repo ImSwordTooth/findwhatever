@@ -7,6 +7,8 @@ chrome.action.onClicked.addListener(async (tab) => {
 	activeTabIdHistoryList[1] = tab.id
 	let visibleFrames = [] // 有内容的 frames
 
+	console.log('open')
+
     for (let i of frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 )) {
 		const res = await chrome.scripting.executeScript({
 			target: { tabId: tab.id, frameIds: [i.frameId] },
@@ -180,17 +182,25 @@ const handleStorageChange = async (changes, areaName) => {
 				return;
 			}
 
+			console.log('1')
+
 			let temp = 0;
+
+			console.log(temp)
 			for (let i in resultSum) {
 				temp += resultSum[i].sum;
+				console.log({activeResult, temp})
 				if (activeResult <= temp) {
 					chrome.scripting.executeScript({
 						target: { tabId: activeTabIdHistoryList[1], frameIds: [Number(resultSum[i].frameId)] },
 						args: [activeResult - temp + resultSum[i].sum, !changes.force],
 						func: (realIndex, isAuto) => {
+							console.log(window.rangesFlat)
 							if (!window.rangesFlat) {
 								return
 							}
+							console.log(filteredRangeList.value)
+							console.log(new Highlight(window.rangesFlat[realIndex - 1]))
 							CSS.highlights.set('search-results-active', new Highlight(window.rangesFlat[realIndex - 1]))
 							if (isAuto) {
 								let parents = [filteredRangeList.value[realIndex - 1]];
