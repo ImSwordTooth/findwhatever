@@ -87,9 +87,6 @@ export const Pop = () => {
 					}) // 然后执行搜索
 				})
 			})
-
-			// 启动后立即进行一次搜索
-			doSearchOutside()
 		}
 
 		window.addEventListener('message', handleMessage)
@@ -137,6 +134,9 @@ export const Pop = () => {
 	}, [recentList, fixList]);
 
 	useEffect(() => {
+		if (!isReady) {
+			return
+		}
 		chrome.storage.sync.set({ isWord, isMatchCase, isReg, isLive }, () => {
 			chrome?.runtime?.sendMessage({
 				action: 'search',
@@ -153,6 +153,9 @@ export const Pop = () => {
 	}, [isWord, isMatchCase, isReg, isLive]);
 
 	useEffect(() => {
+		if (!isReady) {
+			return
+		}
 		chrome.storage.sync.set({ searchValue: debouncedValue }, () => {
 			chrome?.runtime?.sendMessage({
 				action: 'search',

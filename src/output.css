@@ -370,6 +370,17 @@ button {
   font-family: 'JetBrainsMono';
 }
 
+*::-moz-placeholder {
+  -moz-user-select: none;
+       user-select: none;
+}
+
+*::placeholder {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
 .container {
   width: 100%;
 }
@@ -1341,6 +1352,10 @@ button {
 
 .duration-500 {
   transition-duration: 500ms;
+}
+
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
 .file\:border-0::file-selector-button {

@@ -127,8 +127,6 @@
 	.sketch-picker * {
 		box-sizing: unset!important;
 	}
-
-
 }
 
 @layer base {
@@ -142,5 +140,9 @@
 	@font-face {
 		src: url('./assets/JetBrainsMono.ttf');
 		font-family: 'JetBrainsMono';
+	}
+
+	*::placeholder {
+		user-select: none;
 	}
 }
