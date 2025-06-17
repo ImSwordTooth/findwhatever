@@ -41,7 +41,7 @@ export const reCheckTree = () => {
 					 * 1. 没有嵌套结构
 					 * 2. 子节点中包含 normalizedTagArr 中的标签
 					 * 3. 没有换行
-					 * 4. 子节点长度大于 1，防止 <div><a>1111</aaa></div> 这种结构，没必要规范化
+					 * 4. 子节点长度大于 1，防止 <div><a>1111</a></div> 这种结构，没必要规范化
 					 *
 					 * */
 					if (
@@ -150,7 +150,7 @@ export const observerAllExceptMe = () => {
 export const doSearchOutside = async (isAuto = false, cb) => {
 	CSS.highlights.clear() // 清除所有高亮
 
-	const { searchValue, isMatchCase, isWord, isReg, featureObject } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'featureObject'])
+	const { searchValue, isMatchCase, isWord, isReg, swe_setting } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting'])
 	const matchText = []
 
 	if (searchValue && window.allNodes) { // 如果有搜索词
@@ -174,7 +174,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 			let execResLength = searchValue.value // 匹配结果的长度，一般情况下等于字符串长度，如果是正则，就得是正则结果的长度
 			let reg
 			try {
-				reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${featureObject?.isOpenUnicode ? 'u' : ''}`);
+				reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${swe_setting?.isOpenUnicode ? 'u' : ''}`);
 			} catch (e) {
 				// 正则表达式不合法
 				return []
@@ -218,14 +218,20 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 					const children = el.parentNode.sourceNode.childNodes
 
+					console.log(children, index, execResLength)
 
 					for (let i=0; i<children.length; i++) {
 						let currentNode = children[i]
 						if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了
-							currentNode = children[i].childNodes[0]
+							if (children[i].childNodes[0]) {
+								currentNode = children[i].childNodes[0]
+							} else {
+								continue
+							}
 						}
 						const currentLength = currentNode?.length || 0
 						startTextLength += currentLength
+						console.log(currentNode)
 						if (startTextLength >= index) {
 							range.setStart(currentNode, index - (startTextLength - currentLength))
 							break

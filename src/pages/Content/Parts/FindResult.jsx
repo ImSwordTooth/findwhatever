@@ -28,9 +28,7 @@ export const FindResult = (props) => {
 				</svg>
 			</div>
 			：
-			<span id="__swe_current" className="mr-1 inline-block min-w-[15px] text-right shrink-0 monofont shadowText">
-				{current}
-			</span>
+			<span id="__swe_current" className="mr-1 inline-block min-w-[15px] text-right shrink-0 monofont shadowText">{current}</span>
 			/ <span className="ml-1 inline-block min-w-[15px] text-left shrink-0 monofont shadowText" id="__swe_total">{total.map(a => a.sum).reduce((a, b) => a + b, 0)}</span>
 		</>
 	)

@@ -4,7 +4,7 @@ import {i18n} from "../../i18n";
 import PropTypes from "prop-types";
 
 export const RecentList = (props) => {
-	const { fillSearchValue, popupContainer, fixList, recentList, updateFixList, updateRecentList } = props
+	const { fillSearchValue, popupContainer, fixList, recentList, openHistoryMode, updateFixList, updateRecentList } = props
 
 	const addToFix = (e, text) => {
 		e.stopPropagation()
@@ -38,7 +38,7 @@ export const RecentList = (props) => {
 		<Dropdown
 			arrow={true}
 			placement='bottomLeft'
-			trigger={['hover']}
+			trigger={[openHistoryMode]}
 			align={{offset: [-8, 0]}}
 			menu={{
 				items: recentList.map((r, i) => ({
@@ -127,7 +127,7 @@ export const RecentList = (props) => {
 					<div className="flex items-center justify-between pl-[10px] pr-[10px] pt-[10px] h-[20px] box-content">
 						<div className="font-bold w-[128px] select-none">{i18n('最近')}</div>
 						<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer !inline-flex items-center justify-center" onClick={clearRecent}>
-							<svg className="w-[16px] h-[16px] cursor-pointer" onClick={clearRecent} viewBox="0 0 1024 1024"
+							<svg className="w-[16px] h-[16px] cursor-pointer" viewBox="0 0 1024 1024"
 								 version="1.1" xmlns="http://www.w3.org/2000/svg"
 								 width="200" height="200" fill="#f35a5a">
 								<path d="M764 208H656v-56H368v56H152v56h80v580a28 28 0 0 0 28 28h504a28 28 0 0 0 28-28V264h80v-56H764zM736 816H288V264h448v552z"></path>

@@ -77,17 +77,45 @@
 		}
 	}
 
+	.setting-area {
+		box-shadow: 2px 2px 6px 2px #e3e3e31c;
+		margin-top: 12px;
+		width: 400px;
+
+		.setting-row {
+			margin: -1px 0 0 0;
+			border-bottom: dashed 1px rgba(150, 64, 222, 0.08);
+			border-top: dashed 1px rgba(150, 64, 222, 0.08);
+			box-shadow: none;
+			border-radius: 0;
+
+			&:nth-of-type(1) {
+				border-top: dashed 1px #9640de52;
+				border-radius: 4px 4px 0 0;
+			}
+			&:nth-last-of-type(1) {
+				border-bottom: dashed 1px #9640de52;
+				border-radius:0 0 4px 4px;
+			}
+		}
+	}
+
 	.setting-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		font-size: 13px;
 		padding: 4px 12px;
-		background-color: #f1f1f1;
+		border: dashed 1px #9640de52;
 		height: 34px;
+		box-shadow: 2px 2px 6px 2px #e3e3e31c;
+		width: 400px;
+		margin: 12px 0;
+		border-radius: 4px;
+		transition: background-color .15s ease-in;
 
 		&:hover {
-			background-color: #e5e5e5;
+			background-color: rgb(228 207 250 / 4%);
 		}
 
 		.color-picker {
@@ -112,7 +140,6 @@
 				margin-right: 4px;
 			}
 		}
-
 	}
 
 	@keyframes rotateInf {
@@ -126,6 +153,80 @@
 
 	.sketch-picker * {
 		box-sizing: unset!important;
+	}
+
+
+
+	/* 设置页的 */
+	.mainOption {
+		position: relative;
+		font-size: 13px;
+		color: #575757;
+		line-height: 22px;
+		padding-left: 64px;
+		overflow: auto;
+		flex: 1;
+		padding-right: 500px;
+		padding-bottom: 20px;
+
+		&::-webkit-scrollbar {
+			width: 6px!important;
+			height: 6px!important;
+		}
+
+		&::-webkit-scrollbar-track {
+			background-color: rgba(239, 239, 239, 0.5);
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: rgb(203, 203, 203);
+			border-radius: 4px;
+		}
+
+		&::-webkit-scrollbar-corner {
+			background-color: rgba(239, 239, 239, 0.5);
+		}
+	}
+
+
+	.areaTitle {
+		font-size: 20px;
+		display: flex;
+		align-items: center;
+		position: sticky;
+		top: 0;
+		color: #000000;
+		margin-bottom: 4px;
+		background-color: #ffffff;
+		padding: 6px 0;
+	}
+
+	.newPart {
+		background-color: rgba(164, 244, 207, 0.21);
+		padding: 2px 12px;
+		border-radius: 8px;
+		margin-left: -12px;
+
+		.new {
+			display: inline-block;
+			border-radius: 10px;
+			color: #007a55;
+			background-color: #a4f4cf;
+			padding: 1px 6px;
+			border: solid 1px rgba(0, 122, 85, 0.14);
+			position: absolute;
+			left: 10px;
+			line-height: 16px;
+			box-shadow: 2px 2px 4px 3px #a4f4cf6e;
+			font-size: 12px;
+		}
+	}
+
+	.settingPart {
+		/*background-color: rgba(203, 164, 244, 0.21);*/
+		padding: 2px 12px;
+		border-radius: 8px;
+		margin-left: -12px;
 	}
 }
 

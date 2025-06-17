@@ -31,7 +31,7 @@ export const Pop = () => {
 	const [ y, setY ] = useState(parseInt(window.innerHeight * 0.1))
 	const [ debounceDuration, setDebounceDuration ] = useState(200)
 	const [ regexDebounceDuration, setRegexDebounceDuration ] = useState(1000)
-	const [ styleObject, setStyleObject ] = useState({})
+	const [ sweSetting, setSweSetting ] = useState({})
 
 	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration)
 
@@ -43,7 +43,7 @@ export const Pop = () => {
 		const init = async () => {
 			const [ sessionStorage, syncStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
-				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix', 'featureObject', 'styleObject'])
+				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix', 'swe_setting'])
 			])
 			setFrames(sessionStorage.frames)
 			setSearchValue(syncStorage.searchValue)
@@ -55,18 +55,22 @@ export const Pop = () => {
 			setY(syncStorage.y || parseInt(window.innerHeight * 0.1))
 			setRecentList(syncStorage.recent || [])
 			setFixList(syncStorage.fix || [])
-			setDebounceDuration(syncStorage.featureObject?.debounceDuration || 200)
-			setRegexDebounceDuration(syncStorage.featureObject?.regexDebounceDuration || 1000)
-			setStyleObject(syncStorage.styleObject || { tempOpacity: 0.3 })
+			setDebounceDuration(syncStorage.swe_setting?.debounceDuration || 200)
+			setRegexDebounceDuration(syncStorage.swe_setting?.regexDebounceDuration || 1000)
+			setSweSetting(syncStorage.swe_setting || { tempOpacity: 0.3 })
 			setIsReady(true)
 
-			if (window.innerHeight < syncStorage.y + 94 || window.innerWidth < syncStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置
+			if (window.innerHeight < syncStorage.y + 94 || window.innerWidth < syncStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置(右下)
 				setX(parseInt(window.innerWidth * 0.9 - 400))
 				setY(parseInt(window.innerHeight * 0.1))
 
 				if (window.screen.height < syncStorage.y + 94 || window.screen.width < syncStorage.x + 400) { // 继续判断，如果在当前设备都不能完全显示，重置位置
 					chrome.storage.sync.remove(['x', 'y'])
 				}
+			} else if (syncStorage.y < 0 || syncStorage.x < 0) { // 如果在当前视口不能完全显示(左上)，重置位置并直接删除存储
+				setX(parseInt(window.innerWidth * 0.9 - 400))
+				setY(parseInt(window.innerHeight * 0.1))
+				chrome.storage.sync.remove(['x', 'y'])
 			} else { // 如果能完全显示，就使用用户上次保存的位置
 				setX(syncStorage.x || parseInt(window.innerWidth * 0.9 - 400))
 				setY(syncStorage.y || parseInt(window.innerHeight * 0.1))
@@ -326,7 +330,7 @@ export const Pop = () => {
 					enableResizing={false}
 					style={{
 						transition: 'opacity 0.3s ease',
-						opacity: isHidePanel ? styleObject.tempOpacity : (isHidePanelTemporarily ? styleObject.tempOpacity : 1)
+						opacity: isHidePanel ? sweSetting.tempOpacity : (isHidePanelTemporarily ? sweSetting.tempOpacity : 1)
 					}}
 				>
 					<motion.div initial={{ opacity: 0, scale: 0.7,  }}
@@ -351,11 +355,11 @@ export const Pop = () => {
 								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
 									<FindResult total={total} current={current}/>
 								</div>
-								<ExtraArea isHidePanel={isHidePanel} isHidePanelTemporarily={isHidePanelTemporarily} updateIsHidePanel={setIsHidePanel} updateIsHidePanelTemporarily={setIsHidePanelTemporarily} />
+								<ExtraArea isHidePanel={isHidePanel} isHidePanelTemporarily={isHidePanelTemporarily} isShowSetting={sweSetting.isShowSetting ?? true} updateIsHidePanel={setIsHidePanel} updateIsHidePanelTemporarily={setIsHidePanelTemporarily} />
 							</div>
 							<div className="flex items-center w-full">
 								<div className="swe_search relative">
-									<RecentList recentList={recentList} fixList={fixList} updateFixList={setFixList} updateRecentList={setRecentList} fillSearchValue={fillSearchValue} popupContainer={popContainerRef.current} />
+									<RecentList recentList={recentList} fixList={fixList} openHistoryMode={sweSetting.openHistoryMode ?? 'hover'} updateFixList={setFixList} updateRecentList={setRecentList} fillSearchValue={fillSearchValue} popupContainer={popContainerRef.current} />
 									<svg className="absolute w-[8px] h-[8px] left-[24px] top-[14px] z-10"
 										 viewBox="0 0 1024 1024" version="1.1"
 										 xmlns="http://www.w3.org/2000/svg" p-id="7932" width="200" height="200">
