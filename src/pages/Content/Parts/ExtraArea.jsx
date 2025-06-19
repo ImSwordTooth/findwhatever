@@ -16,7 +16,7 @@ export const ExtraArea = (props) => {
 
 
 	const handleSessionChange = async (changes, areaName) => {
-		if (areaName === 'session') {
+		if (areaName === 'sync') {
 			if (!window.isFrame && changes.visibleStatus !== undefined) {
 				setVisibleStatus(changes.visibleStatus.newValue)
 			}

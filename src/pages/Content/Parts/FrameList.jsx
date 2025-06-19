@@ -10,7 +10,7 @@ export const FrameList = (props) => {
 
 		const sum = total.map(a => a.sum).reduce((a, b) => a + b, 0)
 		if (sum > 0) {
-			const { resultSum } = await chrome.storage.session.get(['resultSum'])
+			const { resultSum } = await chrome.storage.sync.get(['resultSum'])
 			updateTabIndex(frameid)
 
 			let currentNum = 0;
@@ -21,7 +21,7 @@ export const FrameList = (props) => {
 					break;
 				}
 			}
-			await chrome.storage.session.set({ activeResult: currentNum + 1})
+			await chrome.storage.sync.set({ activeResult: currentNum + 1})
 			updateCurrent(currentNum + 1)
 		}
 	}

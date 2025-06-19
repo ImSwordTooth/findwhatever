@@ -6,7 +6,7 @@ export const FindResult = (props) => {
 	const { current, total } = props
 
 	const copyResult = async () => {
-		const { resultSum } = await chrome.storage.session.get(['resultSum'])
+		const { resultSum } = await chrome.storage.sync.get(['resultSum'])
 
 		const tag = document.createElement('textarea')
 		tag.setAttribute('id', 'swe_TempInput')

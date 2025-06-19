@@ -42,7 +42,7 @@ export const Pop = () => {
 
 		const init = async () => {
 			const [ sessionStorage, syncStorage ] = await Promise.all([
-				chrome.storage.session.get(['frames']),
+				chrome.storage.sync.get(['frames']),
 				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix', 'swe_setting'])
 			])
 			setFrames(sessionStorage.frames)
@@ -182,7 +182,7 @@ export const Pop = () => {
 		}
 		if (e.data.type === 'swe_updateSettings') {
 			const [ sessionStorage, syncStorage ] = await Promise.all([
-				chrome.storage.session.get(['frames']),
+				chrome.storage.sync.get(['frames']),
 				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive'])
 			])
 			setFrames(sessionStorage.frames)
@@ -230,14 +230,14 @@ export const Pop = () => {
 	}
 
 	const goPrev = async () => {
-		let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
+		let { activeResult, resultSum } = await chrome.storage.sync.get(['activeResult', 'resultSum']);
 		const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
 		activeResult = activeResult || 0;
 		activeResult--;
 		if (activeResult <= 0) {
 			activeResult = sum
 		}
-		await chrome.storage.session.set({ activeResult: activeResult}, () => {
+		await chrome.storage.sync.set({ activeResult: activeResult}, () => {
 			let temp = 0
 			for (let i in resultSum) {
 				temp += resultSum[i].sum
@@ -253,7 +253,7 @@ export const Pop = () => {
 	}
 
 	const goNext = async () => {
-		let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
+		let { activeResult, resultSum } = await chrome.storage.sync.get(['activeResult', 'resultSum']);
 		const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
 		if (sum === 0) {
 			return;
@@ -263,7 +263,7 @@ export const Pop = () => {
 		if (activeResult > sum) {
 			activeResult = 1
 		}
-		chrome.storage.session.set({ activeResult: activeResult}, () => {
+		chrome.storage.sync.set({ activeResult: activeResult}, () => {
 			let temp = 0
 			for (let i in resultSum) {
 				temp += resultSum[i].sum

@@ -107,7 +107,7 @@ export const closePop = () => {
 	document.removeEventListener('keydown', window.handleCloseByEsc)
 	CSS.highlights.clear()
 	destroyPopup()
-	chrome.storage.session.set({ resultSum: [], frames: [] })
+	chrome.storage.sync.set({ resultSum: [], frames: [] })
 	chrome?.runtime?.sendMessage({
 		action: 'closeAction'
 	})

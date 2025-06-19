@@ -1,8 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Find whatever - regex & auto re-find",
-	"short_name": "Find whatever",
-	"description": "Enhance your browser's find capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
+	"description": "Enhance your browser's find capabilities.",
 	"version": "3.0.0",
 	"icons": {
 		"16": "popup.png",
