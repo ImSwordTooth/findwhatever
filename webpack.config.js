@@ -33,8 +33,6 @@ if (fileSystem.existsSync(secretsPath)) {
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-console.log(process.env.npm_lifecycle_event)
-
 var options = {
 	mode: process.env.NODE_ENV || 'development',
 	entry: {

@@ -218,8 +218,6 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 					const children = el.parentNode.sourceNode.childNodes
 
-					console.log(children, index, execResLength)
-
 					for (let i=0; i<children.length; i++) {
 						let currentNode = children[i]
 						if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了
@@ -231,7 +229,6 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 						}
 						const currentLength = currentNode?.length || 0
 						startTextLength += currentLength
-						console.log(currentNode)
 						if (startTextLength >= index) {
 							range.setStart(currentNode, index - (startTextLength - currentLength))
 							break
