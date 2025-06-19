@@ -45,7 +45,7 @@ export const ExtraArea = (props) => {
 		<div className="inline-flex items-center absolute right-[12px] top-[6px] gap-[6px]">
 			{
 				visibleStatus &&
-				<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60">
+				<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 h-[12px]">
 					<div className="inline-flex items-center scale-[0.8] origin-right text-xs cursor-grabbing text-[#a0a0a0]">
 						<svg className="mr-1 w-[14px] h-[14px]" viewBox="0 0 1024 1024" version="1.1"
 							 xmlns="http://www.w3.org/2000/svg" width="200"

@@ -80,7 +80,7 @@
 	.setting-area {
 		box-shadow: 2px 2px 6px 2px #e3e3e31c;
 		margin-top: 12px;
-		width: 400px;
+		width: 450px;
 
 		.setting-row {
 			margin: -1px 0 0 0;
@@ -109,7 +109,7 @@
 		border: dashed 1px #9640de52;
 		height: 34px;
 		box-shadow: 2px 2px 6px 2px #e3e3e31c;
-		width: 400px;
+		width: 450px;
 		margin: 12px 0;
 		border-radius: 4px;
 		transition: background-color .15s ease-in;
@@ -199,6 +199,7 @@
 		margin-bottom: 4px;
 		background-color: #ffffff;
 		padding: 6px 0;
+		text-shadow: 2px 2px 2px rgb(208 208 208 / 46%);
 	}
 
 	.newPart {

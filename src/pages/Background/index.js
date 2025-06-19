@@ -69,6 +69,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 chrome.runtime.onInstalled.addListener(async () => {
     chrome.storage.sync.set({ searchValue: '', isMatchCase: false, isWord: false, isReg: false, isLive: true })
     chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
+	chrome.runtime.openOptionsPage()
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

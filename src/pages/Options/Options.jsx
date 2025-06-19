@@ -118,7 +118,7 @@ export const Options = () => {
 										(navigator.language === 'zh' || navigator.language === 'zh-CN')
 											?
 											<div>
-												根据您的浏览器语言自动设置文本语言，目前只准备了中文和英语两个版本，如果需要更多，请在
+												根据您的浏览器语言自动设置文本语言。目前只准备了中文和英语两个版本，如果需要更多，请在
 												<a style={{color: '#0788dc'}}
 												   href="https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo/reviews"
 												   target="_blank">chrome 商店</a>或者 <a style={{color: '#0788dc'}}

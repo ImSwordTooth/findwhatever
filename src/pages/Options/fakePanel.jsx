@@ -388,10 +388,10 @@ export const FakePanel = (props) => {
 				{text}
 			</pre>
 
-			<Alert message="设置项自动保存，但需要重新打开面板才能生效" description="修改高亮样式后，可能需要刷新页面才能生效" type="warning" showIcon />
+			<Alert message={i18n('设置项自动保存，但需要重新打开面板才能生效')} description={i18n('修改高亮样式后，可能需要刷新页面才能生效')} type="warning" showIcon />
 			<div className="flex justify-end mt-2">
 				<Button type="primary" danger shape="round" onClick={onReset}>
-					<div className="px-[12px]">重置设置项</div>
+					<div className="px-[12px]">{i18n('重置设置项')}</div>
 				</Button>
 			</div>
 		</div>

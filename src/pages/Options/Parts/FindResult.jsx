@@ -17,29 +17,33 @@ export const FindResult = () => {
 
 	return (
 		<div>
-			<div className="areaTitle mt-[30px]">查找结果</div>
+			<div className="areaTitle mt-[30px]">{i18n('查找结果')}</div>
 			<div>
-				<div>展示查找结果(<strong>search-results</strong>)的数量和当前定位的结果的下标(<strong>search-results-active</strong>)。</div>
-				<div>点击
+				{
+					navigator.language === 'zh' || navigator.language === 'zh-CN'
+						? <div>展示查找结果(<strong>search-results</strong>)的数量和当前定位的结果的下标(<strong>search-results-active</strong>)。</div>
+						: <div>Displays the number of search-results and the subscript of the currently targeted results (search-results-active).</div>
+				}
+				<div>{i18n('点击')}
 					<span className="inline-flex items-center cursor-grab active:cursor-grabbing hover:text-[#3aa9e3] transition-colors">
 						<div className="scale-90 origin-right">{i18n('查找结果')}</div>
 						<svg className="w-2.5 h-2.5 ml-[1px]" fill="#3aa9e3" viewBox="64 64 896 896" version="1.1" xmlns="http://www.w3.org/2000/svg">
 							<path d="M832 64H296c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h496v688c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V96c0-17.7-14.3-32-32-32zM704 192H192c-17.7 0-32 14.3-32 32v530.7c0 8.5 3.4 16.6 9.4 22.6l173.3 173.3c2.2 2.2 4.7 4 7.4 5.5v1.9h4.2c3.5 1.3 7.2 2 11 2H704c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32zM350 856.2L263.9 770H350v86.2zM664 888H414V746c0-22.1-17.9-40-40-40H232V264h432v624z"></path>
 						</svg>
 					</span>
-					，会把结果复制到剪贴板。</div>
+					{i18n('，会把结果复制到剪贴板。')}</div>
 
 				<div className="newPart">
 					<div className="new">new</div>
-					v3.0 新增了跨标签搜索。启用跨标签搜索方案的条件为：
+					{i18n('v3.0 新增了跨标签搜索。启用跨标签搜索方案的条件为：')}
 
 					<ol style={{ margin: '0' }}>
-						<li>没有嵌套结构</li>
-						<li>子节点中至少包含这些标签其中的一个：['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']</li>
-						<li>没有换行</li>
-						<li>子节点长度大于 1，防止 {'<div><a>1111</a></div>'} 这种结构，没必要规范化</li>
+						<li>{i18n('没有嵌套结构')}</li>
+						<li>{i18n('子节点中至少包含这些标签其中的一个：')}['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']</li>
+						<li>{i18n('没有换行')}</li>
+						<li>{i18n('子节点长度大于 1，')}{'<div><a>1111</a></div>'} {i18n('这种结构，没必要规范化')}</li>
 					</ol>
-					<div><em>核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！</em></div>
+					<div><em>{i18n('核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！')}</em></div>
 				</div>
 
 				<h3 className="mt-[12px]">search-results</h3>

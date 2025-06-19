@@ -1,57 +1,117 @@
+const textJson = {
+	"当前页": "Page",
+	"查找结果": "Results",
+	"输入文本以查找...": "Start typing to search...",
+	"大小写敏感": "Match case",
+	"匹配单词": "Words",
+	"正则表达式": "Regex",
+	"实时监测 DOM 变化": "Listen for DOM changes in real-time",
+	"在不适合实时监测的情况下请临时关闭此功能": "Please temporarily disable this function if real-time monitoring isn't necessary",
+	"已隐藏": "Hidden",
+	"被遮盖": "Covered",
+	"最近": "Recent",
+	"固定": "Pinned",
+	"填入并开启正则模式": "Restore as regular expression",
+	"固定之": "Pin",
+	"取消固定": "Unpin",
+	"暂无数据": "Empty",
+	"为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒": "To avoid the regular expressions from freezing the page, the search will automatically be aborted after a few seconds",
+	"设置项": "SETTINGS",
+	"外观": "Appearance",
+	"功能": "Functionality",
+	"背景色": "Highlight color",
+	"字体颜色": "Text color",
+	"是否启用下划线": "Enable underline",
+	"下划线间距": "Underline offset",
+	"下划线线条高度": "Underline thickness",
+	"下划线样式": "Underline style",
+	"下划线颜色": "Underline color",
+	"下划线是否和 search-results 一致": "Underline: same as search-results",
+	"其他": "Others",
+	"非正则模式防抖时长": "Search abortion timeout in non-regex mode",
+	"正则模式防抖时长": "Search abortion timeout in regex mode",
+	"正则表达式是否启用 Unicode 模式": "Whether the regular expression enables Unicode mode",
+	"重置成功": "Reset successfully",
+	"保存成功": "Saved successfully",
+
+	"拖拽条": "Drag Bar",
+	"点击并拖拽此处可调整面板位置，会自动记忆位置。": "Click and drag here to adjust the panel position; it will automatically remember the location.",
+	"如果因为修改了浏览器窗口宽高导致面板位置异常（如修改窗口大小、打开控制台等），会在下一次打开时自动临时重置位置。": "If the panel position becomes abnormal due to changes in the browser window size and height (such as resizing the window, opening the console, etc.), it will automatically temporarily reset the position upon the next opening.",
+	"如果超过了设备的宽高，会在下一次打开时自动重置位置并清除记忆的位置。": "If it exceeds the device's width and height, it will automatically reset the position and clear the remembered position upon the next opening.",
+
+	"右上角功能区": "Top-right Functional Area",
+	"元素存在页面中，但是宽度和高度都为 0。": "The element exists on the page, but both its width and height are 0.",
+	"元素被其他元素盖住了，导致不可见。": "The element is covered by other elements, causing it to be invisible.",
+	"控制面板的透明度，防止遮盖背后的元素。": "Control the transparency of the control panel to prevent it from covering the elements behind.",
+	"鼠标悬浮时暂时透明，离开时恢复；也可以点击该图标，使面板固定透明。": "Temporarily transparent when hovering, and restored when left; You can also click the icon to make the panel permanently transparent.",
+	"临时透明度": "Temporary transparency",
+	"进入设置页。除了这里的按钮，也可以使用以下方式进入设置页：": "Go to the Settings page. In addition to the button here, you can also enter the Settings page using the following methods:",
+	"已固定：右击本扩展程序图标，点击“选项”；": "Already pinned: Right-click this extension icon and click \"Options\";",
+	"未固定：点击 chrome 的扩展程序图标，找到 Find whatever，点击“...” - “选项”；": "Unpinned: Click the Chrome extension icon, find Find whatever, click \"...\" - \"Options\";",
+	"进入": "Go to",
+	"找到 Find whatever，点击“详情”-“扩展程序选项”。": "Find whatever, click \"Details\" - \"Extension Options\".",
+	"是否显示设置按钮": "Whether or not to display the settings button",
+
+
+	"页面列表": "Page List",
+	"包含当前页，和页面中的 iframe，每个页面在右侧列出了匹配结果的数量。": "Contains the current page, and the iframes within the page, each with the number of matches listed on the right.",
+	"不再限制页面的 http 协议，现在可以搜索本地文件和 srcdoc 的页面了。": "No longer restricted to the HTTP protocol for pages; now you can search local files and pages with srcdoc.",
+
+	"点击": "Click",
+	"，会把结果复制到剪贴板。": ", will copy the result to the clipboard.",
+	"v3.0 新增了跨标签搜索。启用跨标签搜索方案的条件为：": "v3.0 added cross-tag search. The conditions for enabling cross-tag search are:",
+	"没有嵌套结构": "No nested structure",
+	"子节点中至少包含这些标签其中的一个：": "At least one of these tags must be included in the child node:",
+	"没有换行": "No line break",
+	"子节点长度大于 1，": "Child node length greater than 1, ",
+	"这种结构，没必要规范化": "This structure doesn't need to be standardized",
+	"核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！": "Core and complex features, if there is a page with the wrong search results, please contact me in time, thank you!",
+
+	"输入框": "Input",
+	"本插件比较适用于简短的词语搜索，": "This plugin is more suitable for short word searches and ",
+	"不鼓励": "discourages",
+	"跨行搜索。": " cross-line searches.",
+	"面板打开时，输入框会自动聚焦，如果当前有选中的文本，会自动填入；如果没有选中的文本，会自动填入上一次搜索的文本。": "When the panel opens, the input box will be automatically focused, and if there is currently selected text, it will be automatically filled; If there is no selected text, the text from the last search is automatically filled.",
+	"支持设置防抖时长，停止输入 n 秒后才执行查找动作，可以防止输入过程无谓的内存消耗（尤其是开启了正则表达式模式时）。": "Supports setting debounce duration; the search action is executed only after n seconds of inactivity, preventing unnecessary memory consumption during input (especially when regular expression mode is enabled).",
+	"如果上次搜索的结果会产生bug，而新面板又自动填入了，产生了新的 bug 导致插件不可用，可以": "If the results of the last search would cause bugs, and the new panel automatically fills in, creating new bugs that make the plugin unusable, you can",
+	"点击此处删去上一次的文本": "Click here to delete the last text",
+	"记得把 bug 反馈给我~": "Remember to feedback the bug to me~",
+
+
+	"历史记录": "History",
+	"点击列表项可以把文本填入输入框中。": "Click on a list item to fill in the text in the input box.",
+	"也可以点击右侧的": "You can also click ",
+	"，填入的同时开启正则模式。": ", enable regular mode while filling in.",
+	"历史记录会在面板关闭时更新，记入关闭时的查找词，最多记录 50 条。": "The history will be updated when the panel is closed, recording the search word at the time of closure, with a maximum of 50 records.",
+	"固定列表无内容时不显示。": "Fixed list does not display when empty.",
+	"历史记录打开方式": "How the history is opened",
+	"鼠标移入": "hover",
+	"鼠标点击": "click",
+
+	"功能区": "Function Area",
+	"切换当前定位的结果的下标(search-results-active)，切换时会尽量地把对应的元素滚动到视口内。": "Switch the index of the current located result (search-results-active), and when switching, try to scroll the corresponding element into the viewport.",
+	"在输入框 focus 的状态下，也可以按": "In the state of focus in the input box, you can also press",
+	"来切换。": "to switch.",
+	"切换 search-results-active 时，需要更新缓存来执行高亮和定位的动作，浏览器的 MAX_WRITE_OPERATIONS_PER_MINUTE 限制了一分钟只能更新 120 次，所以切换的时候最好别“幻影键舞”，否则可能会更新失败。": "When switching the `search-results-active` state, the cache needs to be updated to perform the highlight and positioning actions. The browser's `MAX_WRITE_OPERATIONS_PER_MINUTE` limit restricts updates to 120 times per minute, so it's best not to \"phantom key dance\" during the switch, otherwise the update may fail.",
+	"激活后会严格根据字母的大小写匹配。原理是正则表达式的 i 模式。": "After activation, it will match strictly according to the case of the letters. The principle is the i-pattern of regular expressions.",
+	"激活后只能匹配一个完整的单词，比如 special 这个单词，激活单词模式后搜索 spec 是搜不到的。原理是在内容前后加上正则表达式的 \\b。": "After activation, only one complete word can be matched, such as the word \"special\", and the search \"spec\" cannot be found after activating the word mode. The principle is to precede and precede the content with a regular expression \\b.",
+	"激活后可以使用正则表达式的语法进行搜索，为了避免输入过程中出现 .* 这种会匹配所有字符的情况出现，正则模式开启后，会有一段较长的防抖时间，默认 1000ms。": "After activation, you can use the syntax of regular expressions to search, in order to avoid the occurrence of .* will match all characters during the input process, after the regular mode is enabled, there will be a long period of anti-shake time, the default is 1000ms.",
+	"激活后会启用一个 MutationObserver，监听页面里的 DOM 变化，变化后会自动更新查找结果。": "After activation, a MutationObserver will be enabled to monitor DOM changes on the page, and the search results will be automatically updated after changes.",
+	"但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。": "However, the DOM change of the web page is a very common behavior, and it is impossible to judge whether the changes are frequent or whether it needs to be monitored, so it is up to the user to judge here, if you feel that it has no effect, you can turn it on, and if you don't feel that you don't need it, or if the DOM changes frequently under a certain page, you can turn it off.",
+	"点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。": "Click to remove the MutationObserver, clear the highlight, close the panel, zero the search result, and save the search record.",
+	"也可以在页面中按 Esc 键达到同样的效果。": "You can also press the Esc key in the middle of the page to achieve the same effect.",
+
+	"设置项自动保存，但需要重新打开面板才能生效": "Auto-save settings, but need to reopen the panel to take effect",
+	"修改高亮样式后，可能需要刷新页面才能生效": "After you modify the highlight style, you may need to refresh the page for it to take effect",
+	"重置设置项": "Reset settings"
+}
+
 export const i18n = (text) => {
 	const isChinese = navigator.language === 'zh' || navigator.language === 'zh-CN'
-	// const isChinese = false
 
 	if (isChinese) {
 		return text
 	}
-	switch (text) {
-		case '当前页': return 'Page'
-		case '查找结果': return 'Results'
-		case '输入文本以查找...': return 'Start typing to search...'
-		case '大小写敏感': return 'Match case'
-		case '匹配单词': return 'Words'
-		case '正则表达式': return 'Regex'
-		case '实时监测 DOM 变化': return 'Listen for DOM changes in real-time'
-		case '在不适合实时监测的情况下请临时关闭此功能': return 'Please temporarily disable this function if real-time monitoring isn\'t necessary'
-		case '隐藏中': return 'Hidden'
-		case '被遮盖': return 'Covered'
-		case '最近': return 'Recent'
-		case '固定': return 'Pinned'
-		case '填入并开启正则模式': return 'Restore as regular expression'
-		case '固定之': return 'Pin'
-		case '取消固定': return 'Unpin'
-		case '暂无数据': return 'Empty'
-		case '为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒': return 'To avoid the regular expressions from freezing the page, the search will automatically be aborted after a few seconds'
 
-		case '设置项': return 'SETTINGS'
-		case '外观': return 'Appearance'
-		case '功能': return 'Functionality'
-
-		case '高亮样式': return 'Highlight style'
-		case '背景色': return 'Highlight color'
-		case '字体颜色': return 'Text color'
-		case '是否启用下划线': return 'Enable underline'
-		case '下划线间距': return 'Underline offset'
-		case '下划线线条高度': return 'Underline thickness'
-		case '下划线样式': return 'Underline style'
-		case '下划线颜色': return 'Underline color'
-		case '下划线是否和 search-results 一致': return 'Underline: same as search-results'
-		case '其他': return 'Others'
-		case '临时透明度': return 'Temporary opacity'
-
-		case '非正则模式防抖时长': return 'Search abortion timeout in non-regex mode'
-		case '正则模式防抖时长': return 'Search abortion timeout in regex mode'
-		case '正则表达式是否启用 Unicode 模式': return 'Whether the regular expression enables Unicode mode'
-
-		case '重置本页': return 'Revert to default settings'
-		case '确定重置吗？': return 'Are you sure you want to revert your settings to the default settings?'
-		case '确定': return 'Yes'
-		case '取消': return 'Cancel'
-		case '重置成功': return 'Reverted successfully'
-
-		case '保存本页': return 'Save settings'
-		case '保存后需刷新旧页面': return 'After saving, you need to refresh the page for the changes to take effect'
-		case '保存成功': return 'Saved successfully'
-	}
+	return textJson[text] || text
 }

@@ -488,7 +488,7 @@ button {
 .setting-area {
   box-shadow: 2px 2px 6px 2px #e3e3e31c;
   margin-top: 12px;
-  width: 400px;
+  width: 450px;
   .setting-row {
     margin: -1px 0 0 0;
     border-bottom: dashed 1px rgba(150, 64, 222, 0.08);
@@ -515,7 +515,7 @@ button {
   border: dashed 1px #9640de52;
   height: 34px;
   box-shadow: 2px 2px 6px 2px #e3e3e31c;
-  width: 400px;
+  width: 450px;
   margin: 12px 0;
   border-radius: 4px;
   transition: background-color .15s ease-in;
@@ -596,6 +596,7 @@ button {
   margin-bottom: 4px;
   background-color: #ffffff;
   padding: 6px 0;
+  text-shadow: 2px 2px 2px rgb(208 208 208 / 46%);
 }
 
 .newPart {
@@ -620,6 +621,10 @@ button {
 
 .visible {
   visibility: visible;
+}
+
+.invisible {
+  visibility: hidden;
 }
 
 .fixed {
@@ -674,16 +679,8 @@ button {
   right: 12px;
 }
 
-.right-\[30px\] {
-  right: 30px;
-}
-
 .right-\[40px\] {
   right: 40px;
-}
-
-.right-\[42px\] {
-  right: 42px;
 }
 
 .right-\[6px\] {
@@ -708,10 +705,6 @@ button {
 
 .top-\[2px\] {
   top: 2px;
-}
-
-.top-\[5px\] {
-  top: 5px;
 }
 
 .top-\[6px\] {
@@ -747,10 +740,6 @@ button {
   margin-bottom: 4px;
 }
 
-.mb-\[12px\] {
-  margin-bottom: 12px;
-}
-
 .mb-\[40px\] {
   margin-bottom: 40px;
 }
@@ -783,10 +772,6 @@ button {
   margin-right: 8px;
 }
 
-.mr-\[12px\] {
-  margin-right: 12px;
-}
-
 .mt-2 {
   margin-top: 8px;
 }
@@ -803,16 +788,8 @@ button {
   margin-top: 30px;
 }
 
-.mt-\[40px\] {
-  margin-top: 40px;
-}
-
 .mt-\[6px\] {
   margin-top: 6px;
-}
-
-.mt-1 {
-  margin-top: 4px;
 }
 
 .box-content {
@@ -871,8 +848,16 @@ button {
   height: 20px;
 }
 
+.h-\[12px\] {
+  height: 12px;
+}
+
 .h-\[13px\] {
   height: 13px;
+}
+
+.h-\[14px\] {
+  height: 14px;
 }
 
 .h-\[16px\] {
@@ -889,6 +874,10 @@ button {
 
 .h-\[24px\] {
   height: 24px;
+}
+
+.h-\[26px\] {
+  height: 26px;
 }
 
 .h-\[28px\] {
@@ -917,14 +906,6 @@ button {
 
 .h-full {
   height: 100%;
-}
-
-.h-\[14px\] {
-  height: 14px;
-}
-
-.h-\[26px\] {
-  height: 26px;
 }
 
 .max-h-\[160px\] {
@@ -963,8 +944,8 @@ button {
   width: 128px;
 }
 
-.w-\[160px\] {
-  width: 160px;
+.w-\[14px\] {
+  width: 14px;
 }
 
 .w-\[16px\] {
@@ -979,6 +960,10 @@ button {
   width: 1px;
 }
 
+.w-\[26px\] {
+  width: 26px;
+}
+
 .w-\[28px\] {
   width: 28px;
 }
@@ -987,16 +972,8 @@ button {
   width: 400px;
 }
 
-.w-\[450px\] {
-  width: 450px;
-}
-
 .w-\[48px\] {
   width: 48px;
-}
-
-.w-\[500px\] {
-  width: 500px;
 }
 
 .w-\[50px\] {
@@ -1011,14 +988,6 @@ button {
   width: 100%;
 }
 
-.w-\[14px\] {
-  width: 14px;
-}
-
-.w-\[26px\] {
-  width: 26px;
-}
-
 .min-w-\[15px\] {
   min-width: 15px;
 }
@@ -1031,16 +1000,8 @@ button {
   flex: 1 1 0%;
 }
 
-.flex-shrink-0 {
-  flex-shrink: 0;
-}
-
 .shrink-0 {
   flex-shrink: 0;
-}
-
-.origin-left {
-  transform-origin: left;
 }
 
 .origin-right {
@@ -1105,10 +1066,6 @@ button {
   justify-content: space-between;
 }
 
-.gap-\[4px\] {
-  gap: 4px;
-}
-
 .gap-\[6px\] {
   gap: 6px;
 }
@@ -1159,10 +1116,6 @@ button {
 
 .rounded-md {
   border-radius: 6px;
-}
-
-.rounded-xl {
-  border-radius: 12px;
 }
 
 .border-0 {
@@ -1237,6 +1190,11 @@ button {
   padding: 2px;
 }
 
+.px-\[12px\] {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 .px-\[40px\] {
   padding-left: 40px;
   padding-right: 40px;
@@ -1260,11 +1218,6 @@ button {
 .py-\[1px\] {
   padding-top: 1px;
   padding-bottom: 1px;
-}
-
-.px-\[12px\] {
-  padding-left: 12px;
-  padding-right: 12px;
 }
 
 .pl-8 {
@@ -1362,19 +1315,14 @@ button {
   color: rgb(204 204 204 / var(--tw-text-opacity));
 }
 
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
-
-.text-\[\#ff0000\] {
-  --tw-text-opacity: 1;
-  color: rgb(255 0 0 / var(--tw-text-opacity));
-}
-
 .text-\[\#ff4d4f\] {
   --tw-text-opacity: 1;
   color: rgb(255 77 79 / var(--tw-text-opacity));
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .underline {
