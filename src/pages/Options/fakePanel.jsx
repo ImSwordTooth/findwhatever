@@ -87,9 +87,12 @@ export const FakePanel = (props) => {
 		<div className="fixed top-[108px] right-[40px] w-[400px]">
 			<div style={{ position: 'relative', width: '400px', padding:'18px 12px 10px', background: '#fff', borderRadius: '12px',boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3),0px 0px 16px 1px rgba(233,233,233,0.58)', opacity: (isHidePanel || isHidePanelTemporarily) ? setting.tempOpacity : 1}}>
 				<div id="searchWhateverPopup" ref={popContainerRef}>
-					<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
-						<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100 relative before:content-[''] before:px-5 before:py-1 before:w-full before:absolute before:-top-1 before:h-[3px] before:box-content before:-left-5 before:-left-[20px]"/>
-					</div>
+					{
+						setting.dragArea === 'bar' &&
+						<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
+							<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100 relative before:content-[''] before:px-5 before:py-1 before:w-full before:absolute before:-top-1 before:h-[3px] before:box-content before:-left-5 before:-left-[20px]"/>
+						</div>
+					}
 					<div className="flex items-center justify-between h-[24px] border-b-1 border-[#f5f5f5] mb-1">
 						<FrameList tabIndex={'0'} frames={[{frameId: '0'}, { frameId: '1' }, { frameId: '2' }]} total={[{frameId: '0', sum: 3}]} />
 						<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">

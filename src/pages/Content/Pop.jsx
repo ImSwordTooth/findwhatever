@@ -323,7 +323,7 @@ export const Pop = () => {
 			{
 				isReady &&
 				<Rnd
-					dragHandleClassName="searchWhateverMoveHandler"
+					dragHandleClassName={sweSetting.dragArea === 'total' ? '' : 'searchWhateverMoveHandler'}
 					onDragStop={handleDragStop}
 					position={{ x, y }}
 					bounds='window'
@@ -347,9 +347,12 @@ export const Pop = () => {
 								}}
 					>
 						<div id="searchWhateverPopup" ref={popContainerRef}>
-							<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
-								<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100 relative before:content-[''] before:px-5 before:py-1 before:w-full before:absolute before:-top-1 before:h-[3px] before:box-content before:-left-5 before:-left-[20px]"/>
-							</div>
+							{
+								sweSetting.dragArea !== 'total' &&
+								<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
+									<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100 relative before:content-[''] before:px-5 before:py-1 before:w-full before:absolute before:-top-1 before:h-[3px] before:box-content before:-left-5 before:-left-[20px]"/>
+								</div>
+							}
 							<div className="flex items-center justify-between h-[24px] border-b-1 border-[#f5f5f5] mb-1">
 								<FrameList tabIndex={tabIndex} frames={frames} total={total} updateCurrent={setCurrent} updateTabIndex={setTabIndex} />
 								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">

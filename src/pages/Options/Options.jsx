@@ -13,6 +13,8 @@ import { Feature } from './Parts/Feature'
 export const SettingContext = createContext(null)
 
 const INIT_SETTING = {
+	dragArea: 'bar',
+
 	tempOpacity: 0.7, // 临时透明度
 	isShowSetting: true, // 是否显示设置按钮
 
@@ -89,8 +91,8 @@ export const Options = () => {
 			clearTimeout(timerRef.current);
 		}
 		timerRef.current = setTimeout(() => {
-			chrome.storage.sync.set({ swe_setting: setting, styleText: generateStyleText(setting) })
-		}, 2000);
+			chrome.storage.sync.set({ swe_setting: newSetting, styleText: generateStyleText(newSetting) })
+		}, 300);
 	}
 
 	const resetSetting = () => {
