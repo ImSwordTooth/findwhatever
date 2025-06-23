@@ -94,6 +94,7 @@ export const FindResult = () => {
 								<Select
 									value={setting.underlineStyle}
 									onChange={e => updateSetting('underlineStyle', e)}
+									size="small"
 									options={[
 										{
 											label: 'solid',
@@ -185,6 +186,7 @@ export const FindResult = () => {
 											<Select
 												value={setting.underlineStyleActive}
 												onChange={e => updateSetting('underlineStyleActive', e)}
+												size="small"
 												options={[
 													{
 														label: 'solid',

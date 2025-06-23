@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { InputNumber, Button, Spin, message } from 'antd'
+import {InputNumber, Button, Spin, message, Select} from 'antd'
 import { i18n } from '../../i18n';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SettingContext } from '../Options'
@@ -41,6 +41,44 @@ export const Input = () => {
 			</div>
 
 			<div className="setting-area">
+				<div className="setting-row">
+					<div>{i18n('上一次的搜索条件保留时间（包含搜索词、筛选项）')}</div>
+					<Select
+						value={setting.retentionTime}
+						onChange={e => updateSetting('retentionTime', e)}
+						dropdownMatchSelectWidth={false}
+						size="small"
+						options={[
+							{
+								label: '一直保留',
+								value: -1
+							},
+							{
+								label: '一直不保留',
+								value: 0
+							},
+							{
+								label: '5分钟',
+								value: 5
+							},
+							{
+								label: '30分钟',
+								value: 30
+							},
+							{
+								label: '1小时',
+								value: 60
+							},
+							{
+								label: '5小时',
+								value: 300
+							},
+							{
+								label: '24小时',
+								value: 1440
+							},
+						]} />
+				</div>
 				<div className="setting-row">
 					<div>{i18n('非正则模式防抖时长')}</div>
 					<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={0} value={setting.debounceDuration} onChange={e => updateSetting('debounceDuration', e)} />

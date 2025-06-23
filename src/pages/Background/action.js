@@ -24,9 +24,22 @@ window.filteredRangeList = new Proxy({ value: [] }, {
             closePop()
         } else {
 			await reCheckTree()
+
+			const [{ lastSearchTime }, { swe_setting }] = await Promise.all([
+				chrome.storage.session.get(['lastSearchTime']),
+				chrome.storage.sync.get(['swe_setting'])
+			])
+
 			const selection = window.getSelection().toString()
-			if (selection) {
-				await chrome.storage.sync.set({ searchValue: window.getSelection().toString() });
+			const now = Date.now()
+			const retentionTime = swe_setting.retentionTime ?? -1
+
+			if (retentionTime !== -1 && (!lastSearchTime || (now - lastSearchTime)/1000/60 >= retentionTime)) { // 应该重置
+				await chrome.storage.sync.set({ searchValue: selection || '', isMatchCase: false, isWord: false, isReg: false, isLive: true });
+			} else {
+				if (selection) {
+					await chrome.storage.sync.set({ searchValue: selection });
+				}
 			}
 			// 创建新的弹出窗口
 			createOrUpdatePopup();

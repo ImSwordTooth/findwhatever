@@ -56,7 +56,7 @@ export const Pop = () => {
 			setRecentList(syncStorage.recent || [])
 			setFixList(syncStorage.fix || [])
 			setDebounceDuration(syncStorage.swe_setting?.debounceDuration || 200)
-			setRegexDebounceDuration(syncStorage.swe_setting?.regexDebounceDuration || 1000)
+			setRegexDebounceDuration(syncStorage.swe_setting?.regexDebounceDuration || 2000)
 			setSweSetting(syncStorage.swe_setting || { tempOpacity: 0.3 })
 			setIsReady(true)
 
@@ -126,6 +126,9 @@ export const Pop = () => {
 
 	// isLive 变更后，更新监听器
 	useEffect(() => {
+		if (!isReady) {
+			return
+		}
 		if (isLive) {
 			observerAllExceptMe()
 		} else {

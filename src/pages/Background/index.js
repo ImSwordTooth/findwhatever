@@ -91,7 +91,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			resultSum.splice(currentResultIndex, 1)
 		}
 
-		const finalSession = { resultSum }
+		// 记录下上次搜索的时间，打开面板后判断超过一定时间后清除查找条件
+		const finalSession = { resultSum, lastSearchTime: Date.now() }
 
 		chrome.storage.session.get(['activeResult'], (res) => {
 			if (isAuto) {
