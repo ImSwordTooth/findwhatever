@@ -48,6 +48,7 @@ export const Input = () => {
 						onChange={e => updateSetting('retentionTime', e)}
 						dropdownMatchSelectWidth={false}
 						size="small"
+						getPopupContainer={e => e.parentNode}
 						options={[
 							{
 								label: '一直保留',

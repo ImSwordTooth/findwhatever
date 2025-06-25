@@ -95,6 +95,7 @@ export const FindResult = () => {
 									value={setting.underlineStyle}
 									onChange={e => updateSetting('underlineStyle', e)}
 									size="small"
+									getPopupContainer={e => e.parentNode}
 									options={[
 										{
 											label: 'solid',
@@ -187,6 +188,7 @@ export const FindResult = () => {
 												value={setting.underlineStyleActive}
 												onChange={e => updateSetting('underlineStyleActive', e)}
 												size="small"
+												getPopupContainer={e => e.parentNode}
 												options={[
 													{
 														label: 'solid',

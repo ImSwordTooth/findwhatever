@@ -215,7 +215,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 					let startTextLength = 0
 					let endTextLength = 0
-
+					let startIndex = 0
 					const children = el.parentNode.sourceNode.childNodes
 
 					for (let i=0; i<children.length; i++) {
@@ -231,11 +231,13 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 						startTextLength += currentLength
 						if (startTextLength >= index) {
 							range.setStart(currentNode, index - (startTextLength - currentLength))
+							startIndex = i
 							break
 						}
-
 					}
-					for (let i=0; i<children.length; i++) {
+
+					// 直接从 startIndex 开始找，可以减少一部分循环
+					for (let i=startIndex; i<children.length; i++) {
 						let currentNode = children[i]
 						if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了
 							currentNode = children[i].childNodes[0]
