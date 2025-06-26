@@ -55,15 +55,17 @@ export const reCheckTree = () => {
 						clonedContainer.dataset.__swe__normalized = '777' // 标记一下，这个 dom 是规范化过的，名和值都是防重复
 
 						// 开始规范化，先把所有的标签换成文本节点
-						clonedContainer.childNodes.forEach((c) => {
-							if (c.nodeName === '#comment') { // 注释也算一个节点哦，直接干掉
-								c.remove()
+						for (let i=0; i<clonedContainer.childNodes.length; i++) {
+							const child = clonedContainer.childNodes[i]
+							if (child.nodeName === '#comment') { // 注释也算一个节点哦，直接干掉
+								child.remove()
+								i-- // 因为删除了一个节点，所以索引要减一
 							} else {
-								if (c.nodeName !== '#text') {
-									clonedContainer.replaceChild(document.createTextNode(c.textContent), c)
+								if (child.nodeName !== '#text') {
+									clonedContainer.replaceChild(document.createTextNode(child.textContent), child)
 								}
 							}
-						})
+						}
 
 						clonedContainer.normalize(); // 调用 normalize() 合并文本节点
 					}
