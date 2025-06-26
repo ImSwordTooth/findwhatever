@@ -32,7 +32,7 @@ window.filteredRangeList = new Proxy({ value: [] }, {
 
 			const selection = window.getSelection().toString()
 			const now = Date.now()
-			const retentionTime = swe_setting.retentionTime ?? -1
+			const retentionTime = swe_setting?.retentionTime ?? -1
 
 			if (retentionTime !== -1 && (!lastSearchTime || (now - lastSearchTime)/1000/60 >= retentionTime)) { // 应该重置
 				await chrome.storage.sync.set({ searchValue: selection || '', isMatchCase: false, isWord: false, isReg: false, isLive: true });

@@ -57,10 +57,17 @@ chrome.action.onClicked.addListener(async (tab) => {
 		resultSum
 	})
 
-	for (let i of visibleFrames) {
-		// 插入脚本
+	if (visibleFrames.length > 0) {
+		for (let i of visibleFrames) {
+			// 插入脚本
+			await chrome.scripting.executeScript({
+				target: { tabId: tab.id, frameIds: [i.frameId] },
+				files: ['./action.bundle.js']
+			})
+		}
+	} else {
 		await chrome.scripting.executeScript({
-			target: { tabId: tab.id, frameIds: [i.frameId] },
+			target: { tabId: tab.id, frameIds: [0] },
 			files: ['./action.bundle.js']
 		})
 	}
@@ -232,11 +239,6 @@ chrome.tabs.onActivated.addListener(async () => {
 	if (currentTab.url.indexOf('http') < 0) {
 		return;
 	}
-    let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
-	frames = frames.filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1)
-    resultSum = []
-	pageFrames = frames
-    await chrome.storage.session.set({ resultSum: [], frames })
 
 	// 停用旧的标签页的isLive
 	if (activeTabIdHistoryList[0]) {
@@ -256,9 +258,71 @@ chrome.tabs.onActivated.addListener(async () => {
     })
 
     if (res[0].result) {
-		for (let i in frames) {
+		let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
+		frames = frames.filter(a => !a.errorOccurred)
+
+		let visibleFrames = [] // 有内容的 frames
+
+		for (let i of frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 )) {
+			const res = await chrome.scripting.executeScript({
+				target: { tabId: currentTab.id, frameIds: [i.frameId] },
+				func: () => {
+					function hasVisibleText() {
+						const treeWalker = document.createTreeWalker(
+							document.body,
+							NodeFilter.SHOW_TEXT
+						);
+
+						while (treeWalker.nextNode()) {
+							const text = treeWalker.currentNode.textContent.trim();
+							const parent = treeWalker.currentNode.parentElement; // 检查文本节点是否在可见元素内
+
+							if (text.length > 0 &&
+								parent.tagName !== 'SCRIPT' &&
+								parent.tagName !== 'STYLE' &&
+								parent.tagName !== 'NOSCRIPT') {
+								return true;
+							}
+						}
+						return false;
+					}
+					return hasVisibleText()
+				}
+			})
+
+			if (res[0].result) {
+				visibleFrames.push(i)
+			}
+		}
+
+		const index = visibleFrames.findIndex(r => r.frameId === 0);
+		if (index > 0) {
+			visibleFrames.unshift(visibleFrames.splice(index, 1)[0])
+		}
+
+		resultSum = []
+		pageFrames = visibleFrames
+		await chrome.storage.session.set({ resultSum: [], frames: visibleFrames })
+
+		if (visibleFrames.length > 0) {
+			for (let i in visibleFrames) {
+				chrome.scripting.executeScript({
+					target: {tabId: currentTab.id, frameIds: [frames[i].frameId]},
+					func: async () => {
+						window.__swe_doSearchOutside(false, (response) => {
+							if (window.isFrame) {
+								window.parent.postMessage({ type: 'swe_updateSettings', data: response }, '*')
+							} else {
+								window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
+							}
+						})
+						window.observerAllExceptMe()
+					}
+				})
+			}
+		} else {
 			chrome.scripting.executeScript({
-				target: {tabId: currentTab.id, frameIds: [frames[i].frameId]},
+				target: {tabId: currentTab.id, frameIds: [0]},
 				func: async () => {
 					window.__swe_doSearchOutside(false, (response) => {
 						if (window.isFrame) {
