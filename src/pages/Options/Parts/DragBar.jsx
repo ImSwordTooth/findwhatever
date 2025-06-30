@@ -20,7 +20,7 @@ export const DragBar = () => {
 			</div>
 
 			<div className="setting-row">
-				<div>可拖拽区域：</div>
+				<div>{i18n('可拖拽区域')}：</div>
 				<Radio.Group value={setting.dragArea} onChange={e  => updateSetting('dragArea', e.target.value)}>
 					<Radio value={'bar'}>{i18n('仅拖拽条')}</Radio>
 					<Radio value={'total'}>{i18n('整个面板')}</Radio>

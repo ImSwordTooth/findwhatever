@@ -346,7 +346,7 @@ export const Pop = () => {
 									padding:'18px 12px 10px',
 									background: '#fff',
 									borderRadius: '14px',
-									boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3),0px 0px 16px 1px rgba(233,233,233,0.58) ',
+									boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3),0px 0px 8px 1px rgba(233,233,233,0.58) ',
 								}}
 					>
 						<div id="searchWhateverPopup" ref={popContainerRef}>

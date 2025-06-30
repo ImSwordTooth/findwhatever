@@ -760,10 +760,6 @@ button {
   margin-left: 1px;
 }
 
-.ml-\[20px\] {
-  margin-left: 20px;
-}
-
 .mr-1 {
   margin-right: 4px;
 }
@@ -914,10 +910,6 @@ button {
 
 .w-2\.5 {
   width: 10px;
-}
-
-.w-20 {
-  width: 80px;
 }
 
 .w-3 {
@@ -1343,6 +1335,11 @@ button {
 
 .opacity-80 {
   opacity: 0.8;
+}
+
+.blur {
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .filter {

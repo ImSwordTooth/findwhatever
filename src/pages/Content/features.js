@@ -89,7 +89,7 @@ export const reCheckTree = () => {
 		let genReturnNext = genReturn.next()
 		while (!genReturnNext.done) {
 			if (genReturnNext.value && genReturnNext.value.textContent && !/^\s+$/g.test(genReturnNext.value.textContent)) { // 如果一个元素的有内容，并且内容全都是空白，跳过之
-				if (genReturnNext.value.parentElement.dataset.__swe__normalized === '777') { // 规范化的元素是克隆的，所以在页面中必然是隐藏的，所以需要特殊处理
+				if (genReturnNext.value.parentElement?.dataset.__swe__normalized === '777') { // 规范化的元素是克隆的，所以在页面中必然是隐藏的，所以需要特殊处理
 					window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
 				} else {
 					if (isElementVisible(genReturnNext.value.parentElement) !== i18n('隐藏中')) {

@@ -71,7 +71,7 @@ export const FrameList = (props) => {
 				<div className="flex items-center text-xs select-none cursor-pointer" onClick={nextFrame}>
 					<div className=" relative">
 						<span className="scale-90 inline-block mr-1 text-[#808080]">iframe</span>
-						<span className="font-mono">{frames.findIndex(f => f.frameId == tabIndex)}/{frames.length - 1}</span>
+						<span className="font-mono text-[#808080]">{frames.findIndex(f => f.frameId == tabIndex)}/{frames.length - 1}</span>
 
 						<div className="flex items-center text-xs absolute w-full -bottom-[4px]">
 							{

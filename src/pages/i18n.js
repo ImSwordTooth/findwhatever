@@ -38,6 +38,9 @@ const textJson = {
 	"点击并拖拽此处可调整面板位置，会自动记忆位置。": "Click and drag here to adjust the panel position; it will automatically remember the location.",
 	"如果因为修改了浏览器窗口宽高导致面板位置异常（如修改窗口大小、打开控制台等），会在下一次打开时自动临时重置位置。": "If the panel position becomes abnormal due to changes in the browser window size and height (such as resizing the window, opening the console, etc.), it will automatically temporarily reset the position upon the next opening.",
 	"如果超过了设备的宽高，会在下一次打开时自动重置位置并清除记忆的位置。": "If it exceeds the device's width and height, it will automatically reset the position and clear the remembered position upon the next opening.",
+	"可拖拽区域": "Draggable area",
+	"仅拖拽条": "Drag bar only",
+	"整个面板": "The entire panel",
 
 	"右上角功能区": "Top-right Functional Area",
 	"元素存在页面中，但是宽度和高度都为 0。": "The element exists on the page, but both its width and height are 0.",
@@ -51,7 +54,6 @@ const textJson = {
 	"进入": "Go to",
 	"找到 Find whatever，点击“详情”-“扩展程序选项”。": "Find whatever, click \"Details\" - \"Extension Options\".",
 	"是否显示设置按钮": "Whether or not to display the settings button",
-
 
 	"页面列表": "Page List",
 	"包含当前页，和页面中的 iframe，每个页面在右侧列出了匹配结果的数量。": "Contains the current page, and the iframes within the page, each with the number of matches listed on the right.",
@@ -76,7 +78,14 @@ const textJson = {
 	"如果上次搜索的结果会产生bug，而新面板又自动填入了，产生了新的 bug 导致插件不可用，可以": "If the results of the last search would cause bugs, and the new panel automatically fills in, creating new bugs that make the plugin unusable, you can",
 	"点击此处删去上一次的文本": "Click here to delete the last text",
 	"记得把 bug 反馈给我~": "Remember to feedback the bug to me~",
-
+	"上一次的搜索条件保留时间（包含搜索词、筛选项）": "The retention time of the last search condition (including search word and filter items)",
+	"一直保留": "Always keep",
+	"一直不保留": "Never keep",
+	"5分钟": "5 minutes",
+	"30分钟": "30 minutes",
+	"1小时": "1 hour",
+	"5小时": "5 hours",
+	"24小时": "24 hours",
 
 	"历史记录": "History",
 	"点击列表项可以把文本填入输入框中。": "Click on a list item to fill in the text in the input box.",

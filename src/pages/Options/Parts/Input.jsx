@@ -51,31 +51,31 @@ export const Input = () => {
 						getPopupContainer={e => e.parentNode}
 						options={[
 							{
-								label: '一直保留',
+								label: i18n('一直保留'),
 								value: -1
 							},
 							{
-								label: '一直不保留',
+								label: i18n('一直不保留'),
 								value: 0
 							},
 							{
-								label: '5分钟',
+								label: i18n('5分钟'),
 								value: 5
 							},
 							{
-								label: '30分钟',
+								label: i18n('30分钟'),
 								value: 30
 							},
 							{
-								label: '1小时',
+								label: i18n('1小时'),
 								value: 60
 							},
 							{
-								label: '5小时',
+								label: i18n('5小时'),
 								value: 300
 							},
 							{
-								label: '24小时',
+								label: i18n('24小时'),
 								value: 1440
 							},
 						]} />
