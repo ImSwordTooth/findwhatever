@@ -419,6 +419,19 @@ button {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 }
 
+.mainPanel {
+  padding: 18px 12px 10px;
+  border-radius: 14px;
+  background-color: rgba(255, 255, 255, 1);
+  border: solid 1px rgb(211 211 211 / 47%);
+  box-shadow: 0 0 6px 3px rgb(233 233 233 / 27%);
+  &.glass {
+    background-color: rgba(255, 255, 255, 0.8);
+    -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+  }
+}
+
 .monofont {
   font-family: 'JetBrainsMono', monospace;
 }
@@ -495,6 +508,9 @@ button {
     border-top: dashed 1px rgba(150, 64, 222, 0.08);
     box-shadow: none;
     border-radius: 0;
+    & > div {
+      line-height: 14px;
+    }
     &:nth-of-type(1) {
       border-top: dashed 1px #9640de52;
       border-radius: 4px 4px 0 0;
@@ -1126,14 +1142,13 @@ button {
   border-style: none;
 }
 
-.border-\[\#f0f0f0\] {
-  --tw-border-opacity: 1;
-  border-color: rgb(240 240 240 / var(--tw-border-opacity));
-}
-
 .border-\[\#f5f5f5\] {
   --tw-border-opacity: 1;
   border-color: rgb(245 245 245 / var(--tw-border-opacity));
+}
+
+.border-\[rgba\(232\2c 232\2c 232\2c 0\.8\)\] {
+  border-color: rgba(232,232,232,0.8);
 }
 
 .bg-\[\#888888\] {
@@ -1156,9 +1171,8 @@ button {
   background-color: rgb(244 244 244 / var(--tw-bg-opacity));
 }
 
-.bg-\[\#f4f4f5\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(244 244 245 / var(--tw-bg-opacity));
+.bg-\[rgba\(255\2c 255\2c 255\2c 0\.9\)\] {
+  background-color: rgba(255,255,255,0.9);
 }
 
 .bg-white {
@@ -1335,11 +1349,6 @@ button {
 
 .opacity-80 {
   opacity: 0.8;
-}
-
-.blur {
-  --tw-blur: blur(8px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .filter {

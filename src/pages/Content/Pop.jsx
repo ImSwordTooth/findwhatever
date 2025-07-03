@@ -12,6 +12,7 @@ import { RecentList } from "./Parts/RecentList";
 import { ExtraArea } from "./Parts/ExtraArea";
 import * as motion from 'motion/react-client'
 
+
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
 	const [ searchValue, setSearchValue ] = useState('') // 搜索词
@@ -34,6 +35,7 @@ export const Pop = () => {
 	const [ sweSetting, setSweSetting ] = useState({})
 
 	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration)
+
 
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
@@ -321,6 +323,7 @@ export const Pop = () => {
 		}
 	}
 
+
 	return (
 		<div className="fixed z-[10000] top-0 left-0">
 			{
@@ -342,12 +345,7 @@ export const Pop = () => {
 									type: "spring",
 									duration: 0.3
 								}}
-								style={{
-									padding:'18px 12px 10px',
-									background: '#fff',
-									borderRadius: '14px',
-									boxShadow: '0px 0px 5px 0px rgba(0,0,0,.02),0px 2px 10px 0px rgba(0,0,0,.06),0px 0px 1px 0px rgba(0,0,0,.3),0px 0px 8px 1px rgba(233,233,233,0.58) ',
-								}}
+								className={`mainPanel ${sweSetting.isUseGlassEffect ? 'glass' : ''}`}
 					>
 						<div id="searchWhateverPopup" ref={popContainerRef}>
 							{
@@ -383,7 +381,7 @@ export const Pop = () => {
 										onChange={handleSearchValueChange}
 										onKeyDown={handleEnter}
 									>
-										<div className="flex items-center bg-white rounded-lg p-0.5 absolute right-[6px] top-[6px]">
+										<div className="flex items-center bg-[rgba(255,255,255,0.9)] rounded-lg p-0.5 absolute right-[6px] top-[6px]">
 											{
 												isReg && !isDebounceOk &&
 												<div className="absolute -left-[36px] top-[0px] h-full flex items-center"><Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 12 }} spin />} /></div>

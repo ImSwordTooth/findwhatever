@@ -7,6 +7,19 @@
 		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 	}
 
+	.mainPanel {
+		padding: 18px 12px 10px;
+		border-radius: 14px;
+		background-color: rgba(255, 255, 255, 1);
+		border: solid 1px rgb(211 211 211 / 47%);
+		box-shadow: 0 0 6px 3px rgb(233 233 233 / 27%);
+
+		&.glass {
+			background-color: rgba(255, 255, 255, 0.8);
+			backdrop-filter: blur(4px);
+		}
+	}
+
 	.monofont {
 		font-family: 'JetBrainsMono', monospace;
 	}
@@ -88,6 +101,10 @@
 			border-top: dashed 1px rgba(150, 64, 222, 0.08);
 			box-shadow: none;
 			border-radius: 0;
+
+			& > div {
+				line-height: 14px;
+			}
 
 			&:nth-of-type(1) {
 				border-top: dashed 1px #9640de52;

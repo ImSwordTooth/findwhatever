@@ -34,6 +34,13 @@ const textJson = {
 	"重置成功": "Reset successfully",
 	"保存成功": "Saved successfully",
 
+	"整体": "Overall",
+	"现在打开面板的默认快捷键为 Alt+F。": "The default shortcut key to open the panel is now Alt+F.",
+	"当前快捷键为": "The current shortcut key is",
+	"未设置快捷键会导致面板只能通过点击图标打开。": "Not setting a shortcut key will cause the panel to only be able to be opened by clicking the icon.",
+	"设置 Command+F(macOS) 或者 Ctrl+F(windows等) 时会覆盖浏览器自带的查找。": "Setting Command+F (macOS) or Ctrl+F (Windows, etc.) will override the browser's built-in find function.",
+	"是否使用毛玻璃效果面板": "Whether or not to use a frosted glass effect panel",
+
 	"拖拽条": "Drag Bar",
 	"点击并拖拽此处可调整面板位置，会自动记忆位置。": "Click and drag here to adjust the panel position; it will automatically remember the location.",
 	"如果因为修改了浏览器窗口宽高导致面板位置异常（如修改窗口大小、打开控制台等），会在下一次打开时自动临时重置位置。": "If the panel position becomes abnormal due to changes in the browser window size and height (such as resizing the window, opening the console, etc.), it will automatically temporarily reset the position upon the next opening.",
@@ -117,6 +124,7 @@ const textJson = {
 
 export const i18n = (text) => {
 	const isChinese = navigator.language === 'zh' || navigator.language === 'zh-CN'
+	// const isChinese = false
 
 	if (isChinese) {
 		return text

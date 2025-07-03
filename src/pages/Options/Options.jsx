@@ -1,6 +1,6 @@
-import React, {useEffect, useState, createContext, useRef} from 'react'
+import React, { useEffect, useState, createContext, useRef } from 'react'
 import { i18n } from '../i18n'
-import {Button, message, Popover} from 'antd'
+import { message, Popover } from 'antd'
 import { DragBar } from './Parts/DragBar';
 import { ExtraArea } from './Parts/ExtraArea';
 import { FrameList } from './Parts/FrameList';
@@ -9,10 +9,13 @@ import { FakePanel } from './fakePanel';
 import { Input } from './Parts/Input';
 import { History } from './Parts/History'
 import { Feature } from './Parts/Feature'
+import { Total } from './Parts/Total'
 
 export const SettingContext = createContext(null)
 
 const INIT_SETTING = {
+	isUseGlassEffect: true,
+
 	dragArea: 'bar', // 可拖拽区域
 
 	tempOpacity: 0.7, // 临时透明度
@@ -62,6 +65,13 @@ export const Options = () => {
 			...INIT_SETTING,
 			...swe_setting
 		})
+
+		chrome.storage.sync.set({
+			swe_setting: {
+				...INIT_SETTING,
+				...swe_setting
+			}
+		})
 	}
 
 	const generateStyleText = (obj) => {
@@ -105,7 +115,7 @@ export const Options = () => {
 
 	return (
 		<SettingContext.Provider value={{setting, updateSetting}}>
-			<div className="flex flex-col" style={{ height: '100%', padding:'20px 0' }}>
+			<div className="flex flex-col optionWrap" style={{ height: '100%', padding:'20px 0' }}>
 				<div className="flex items-center justify-between mb-[40px] px-[40px]">
 					<div className="flex items-center">
 						<img className="w-[48px] h-[48px] mr-2" src="https://i2.letvimg.com/lc18_lemf/202503/31/13/43/icon.png"
@@ -114,6 +124,9 @@ export const Options = () => {
 					</div>
 
 					<div className="flex items-center">
+						<a href="https://www.producthunt.com/products/find-whatever-regex-auto-re-find?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-find&#0045;whatever" target="_blank" style={{ marginRight: '16px' }}>
+							<img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=987390&theme=light&t=1752202780162" alt="Find&#0032;whatever - Enhance&#0032;your&#0032;browser&#0039;s&#0032;find&#0032;capabilities | Product Hunt" style={{ width: '180px' }} />
+						</a>
 						<Popover
 							placement="bottomRight"
 							content={
@@ -165,6 +178,7 @@ export const Options = () => {
 
 				<div className="relative overflow-auto flex-1">
 					<div className="mainOption">
+						<Total />
 						<DragBar/>
 						<ExtraArea/>
 						<FrameList/>

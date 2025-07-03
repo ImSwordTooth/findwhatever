@@ -33,18 +33,14 @@ export const FindResult = () => {
 					</span>
 					{i18n('，会把结果复制到剪贴板。')}</div>
 
-				<div className="newPart">
-					<div className="new">new</div>
-					{i18n('v3.0 新增了跨标签搜索。启用跨标签搜索方案的条件为：')}
-
-					<ol style={{ margin: '0' }}>
-						<li>{i18n('没有嵌套结构')}</li>
-						<li>{i18n('子节点中至少包含这些标签其中的一个：')}['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']</li>
-						<li>{i18n('没有换行')}</li>
-						<li>{i18n('子节点长度大于 1，')}{'<div><a>1111</a></div>'} {i18n('这种结构，没必要规范化')}</li>
-					</ol>
-					<div><em>{i18n('核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！')}</em></div>
-				</div>
+				<div>{i18n('v3.0 新增了跨标签搜索。启用跨标签搜索方案的条件为：')}</div>
+				<ol style={{ margin: '0' }}>
+					<li>{i18n('没有嵌套结构')}</li>
+					<li>{i18n('子节点中至少包含这些标签其中的一个：')}['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']</li>
+					<li>{i18n('没有换行')}</li>
+					<li>{i18n('子节点长度大于 1，')}{'<div><a>1111</a></div>'} {i18n('这种结构，没必要规范化')}</li>
+				</ol>
+				<div><em>{i18n('核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！')}</em></div>
 
 				<h3 className="mt-[12px]">search-results</h3>
 				<div className="setting-area">

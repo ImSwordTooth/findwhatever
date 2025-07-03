@@ -94,7 +94,7 @@ export const FakePanel = (props) => {
 						</div>
 					}
 					<div className="flex items-center justify-between h-[24px] border-b-1 border-[#f5f5f5] mb-1">
-						<FrameList tabIndex={'0'} frames={[{frameId: '0'}, { frameId: '1' }, { frameId: '2' }]} total={[{frameId: '0', sum: 3}]} />
+						<FrameList tabIndex={'0'} frames={[{frameId: '0'}, { frameId: '1' }, { frameId: '2' }]} total={[{frameId: '0', sum: 3}]} updateTabIndex={() => {}} updateCurrent={() => {}} />
 						<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
 							<div className="inline-flex items-center absolute right-[12px] top-[6px] gap-[6px]">
 								<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60">

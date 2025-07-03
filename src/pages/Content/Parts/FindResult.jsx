@@ -1,9 +1,22 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {i18n} from "../../i18n";
 import Proptypes from 'prop-types'
+import { animate, motion, useMotionValue, useTransform } from 'motion/react'
+import { easeIn, easeOut, circOut, spring } from 'motion'
 
 export const FindResult = (props) => {
 	const { current, total } = props
+
+	const aniCurrent = useMotionValue(total.map(a => a.sum).reduce((a, b) => a + b, 0))
+	const rounded = useTransform(() => Math.round(aniCurrent.get()), { ease: circOut })
+
+	useEffect(() => {
+		const controls = animate(aniCurrent, total.map(a => a.sum).reduce((a, b) => a + b, 0), { duration: 0.25 })
+
+		return () => {
+			controls.stop()
+		}
+	}, [total]);
 
 	const copyResult = async () => {
 		const { resultSum } = await chrome.storage.session.get(['resultSum'])
@@ -29,7 +42,7 @@ export const FindResult = (props) => {
 			</div>
 			：
 			<span id="__swe_current" className="mr-1 inline-block min-w-[15px] text-right shrink-0 monofont shadowText">{current}</span>
-			/ <span className="ml-1 inline-block min-w-[15px] text-left shrink-0 monofont shadowText" id="__swe_total">{total.map(a => a.sum).reduce((a, b) => a + b, 0)}</span>
+			/ <motion.span className="ml-1 inline-block min-w-[15px] text-left shrink-0 monofont shadowText" id="__swe_total">{rounded}</motion.span>
 		</>
 	)
 }

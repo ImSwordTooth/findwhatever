@@ -34,9 +34,8 @@ export const Input = () => {
 						: <>When debouncing is triggered, a <div className="inline-flex items-center"><Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 12 }} spin />} /></div> will appear on the right side of the input box</>
 				}
 			</div>
-			<div className="newPart">
-				<div className="new">new</div>
-				{i18n('如果上次搜索的结果会产生bug，而新面板又自动填入了，产生了新的 bug 导致插件不可用，可以')} <Button type="dashed" disabled={!lastValue} danger onClick={clearLast}><span className="px-[8px]">{i18n('点击此处删去上一次的文本')}（{lastValue || '空'}）</span></Button> 。
+			<div>
+				<div>{i18n('如果上次搜索的结果会产生bug，而新面板又自动填入了，产生了新的 bug 导致插件不可用，可以')} <Button type="dashed" disabled={!lastValue} danger onClick={clearLast}><span className="px-[8px]">{i18n('点击此处删去上一次的文本')}（{lastValue || '空'}）</span></Button> 。</div>
 				<div className="text-xs"><em>{i18n('记得把 bug 反馈给我~')}</em></div>
 			</div>
 

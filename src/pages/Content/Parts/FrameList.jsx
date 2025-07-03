@@ -47,7 +47,7 @@ export const FrameList = (props) => {
 	}
 
 	return (
-		<div className="flex items-center border-solid border-0 border-b border-[#f0f0f0] h-full flex-1 mr-1">
+		<div className="flex items-center border-solid border-0 border-b border-[rgba(232,232,232,0.8)] h-full flex-1 mr-1">
 			<div className="flex items-center text-xs mr-2 text-[#000000] relative cursor-pointer select-none" onClick={() => handleTabChange('0')}>
 				{i18n('当前页')}
 				<span className="bg-[#f4f4f4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
