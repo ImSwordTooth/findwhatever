@@ -107,24 +107,67 @@ export const Pop = () => {
 
 	useEffect(() => {
 		// 防止输入时触发页面的全局快捷键
+		const pressedKeys = new Set();
+		
+		// 检测操作系统
+		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || 
+					 navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
 
 		const handleKeyDown = (e) => {
-			if (e.target.parentElement?.id === '__swe_container') {
-				if (!['Escape', 'Shift', 'Enter'].includes(e.key)) {
-					e.stopPropagation()
+			if (e.target.parentElement?.id === "__swe_container") {
+				// 根据操作系统判断快捷键组合
+				const isValidModifier = isMac ? 
+					(e.ctrlKey && !e.shiftKey) : // macOS: Ctrl (不包含Shift)
+					(e.ctrlKey && e.shiftKey);   // 其他系统: Ctrl + Shift
+				
+				if (isValidModifier && !e.repeat) {
+					const keyId = `${e.ctrlKey}-${e.shiftKey}-${e.key.toLowerCase()}`;
+					
+					if (!pressedKeys.has(keyId)) {
+						pressedKeys.add(keyId);
+						
+						if (e.key === "c" || e.key === "C") {
+							e.preventDefault();
+							e.stopPropagation();
+							handleIsMatchCaseChange();
+							return;
+						}
+						if (e.key === "w" || e.key === "W") {
+							e.preventDefault();
+							e.stopPropagation();
+							handleIsWordChange();
+							return;
+						}
+					}
+				}
+				if (!["Escape", "Shift", "Enter"].includes(e.key)) {
+					e.stopPropagation();
 				}
 			}
-		}
+		};
+
+		const handleKeyUp = (e) => {
+			const keyId = `${e.ctrlKey}-${e.shiftKey}-${e.key.toLowerCase()}`;
+			pressedKeys.delete(keyId);
+		};
+
+		const handleKeyPress = (e) => {
+			if (e.target.parentElement?.id === "__swe_container") {
+				if (!["Escape", "Shift", "Enter"].includes(e.key)) {
+					e.stopPropagation();
+				}
+			}
+		};
 
 		window.addEventListener("keydown", handleKeyDown, true);
-		window.addEventListener("keypress", handleKeyDown, true);
-		window.addEventListener("keyup", handleKeyDown, true);
+		window.addEventListener("keypress", handleKeyPress, true);
+		window.addEventListener("keyup", handleKeyUp, true);
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown, true);
-			window.removeEventListener("keypress", handleKeyDown, true);
-			window.removeEventListener("keyup", handleKeyDown, true);
+			window.removeEventListener("keypress", handleKeyPress, true);
+			window.removeEventListener("keyup", handleKeyUp, true);
 		};
-	}, [])
+	}, [isMatchCase, isWord]);
 
 	// isLive 变更后，更新监听器
 	useEffect(() => {
@@ -474,7 +517,7 @@ export const Pop = () => {
 												)}
 											>
 												<div
-													className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center cursor-pointer ml-1 ${isLive ? 'activeButton' : ''}`}
+													className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center ml-1 ${isLive ? 'activeButton' : ''}`}
 													onClick={handleIsLiveChange}
 												>
 													<svg className="w-4 h-4 will-change-transform" viewBox="0 0 1024 1024" version="1.1"
