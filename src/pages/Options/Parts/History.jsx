@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Radio } from 'antd';
+import {Radio, Switch} from 'antd';
 import { SettingContext } from '../Options'
 import {i18n} from '../../i18n';
 
@@ -88,12 +88,21 @@ export const History = () => {
 				{i18n('固定列表无内容时不显示。')}
 			</div>
 			<div>{i18n('历史记录会在面板关闭时更新，记入关闭时的查找词，最多记录 50 条。')}</div>
-			<div className="setting-row">
-				<div>{i18n('历史记录打开方式')}</div>
-				<Radio.Group value={setting.openHistoryMode} onChange={e  => updateSetting('openHistoryMode', e.target.value)}>
-					<Radio value={'hover'}>{i18n('鼠标移入')}</Radio>
-					<Radio value={'click'}>{i18n('鼠标点击')}</Radio>
-				</Radio.Group>
+			<div className="setting-area">
+				<div className="setting-row">
+					<div>{i18n('是否显示历史记录')}</div>
+					<Switch size="small" checked={setting.isShowHistory} onChange={e => updateSetting('isShowHistory', e)} />
+				</div>
+				{
+					setting.isShowHistory &&
+					<div className="setting-row">
+						<div>{i18n('历史记录打开方式')}</div>
+						<Radio.Group value={setting.openHistoryMode} onChange={e  => updateSetting('openHistoryMode', e.target.value)}>
+							<Radio value={'hover'}>{i18n('鼠标移入')}</Radio>
+							<Radio value={'click'}>{i18n('鼠标点击')}</Radio>
+						</Radio.Group>
+					</div>
+				}
 			</div>
 		</div>
 	)

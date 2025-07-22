@@ -42,6 +42,11 @@ export const FindResult = () => {
 				</ol>
 				<div><em>{i18n('核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！')}</em></div>
 
+				<div className="setting-row">
+					<div>{i18n('是否显示查找结果的文本')}</div>
+					<Switch size="small" checked={setting.isShowResultText} onChange={e => updateSetting('isShowResultText', e)} />
+				</div>
+
 				<h3 className="mt-[12px]">search-results</h3>
 				<div className="setting-area">
 					<div className="setting-row">

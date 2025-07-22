@@ -61,6 +61,8 @@ const textJson = {
 	"进入": "Go to",
 	"找到 Find whatever，点击“详情”-“扩展程序选项”。": "Find whatever, click \"Details\" - \"Extension Options\".",
 	"是否显示设置按钮": "Whether or not to display the settings button",
+	"是否显示元素状态": "Whether or not to display the element status",
+	"是否显示透明按钮": "Whether or not to display the opacity button",
 
 	"页面列表": "Page List",
 	"包含当前页，和页面中的 iframe，每个页面在右侧列出了匹配结果的数量。": "Contains the current page, and the iframes within the page, each with the number of matches listed on the right.",
@@ -75,6 +77,7 @@ const textJson = {
 	"子节点长度大于 1，": "Child node length greater than 1, ",
 	"这种结构，没必要规范化": "This structure doesn't need to be standardized",
 	"核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！": "Core and complex features, if there is a page with the wrong search results, please contact me in time, thank you!",
+	"是否显示查找结果的文本": "Whether or not to display the text of the search results",
 
 	"输入框": "Input",
 	"本插件比较适用于简短的词语搜索，": "This plugin is more suitable for short word searches and ",
@@ -93,6 +96,9 @@ const textJson = {
 	"1小时": "1 hour",
 	"5小时": "5 hours",
 	"24小时": "24 hours",
+	"文本框宽度": "Input box width",
+	"是否显示文本框光圈": "Whether or not to display the input box halo",
+	"光圈颜色": "Halo color",
 
 	"历史记录": "History",
 	"点击列表项可以把文本填入输入框中。": "Click on a list item to fill in the text in the input box.",
@@ -103,6 +109,7 @@ const textJson = {
 	"历史记录打开方式": "How the history is opened",
 	"鼠标移入": "hover",
 	"鼠标点击": "click",
+	"是否显示历史记录": "Whether or not to display the history",
 
 	"功能区": "Function Area",
 	"切换当前定位的结果的下标(search-results-active)，切换时会尽量地把对应的元素滚动到视口内。": "Switch the index of the current located result (search-results-active), and when switching, try to scroll the corresponding element into the viewport.",
@@ -116,6 +123,7 @@ const textJson = {
 	"但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。": "However, the DOM change of the web page is a very common behavior, and it is impossible to judge whether the changes are frequent or whether it needs to be monitored, so it is up to the user to judge here, if you feel that it has no effect, you can turn it on, and if you don't feel that you don't need it, or if the DOM changes frequently under a certain page, you can turn it off.",
 	"点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。": "Click to remove the MutationObserver, clear the highlight, close the panel, zero the search result, and save the search record.",
 	"也可以在页面中按 Esc 键达到同样的效果。": "You can also press the Esc key in the middle of the page to achieve the same effect.",
+	"是否显示关闭按钮": "Whether or not to display the close button",
 
 	"设置项自动保存，但需要重新打开面板才能生效": "Auto-save settings, but need to reopen the panel to take effect",
 	"修改高亮样式后，可能需要刷新页面才能生效": "After you modify the highlight style, you may need to refresh the page for it to take effect",

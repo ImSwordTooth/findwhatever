@@ -3,7 +3,7 @@ import {i18n} from "../../i18n";
 import PropTypes from 'prop-types'
 
 export const ExtraArea = (props) => {
-	const { isHidePanel, isShowSetting, updateIsHidePanel, updateIsHidePanelTemporarily } = props
+	const { isHidePanel, isShowSetting, isShowOpacity, isShowStatus, updateIsHidePanel, updateIsHidePanelTemporarily } = props
 	const [ visibleStatus, setVisibleStatus ] = useState(false)
 
 	useEffect(() => {
@@ -44,7 +44,7 @@ export const ExtraArea = (props) => {
 	return (
 		<div className="inline-flex items-center absolute right-[12px] top-[6px] gap-[6px]">
 			{
-				visibleStatus &&
+				isShowStatus && visibleStatus &&
 				<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 h-[12px]">
 					<div className="inline-flex items-center scale-[0.8] origin-right text-xs cursor-grabbing text-[#a0a0a0]">
 						<svg className="mr-1 w-[14px] h-[14px]" viewBox="0 0 1024 1024" version="1.1"
@@ -58,17 +58,20 @@ export const ExtraArea = (props) => {
 					</div>
 				</div>
 			}
-			<div className="flex items-center text-xs text-[#a0a0a0] cursor-grab opacity-80 active:cursor-grabbing z-30" onMouseEnter={hidePanelTemporarily} onMouseLeave={showPanelTemporarily} onClick={toggleHidePanel}>
-				<svg t="1749795998566" viewBox="0 0 1024 1024" version="1.1"
-					 xmlns="http://www.w3.org/2000/svg" width="12" height="12">
-					<path
-						d="M469.333333 681.386667c-36.053333-2.432-71.253333-8.533333-104.96-17.92l-69.802666 149.674666a42.368 42.368 0 0 1-56.533334 20.266667 42.666667 42.666667 0 0 1-20.821333-56.32l66.986667-143.658667a451.712 451.712 0 0 1-148.906667-112.682666 388.693333 388.693333 0 0 1-70.570667-119.338667 42.666667 42.666667 0 1 1 80.128-29.354667 303.445333 303.445333 0 0 0 55.210667 93.098667C270.634667 547.413333 383.018667 597.333333 505.728 597.333333c122.752 0 235.136-49.962667 305.706667-132.181333a303.445333 303.445333 0 0 0 55.210666-93.098667 42.666667 42.666667 0 0 1 80.128 29.354667 388.693333 388.693333 0 0 1-70.570666 119.338667 423.68 423.68 0 0 1-18.773334 20.48l104.362667 104.362666a42.666667 42.666667 0 0 1-0.298667 60.032 42.368 42.368 0 0 1-60.032 0.298667l-109.653333-109.653333c-20.48 14.08-42.24 26.581333-65.024 37.418666l66.901333 143.36a42.666667 42.666667 0 0 1-20.821333 56.362667 42.368 42.368 0 0 1-56.533333-20.266667l-69.717334-149.546666a520.533333 520.533333 0 0 1-91.946666 16.810666v130.645334A42.666667 42.666667 0 0 1 512 853.333333c-23.722667 0-42.666667-18.944-42.666667-42.24v-129.706666z"
-						fill="#388CFF"></path>
-					<path
-						d="M176.128 524.373333a42.368 42.368 0 0 1 60.032 0.256 42.666667 42.666667 0 0 1 0.298667 60.074667l-121.216 121.216a42.368 42.368 0 0 1-60.074667-0.298667 42.666667 42.666667 0 0 1-0.298667-60.032l121.258667-121.258666z"
-						fill="#388CFF"></path>
-				</svg>
-			</div>
+			{
+				isShowOpacity &&
+				<div className="flex items-center text-xs text-[#a0a0a0] cursor-grab opacity-80 active:cursor-grabbing z-30" onMouseEnter={hidePanelTemporarily} onMouseLeave={showPanelTemporarily} onClick={toggleHidePanel}>
+					<svg t="1749795998566" viewBox="0 0 1024 1024" version="1.1"
+						 xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+						<path
+							d="M469.333333 681.386667c-36.053333-2.432-71.253333-8.533333-104.96-17.92l-69.802666 149.674666a42.368 42.368 0 0 1-56.533334 20.266667 42.666667 42.666667 0 0 1-20.821333-56.32l66.986667-143.658667a451.712 451.712 0 0 1-148.906667-112.682666 388.693333 388.693333 0 0 1-70.570667-119.338667 42.666667 42.666667 0 1 1 80.128-29.354667 303.445333 303.445333 0 0 0 55.210667 93.098667C270.634667 547.413333 383.018667 597.333333 505.728 597.333333c122.752 0 235.136-49.962667 305.706667-132.181333a303.445333 303.445333 0 0 0 55.210666-93.098667 42.666667 42.666667 0 0 1 80.128 29.354667 388.693333 388.693333 0 0 1-70.570666 119.338667 423.68 423.68 0 0 1-18.773334 20.48l104.362667 104.362666a42.666667 42.666667 0 0 1-0.298667 60.032 42.368 42.368 0 0 1-60.032 0.298667l-109.653333-109.653333c-20.48 14.08-42.24 26.581333-65.024 37.418666l66.901333 143.36a42.666667 42.666667 0 0 1-20.821333 56.362667 42.368 42.368 0 0 1-56.533333-20.266667l-69.717334-149.546666a520.533333 520.533333 0 0 1-91.946666 16.810666v130.645334A42.666667 42.666667 0 0 1 512 853.333333c-23.722667 0-42.666667-18.944-42.666667-42.24v-129.706666z"
+							fill="#388CFF"></path>
+						<path
+							d="M176.128 524.373333a42.368 42.368 0 0 1 60.032 0.256 42.666667 42.666667 0 0 1 0.298667 60.074667l-121.216 121.216a42.368 42.368 0 0 1-60.074667-0.298667 42.666667 42.666667 0 0 1-0.298667-60.032l121.258667-121.258666z"
+							fill="#388CFF"></path>
+					</svg>
+				</div>
+			}
 			{
 				isShowSetting &&
 				<div className="flex items-center text-xs text-[#a0a0a0] cursor-pointer opacity-80 z-30" onClick={openSetting}>

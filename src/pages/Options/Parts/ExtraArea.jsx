@@ -36,6 +36,11 @@ export const ExtraArea = () => {
 							<div className="inline-block text-xs cursor-grabbing text-[#a0a0a0]">{i18n('被遮盖')}</div>
 						</div>
 						<div>{i18n('元素被其他元素盖住了，导致不可见。')}</div>
+
+						<div className="setting-row">
+							<div>{i18n('是否显示元素状态')}</div>
+							<Switch size="small" checked={setting.isShowStatus} onChange={e => updateSetting('isShowStatus', e)} />
+						</div>
 					</div>
 
 					<div className="mt-[6px]">
@@ -53,13 +58,23 @@ export const ExtraArea = () => {
 						<div>{i18n('控制面板的透明度，防止遮盖背后的元素。')}</div>
 						<div>{i18n('鼠标悬浮时暂时透明，离开时恢复；也可以点击该图标，使面板固定透明。')}</div>
 
-						<div className="setting-row">
-							<div>{i18n('临时透明度')}</div>
-							<div className="flex items-center">
-								<Slider style={{ width: '120px', margin: 0 }} min={0.1} max={0.9} step={0.1} value={setting.tempOpacity} onChange={e => updateSetting('tempOpacity', e)} />
-								<div className="ml-2">{setting.tempOpacity}</div>
+						<div className="setting-area">
+							<div className="setting-row">
+								<div>{i18n('是否显示透明按钮')}</div>
+								<Switch size="small" checked={setting.isShowOpacity} onChange={e => updateSetting('isShowOpacity', e)} />
 							</div>
+							{
+								setting.isShowOpacity &&
+								<div className="setting-row">
+									<div>{i18n('临时透明度')}</div>
+									<div className="flex items-center">
+										<Slider style={{ width: '120px', margin: 0 }} min={0.1} max={0.9} step={0.1} value={setting.tempOpacity} onChange={e => updateSetting('tempOpacity', e)} />
+										<div className="ml-2">{setting.tempOpacity}</div>
+									</div>
+								</div>
+							}
 						</div>
+
 					</div>
 
 					<div className="mt-[12px]">

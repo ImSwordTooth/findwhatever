@@ -108,24 +108,25 @@ export const Pop = () => {
 	useEffect(() => {
 		// 防止输入时触发页面的全局快捷键
 		const pressedKeys = new Set();
-		
+
 		// 检测操作系统
-		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || 
+		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 ||
 					 navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
 
 		const handleKeyDown = (e) => {
 			if (e.target.parentElement?.id === "__swe_container") {
+
 				// 根据操作系统判断快捷键组合
-				const isValidModifier = isMac ? 
+				const isValidModifier = isMac ?
 					(e.ctrlKey && !e.shiftKey) : // macOS: Ctrl (不包含Shift)
 					(e.ctrlKey && e.shiftKey);   // 其他系统: Ctrl + Shift
-				
+
 				if (isValidModifier && !e.repeat) {
 					const keyId = `${e.ctrlKey}-${e.shiftKey}-${e.key.toLowerCase()}`;
-					
+
 					if (!pressedKeys.has(keyId)) {
 						pressedKeys.add(keyId);
-						
+
 						if (e.key === "c" || e.key === "C") {
 							e.preventDefault();
 							e.stopPropagation();
@@ -136,6 +137,18 @@ export const Pop = () => {
 							e.preventDefault();
 							e.stopPropagation();
 							handleIsWordChange();
+							return;
+						}
+						if (e.key === "d" || e.key === "D") {
+							e.preventDefault();
+							e.stopPropagation();
+							handleIsLiveChange();
+							return;
+						}
+						if (e.key === "r" || e.key === "R") {
+							e.preventDefault();
+							e.stopPropagation();
+							handleIsRegChange();
 							return;
 						}
 					}
@@ -167,7 +180,7 @@ export const Pop = () => {
 			window.removeEventListener("keypress", handleKeyPress, true);
 			window.removeEventListener("keyup", handleKeyUp, true);
 		};
-	}, [isMatchCase, isWord]);
+	}, [isMatchCase, isWord, isReg, isLive]);
 
 	// isLive 变更后，更新监听器
 	useEffect(() => {
@@ -260,22 +273,10 @@ export const Pop = () => {
 		}
 	}
 
-	const handleIsMatchCaseChange = () => {
-		const value = !isMatchCase
-		setIsMatchCase(value)
-	}
-	const handleIsWordChange = () => {
-		const value = !isWord
-		setIsWord(value)
-	}
-	const handleIsRegChange = () => {
-		const value = !isReg
-		setIsReg(value)
-	}
-	const handleIsLiveChange = () => {
-		const value = !isLive
-		setIsLive(value)
-	}
+	const handleIsMatchCaseChange = () => setIsMatchCase(!isMatchCase)
+	const handleIsWordChange = () => setIsWord(!isWord)
+	const handleIsRegChange = () => setIsReg(!isReg)
+	const handleIsLiveChange = () => setIsLive(!isLive)
 
 	const goPrev = async () => {
 		let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
@@ -366,6 +367,14 @@ export const Pop = () => {
 		}
 	}
 
+	const getShortcutText = (key, isBottom = false) => {
+		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
+		let text = `Ctrl + Shift + ${key.toUpperCase()}`
+		if (isMac) {
+			text = `Ctrl + ${key.toUpperCase()}`
+		}
+		return <span className={`italic scale-90 origin-${isBottom ? 'bottom' : 'center'} text-[#ffd700] inline-block opacity-90`}>{text}</span>
+	}
 
 	return (
 		<div className="fixed z-[10000] top-0 left-0">
@@ -388,7 +397,7 @@ export const Pop = () => {
 									type: "spring",
 									duration: 0.3
 								}}
-								className={`mainPanel ${sweSetting.isUseGlassEffect ? 'glass' : ''}`}
+								className={`mainPanel ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
 					>
 						<div id="searchWhateverPopup" ref={popContainerRef}>
 							{
@@ -400,9 +409,9 @@ export const Pop = () => {
 							<div className="flex items-center justify-between h-[24px] border-b-1 border-[#f5f5f5] mb-1">
 								<FrameList tabIndex={tabIndex} frames={frames} total={total} updateCurrent={setCurrent} updateTabIndex={setTabIndex} />
 								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
-									<FindResult total={total} current={current}/>
+									<FindResult total={total} current={current} isShowResultText={sweSetting.isShowResultText} />
 								</div>
-								<ExtraArea isHidePanel={isHidePanel} isHidePanelTemporarily={isHidePanelTemporarily} isShowSetting={sweSetting.isShowSetting ?? true} updateIsHidePanel={setIsHidePanel} updateIsHidePanelTemporarily={setIsHidePanelTemporarily} />
+								<ExtraArea isHidePanel={isHidePanel} isHidePanelTemporarily={isHidePanelTemporarily} isShowSetting={sweSetting.isShowSetting ?? true} isShowOpacity={sweSetting.isShowOpacity ?? true} isShowStatus={sweSetting.isShowStatus ?? true} updateIsHidePanel={setIsHidePanel} updateIsHidePanelTemporarily={setIsHidePanelTemporarily} />
 							</div>
 							<div className="flex items-center w-full">
 								<div className="swe_search relative">
@@ -423,6 +432,9 @@ export const Pop = () => {
 										value={searchValue}
 										onChange={handleSearchValueChange}
 										onKeyDown={handleEnter}
+										isShowRing={sweSetting.isShowRing ?? true}
+										ringColor={sweSetting.ringColor ?? '#3b82f6'}
+										textWidth={sweSetting.textWidth}
 									>
 										<div className="flex items-center bg-[rgba(255,255,255,0.9)] rounded-lg p-0.5 absolute right-[6px] top-[6px]">
 											{
@@ -465,7 +477,7 @@ export const Pop = () => {
 												arrowPointAtCenter={true}
 												placement="bottom"
 												getPopupContainer={(e) => e.parentElement}
-												title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('大小写敏感')}</div>}
+												title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('大小写敏感')} {getShortcutText('c', true)}</div>}
 											>
 												<button
 													className={`normalButton ${isMatchCase ? 'activeButton' : ''}`}
@@ -478,7 +490,7 @@ export const Pop = () => {
 												arrowPointAtCenter={true}
 												placement="bottom"
 												getPopupContainer={(e) => e.parentElement}
-												title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('匹配单词')}</div>}
+												title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('匹配单词')} {getShortcutText('w', true)}</div>}
 											>
 												<button
 													className={`normalButton ${isWord ? 'activeButton' : ''}`}
@@ -493,7 +505,7 @@ export const Pop = () => {
 												getPopupContainer={(e) => e.parentElement}
 												title={
 													<div className="scale-90" style={{ padding: '4px 0' }}>
-														<div>{i18n('正则表达式')}</div>
+														<div>{i18n('正则表达式')} {getShortcutText('r')}</div>
 														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
 													</div>
 												}
@@ -511,7 +523,7 @@ export const Pop = () => {
 												getPopupContainer={(e) => e.parentElement}
 												title={(
 													<div className="scale-90" style={{ padding: '4px 0' }}>
-														<div>{i18n('实时监测 DOM 变化')}</div>
+														<div>{i18n('实时监测 DOM 变化')} {getShortcutText('d')}</div>
 														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('在不适合实时监测的情况下请临时关闭此功能')}</div>
 													</div>
 												)}
@@ -540,14 +552,17 @@ export const Pop = () => {
 										</div>
 									</Input>
 								</div>
-								<div className="flex items-center">
-									<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer" onClick={closePop}>
-										<svg className="icon w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-											<path d="M12.47232 12.51328C26.74688-1.76128 49.5104-2.90816 65.15712 9.84064l2.93888 2.70336L1009.664 955.37152c14.96064 14.80704 15.62624 38.76864 1.51552 54.38464-14.12096 15.616-38.02112 17.3568-54.26176 3.95264l-2.9696-2.70336L12.41088 68.17792c-15.34976-15.39072-15.31904-40.30464 0.06144-55.66464z m0 0" fill="red"/>
-											<path d="M1009.67424 12.51328c-14.2848-14.27456-37.04832-15.42144-52.69504-2.67264l-2.99008 2.70336L12.41088 955.37152c-14.96064 14.80704-15.62624 38.76864-1.51552 54.38464 14.12096 15.616 38.02112 17.3568 54.25152 3.95264l2.9696-2.70336 941.568-942.82752c15.34976-15.38048 15.32928-40.30464-0.0512-55.66464h0.04096z m0 0" fill="red"/>
-										</svg>
-									</Button>
-								</div>
+								{
+									sweSetting.isShowClose &&
+									<div className="flex items-center">
+										<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer" onClick={closePop}>
+											<svg className="icon w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+												<path d="M12.47232 12.51328C26.74688-1.76128 49.5104-2.90816 65.15712 9.84064l2.93888 2.70336L1009.664 955.37152c14.96064 14.80704 15.62624 38.76864 1.51552 54.38464-14.12096 15.616-38.02112 17.3568-54.26176 3.95264l-2.9696-2.70336L12.41088 68.17792c-15.34976-15.39072-15.31904-40.30464 0.06144-55.66464z m0 0" fill="red"/>
+												<path d="M1009.67424 12.51328c-14.2848-14.27456-37.04832-15.42144-52.69504-2.67264l-2.99008 2.70336L12.41088 955.37152c-14.96064 14.80704-15.62624 38.76864-1.51552 54.38464 14.12096 15.616 38.02112 17.3568 54.25152 3.95264l2.9696-2.70336 941.568-942.82752c15.34976-15.38048 15.32928-40.30464-0.0512-55.66464h0.04096z m0 0" fill="red"/>
+											</svg>
+										</Button>
+									</div>
+								}
 							</div>
 						</div>
 					</motion.div>

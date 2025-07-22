@@ -18,8 +18,12 @@ const INIT_SETTING = {
 
 	dragArea: 'bar', // 可拖拽区域
 
+	isShowStatus: true, // 是否显示状态
+	isShowOpacity: true, // 是否显示临时透明度
 	tempOpacity: 0.7, // 临时透明度
 	isShowSetting: true, // 是否显示设置按钮
+
+	isShowResultText: true, // 是否显示查找结果的文本
 
 	bgColor: '#ffff37',
 	textColor: '#000000',
@@ -38,12 +42,18 @@ const INIT_SETTING = {
 	underlineStyleActive:'solid',
 	underlineColorActive: '#000000',
 
+	textWidth: 340, // 文本框长度
 	retentionTime: -1, // 历史记录保留时间
+	isShowRing: true, // 是否显示文本框光圈
+	ringColor: '#3b82f6', // 光圈颜色
 
+	isShowHistory: true, // 是否显示历史记录
 	openHistoryMode: 'hover', // 历史记录打开方式
 	debounceDuration: 200, // 非正则模式防抖时长
 	regexDebounceDuration: 2000, // 正则模式防抖时长
 	isOpenUnicode: false, // 是否开启 unicode 模式
+
+	isShowClose: true, // 是否显示设置按钮
 }
 
 export const Options = () => {

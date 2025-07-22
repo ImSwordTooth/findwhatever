@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import { i18n } from '../../i18n';
 import { Button, Switch, InputNumber } from 'antd';
 import { SettingContext } from '../Options'
+import { Shortcut } from '../Shortcut';
 
 export const Feature = () => {
 
@@ -25,7 +26,7 @@ export const Feature = () => {
 			</div>
 
 			<div className="mt-[6px]">
-				<div className="flex items-center">
+				<div className="flex items-center mt-2 mb-2">
 					<button className="normalButton ml-[0px]">
 						<span className="text-xs select-none">Cc</span>
 					</button>
@@ -34,11 +35,14 @@ export const Feature = () => {
 					</button>
 				</div>
 
-				<div>{i18n('激活后会严格根据字母的大小写匹配。原理是正则表达式的 i 模式。')}</div>
+				<div>
+					<Shortcut isMulti shortkey="c" />
+					<div>{i18n('激活后会严格根据字母的大小写匹配。原理是正则表达式的 i 模式。')}</div>
+				</div>
 			</div>
 
 			<div className="mt-[6px]">
-				<div className="flex items-center">
+				<div className="flex items-center mt-2 mb-2">
 					<button className="normalButton ml-[0px]">
 						<span className="text-xs select-none">W</span>
 					</button>
@@ -47,11 +51,14 @@ export const Feature = () => {
 					</button>
 				</div>
 
-				<div>{i18n('激活后只能匹配一个完整的单词，比如 special 这个单词，激活单词模式后搜索 spec 是搜不到的。原理是在内容前后加上正则表达式的 \\b。')}</div>
+				<div>
+					<Shortcut shortkey="w" isMulti />
+					<div>{i18n('激活后只能匹配一个完整的单词，比如 special 这个单词，激活单词模式后搜索 spec 是搜不到的。原理是在内容前后加上正则表达式的 \\b。')}</div>
+				</div>
 			</div>
 
 			<div className="mt-[6px]">
-				<div className="flex items-center">
+				<div className="flex items-center mt-2 mb-2">
 					<button className="normalButton ml-[0px]">
 						<span className="text-xs select-none">.*</span>
 					</button>
@@ -60,7 +67,10 @@ export const Feature = () => {
 					</button>
 				</div>
 
-				<div>{i18n('激活后可以使用正则表达式的语法进行搜索，为了避免输入过程中出现 .* 这种会匹配所有字符的情况出现，正则模式开启后，会有一段较长的防抖时间，默认 1000ms。')}</div>
+				<div>
+					<Shortcut shortkey="r" isMulti />
+					<div>{i18n('激活后可以使用正则表达式的语法进行搜索，为了避免输入过程中出现 .* 这种会匹配所有字符的情况出现，正则模式开启后，会有一段较长的防抖时间，默认 1000ms。')}</div>
+				</div>
 			</div>
 
 			<div className="setting-area">
@@ -75,7 +85,7 @@ export const Feature = () => {
 			</div>
 
 			<div className="mt-[6px]">
-				<div className="flex items-center">
+				<div className="flex items-center mt-2 mb-2">
 					<div
 						className={`w-5 h-5 justify-center rounded-[6px] select-none inline-flex items-center cursor-pointer ml-1`}
 					>
@@ -116,25 +126,35 @@ export const Feature = () => {
 					</div>
 				</div>
 
+				<Shortcut shortkey="d" isMulti />
 				<div>{i18n('激活后会启用一个 MutationObserver，监听页面里的 DOM 变化，变化后会自动更新查找结果。')}</div>
 				<div>{i18n('但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。')}</div>
 			</div>
 
 			<div className="mt-[6px]">
-				<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 cursor-pointer">
-					<svg className="icon w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1"
-						 xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-						<path
-							d="M12.47232 12.51328C26.74688-1.76128 49.5104-2.90816 65.15712 9.84064l2.93888 2.70336L1009.664 955.37152c14.96064 14.80704 15.62624 38.76864 1.51552 54.38464-14.12096 15.616-38.02112 17.3568-54.26176 3.95264l-2.9696-2.70336L12.41088 68.17792c-15.34976-15.39072-15.31904-40.30464 0.06144-55.66464z m0 0"
-							fill="red"/>
-						<path
-							d="M1009.67424 12.51328c-14.2848-14.27456-37.04832-15.42144-52.69504-2.67264l-2.99008 2.70336L12.41088 955.37152c-14.96064 14.80704-15.62624 38.76864-1.51552 54.38464 14.12096 15.616 38.02112 17.3568 54.25152 3.95264l2.9696-2.70336 941.568-942.82752c15.34976-15.38048 15.32928-40.30464-0.0512-55.66464h0.04096z m0 0"
-							fill="red"/>
-					</svg>
-				</Button>
+				<div className="mt-1 mb-1">
+					<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 cursor-pointer ">
+						<svg className="icon w-2.5 h-2.5" viewBox="0 0 1024 1024" version="1.1"
+							 xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+							<path
+								d="M12.47232 12.51328C26.74688-1.76128 49.5104-2.90816 65.15712 9.84064l2.93888 2.70336L1009.664 955.37152c14.96064 14.80704 15.62624 38.76864 1.51552 54.38464-14.12096 15.616-38.02112 17.3568-54.26176 3.95264l-2.9696-2.70336L12.41088 68.17792c-15.34976-15.39072-15.31904-40.30464 0.06144-55.66464z m0 0"
+								fill="red"/>
+							<path
+								d="M1009.67424 12.51328c-14.2848-14.27456-37.04832-15.42144-52.69504-2.67264l-2.99008 2.70336L12.41088 955.37152c-14.96064 14.80704-15.62624 38.76864-1.51552 54.38464 14.12096 15.616 38.02112 17.3568 54.25152 3.95264l2.9696-2.70336 941.568-942.82752c15.34976-15.38048 15.32928-40.30464-0.0512-55.66464h0.04096z m0 0"
+								fill="red"/>
+						</svg>
+					</Button>
+				</div>
 
-				<div>{i18n('点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。')}</div>
-				<div>{i18n('也可以在页面中按 Esc 键达到同样的效果。')}</div>
+				<div>
+					<Shortcut shortkey="Esc" />
+					<div>{i18n('点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。')}</div>
+				</div>
+
+				<div className="setting-row">
+					<div>{i18n('是否显示关闭按钮')}</div>
+					<Switch size="small" checked={setting.isShowClose} onChange={e => updateSetting('isShowClose', e)} />
+				</div>
 			</div>
 		</div>
 	)

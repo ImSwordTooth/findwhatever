@@ -18,6 +18,10 @@
 			background-color: rgba(255, 255, 255, 0.8);
 			backdrop-filter: blur(4px);
 		}
+
+		&.lessPT {
+			padding-top: 12px;
+		}
 	}
 
 	.monofont {
@@ -172,8 +176,6 @@
 		box-sizing: unset!important;
 	}
 
-
-
 	/* 设置页的 */
 	.mainOption {
 		position: relative;
@@ -245,6 +247,20 @@
 		padding: 2px 12px;
 		border-radius: 8px;
 		margin-left: -12px;
+	}
+
+	.shortcut {
+		font-size: 12px;
+		border-radius: 6px;
+		border: dashed 1px #87e8de;
+		display: inline-block;
+		padding: 0 8px;
+		color: #08979c;
+		background: #e6fffb;
+
+		.key {
+			font-size: 13px;
+		}
 	}
 }
 

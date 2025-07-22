@@ -430,6 +430,9 @@ button {
     -webkit-backdrop-filter: blur(4px);
             backdrop-filter: blur(4px);
   }
+  &.lessPT {
+    padding-top: 12px;
+  }
 }
 
 .monofont {
@@ -635,6 +638,19 @@ button {
   }
 }
 
+.shortcut {
+  font-size: 12px;
+  border-radius: 6px;
+  border: dashed 1px #87e8de;
+  display: inline-block;
+  padding: 0 8px;
+  color: #08979c;
+  background: #e6fffb;
+  .key {
+    font-size: 13px;
+  }
+}
+
 .visible {
   visibility: visible;
 }
@@ -756,6 +772,10 @@ button {
   margin-bottom: 4px;
 }
 
+.mb-2 {
+  margin-bottom: 8px;
+}
+
 .mb-\[40px\] {
   margin-bottom: 40px;
 }
@@ -784,6 +804,10 @@ button {
   margin-right: 8px;
 }
 
+.mt-1 {
+  margin-top: 4px;
+}
+
 .mt-2 {
   margin-top: 8px;
 }
@@ -802,6 +826,10 @@ button {
 
 .mt-\[6px\] {
   margin-top: 6px;
+}
+
+.mt-\[110px\] {
+  margin-top: 110px;
 }
 
 .box-content {
@@ -1130,6 +1158,10 @@ button {
   border-width: 0px;
 }
 
+.border {
+  border-width: 1px;
+}
+
 .border-b {
   border-bottom-width: 1px;
 }
@@ -1234,6 +1266,10 @@ button {
   padding-left: 10px;
 }
 
+.pl-\[8px\] {
+  padding-left: 8px;
+}
+
 .pr-3 {
   padding-right: 12px;
 }
@@ -1292,6 +1328,10 @@ button {
   font-weight: 700;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .leading-\[14px\] {
   line-height: 14px;
 }
@@ -1326,6 +1366,11 @@ button {
   color: rgb(255 77 79 / var(--tw-text-opacity));
 }
 
+.text-\[\#ffd700\] {
+  --tw-text-opacity: 1;
+  color: rgb(255 215 0 / var(--tw-text-opacity));
+}
+
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
@@ -1349,6 +1394,10 @@ button {
 
 .opacity-80 {
   opacity: 0.8;
+}
+
+.opacity-90 {
+  opacity: 0.9;
 }
 
 .filter {
