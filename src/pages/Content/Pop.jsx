@@ -236,6 +236,17 @@ export const Pop = () => {
 
 	}, [debouncedValue]);
 
+	// pop再次出现时，自动选中文本，方便直接下一轮直接输入关键字检索
+	useEffect(() => {
+		if (isReady && searchInputRef.current) {
+			setTimeout(() => {
+				if (searchInputRef.current) {
+					searchInputRef.current.select();
+				}
+			}, 10);
+		}
+	}, [isReady]);
+
 	const handleMessage = async (e) => {
 		if (e.data.type === 'swe_updateSearchResult') {
 			setCurrent(e.data.data.current)
