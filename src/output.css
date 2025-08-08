@@ -812,12 +812,12 @@ button {
   margin-top: 8px;
 }
 
-.mt-\[12px\] {
-  margin-top: 12px;
+.mt-\[110px\] {
+  margin-top: 110px;
 }
 
-.mt-\[20px\] {
-  margin-top: 20px;
+.mt-\[12px\] {
+  margin-top: 12px;
 }
 
 .mt-\[30px\] {
@@ -826,10 +826,6 @@ button {
 
 .mt-\[6px\] {
   margin-top: 6px;
-}
-
-.mt-\[110px\] {
-  margin-top: 110px;
 }
 
 .box-content {
@@ -1028,10 +1024,6 @@ button {
   min-width: 15px;
 }
 
-.min-w-\[340px\] {
-  min-width: 340px;
-}
-
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -1154,12 +1146,12 @@ button {
   border-radius: 6px;
 }
 
-.border-0 {
-  border-width: 0px;
-}
-
 .border {
   border-width: 1px;
+}
+
+.border-0 {
+  border-width: 0px;
 }
 
 .border-b {

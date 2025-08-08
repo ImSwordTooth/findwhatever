@@ -394,6 +394,7 @@ export const Pop = () => {
 				<Rnd
 					dragHandleClassName={sweSetting.dragArea === 'total' ? '' : 'searchWhateverMoveHandler'}
 					onDragStop={handleDragStop}
+					cancel="#swe_searchInput"
 					position={{ x, y }}
 					bounds='window'
 					enableResizing={false}
