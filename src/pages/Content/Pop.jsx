@@ -398,6 +398,7 @@ export const Pop = () => {
 					position={{ x, y }}
 					bounds='window'
 					enableResizing={false}
+					enableUserSelectHack={true}
 					style={{
 						transition: 'opacity 0.3s ease',
 						opacity: isHidePanel ? sweSetting.tempOpacity : (isHidePanelTemporarily ? sweSetting.tempOpacity : 1)
