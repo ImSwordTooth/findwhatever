@@ -2,6 +2,8 @@ import React, { useContext } from 'react'
 import {Radio, Switch} from 'antd';
 import { SettingContext } from '../Options'
 import {i18n} from '../../i18n';
+import SearchSvg from '../../../assets/svg/search.svg'
+import FixSvg from '../../../assets/svg/fix.svg'
 
 export const History = () => {
 	const { setting, updateSetting } = useContext(SettingContext)
@@ -15,29 +17,13 @@ export const History = () => {
 						?
 						<>
 							鼠标移动到输入框左侧的
-							<svg
-								className="p-1 box-content w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[#50a3d2]"
-								viewBox="0 0 1024 1024" version="1.1"
-								xmlns="http://www.w3.org/2000/svg" p-id="3578" width="32" height="32"
-								fill="#272636">
-								<path
-									d="M924.352 844.256l-163.968-163.968c44.992-62.912 71.808-139.648 71.808-222.72 0-211.776-172.224-384-384-384s-384 172.224-384 384 172.224 384 384 384c82.56 0 158.912-26.432 221.568-70.912l164.16 164.16c12.416 12.416 38.592 15.04 51.072 2.624l45.248-45.248c12.416-12.544 6.592-35.392-5.888-47.936zM128.128 457.568c0-176.448 143.552-320 320-320s320 143.552 320 320-143.552 320-320 320-320-143.552-320-320z"
-									p-id="3579"></path>
-							</svg>
+							<SearchSvg className="p-1 box-content w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[#50a3d2]" />
 							时，会展开查找记录列表。
 						</>
 						:
 						<>
 							When you move the mouse over the
-							<svg
-								className="p-1 box-content w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[#50a3d2]"
-								viewBox="0 0 1024 1024" version="1.1"
-								xmlns="http://www.w3.org/2000/svg" p-id="3578" width="32" height="32"
-								fill="#272636">
-								<path
-									d="M924.352 844.256l-163.968-163.968c44.992-62.912 71.808-139.648 71.808-222.72 0-211.776-172.224-384-384-384s-384 172.224-384 384 172.224 384 384 384c82.56 0 158.912-26.432 221.568-70.912l164.16 164.16c12.416 12.416 38.592 15.04 51.072 2.624l45.248-45.248c12.416-12.544 6.592-35.392-5.888-47.936zM128.128 457.568c0-176.448 143.552-320 320-320s320 143.552 320 320-143.552 320-320 320-320-143.552-320-320z"
-									p-id="3579"></path>
-							</svg>
+							<SearchSvg className="p-1 box-content w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[#50a3d2]" />
 							on the left side of the input field, the list of search records expands.
 						</>
 				}
@@ -56,31 +42,15 @@ export const History = () => {
 						?
 							<>
 								你还可以把常用的词语添加到固定列表中，只需在历史记录的某一条右侧点击
-								<div
-									className="inline-flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] group/fix ">
-									<svg className="w-3 h-3 group-hover/fix:fill-[#50a3d2]"
-										 viewBox="0 0 1024 1024" version="1.1"
-										 xmlns="http://www.w3.org/2000/svg" p-id="8003"
-										 width="200" height="200" fill="#3B3B3B">
-										<path
-											d="M1008.618567 392.01748l-383.019709-383.019709C606.447872-10.153214 574.529563 2.61411 568.145902 34.532419l-6.383662 57.452956-6.383662 70.22028c0 12.767324-6.383662 19.150985-12.767324 25.534647L236.195487 404.784804c-6.383662 6.383662-12.767324 6.383662-25.534647 6.383662h-12.767324l-57.452956-6.383662c-31.918309 0-51.069295 38.301971-25.534647 57.452956l44.685632 44.685633 127.673237 127.673236L0 1024l383.019709-287.264782 172.358869 172.358869c25.534647 25.534647 63.836618 6.383662 57.452956-25.534647l-6.383662-57.452956v-12.767324c0-6.383662 0-19.150985 6.383662-25.534647L829.876036 481.388746c6.383662-6.383662 12.767324-12.767324 25.534647-12.767324l70.22028-6.383662 57.452957-6.383662c38.301971-6.383662 51.069295-38.301971 25.534647-63.836618z m-255.346473 31.918309l-217.044501 306.415767s0 6.383662-6.383662 6.383662L287.264782 494.156069s6.383662 0 6.383662-6.383662l306.415767-217.044501c31.918309-19.150985 51.069295-51.069295 57.452956-89.371266l178.742531 178.742531c-31.918309 12.767324-63.836618 31.918309-82.987604 63.836618z"
-											p-id="8004"></path>
-									</svg>
+								<div className="inline-flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] group/fix ">
+									<FixSvg className="w-3 h-3 group-hover/fix:fill-[#50a3d2]" />
 								</div>。
 							</>
 						:
 						<>
 							You can also add frequently used words to a fixed list, just click the
-							<div
-								className="inline-flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] group/fix ">
-								<svg className="w-3 h-3 group-hover/fix:fill-[#50a3d2]"
-									 viewBox="0 0 1024 1024" version="1.1"
-									 xmlns="http://www.w3.org/2000/svg" p-id="8003"
-									 width="200" height="200" fill="#3B3B3B">
-									<path
-										d="M1008.618567 392.01748l-383.019709-383.019709C606.447872-10.153214 574.529563 2.61411 568.145902 34.532419l-6.383662 57.452956-6.383662 70.22028c0 12.767324-6.383662 19.150985-12.767324 25.534647L236.195487 404.784804c-6.383662 6.383662-12.767324 6.383662-25.534647 6.383662h-12.767324l-57.452956-6.383662c-31.918309 0-51.069295 38.301971-25.534647 57.452956l44.685632 44.685633 127.673237 127.673236L0 1024l383.019709-287.264782 172.358869 172.358869c25.534647 25.534647 63.836618 6.383662 57.452956-25.534647l-6.383662-57.452956v-12.767324c0-6.383662 0-19.150985 6.383662-25.534647L829.876036 481.388746c6.383662-6.383662 12.767324-12.767324 25.534647-12.767324l70.22028-6.383662 57.452957-6.383662c38.301971-6.383662 51.069295-38.301971 25.534647-63.836618z m-255.346473 31.918309l-217.044501 306.415767s0 6.383662-6.383662 6.383662L287.264782 494.156069s6.383662 0 6.383662-6.383662l306.415767-217.044501c31.918309-19.150985 51.069295-51.069295 57.452956-89.371266l178.742531 178.742531c-31.918309 12.767324-63.836618 31.918309-82.987604 63.836618z"
-										p-id="8004"></path>
-								</svg>
+							<div className="inline-flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] group/fix ">
+								<FixSvg className="w-3 h-3 group-hover/fix:fill-[#50a3d2]" />
 							</div>
 							on the right side of any entry in the history.
 						</>

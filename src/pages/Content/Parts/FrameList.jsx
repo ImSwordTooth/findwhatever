@@ -1,5 +1,4 @@
 import React from 'react'
-import {Tabs} from "antd";
 import PropTypes from 'prop-types'
 import { i18n } from '../../i18n'
 

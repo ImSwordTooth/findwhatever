@@ -30,9 +30,6 @@ export const Total = () => {
 					}
 					<span>{i18n('设置 Command+F(macOS) 或者 Ctrl+F(windows等) 时会覆盖浏览器自带的查找。')}</span>
 				</div>
-
-
-
 			</NewPart>
 
 			<div className="setting-row">
