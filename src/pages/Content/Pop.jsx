@@ -432,12 +432,16 @@ export const Pop = () => {
 							</div>
 							<div className="flex items-center w-full">
 								<div className="swe_search relative">
-									<RecentList recentList={recentList} fixList={fixList} openHistoryMode={sweSetting.openHistoryMode ?? 'hover'} updateFixList={setFixList} updateRecentList={setRecentList} fillSearchValue={fillSearchValue} popupContainer={popContainerRef.current} />
+									{
+										(sweSetting.isShowHistory ?? true) &&
+										<RecentList recentList={recentList} fixList={fixList} openHistoryMode={sweSetting.openHistoryMode ?? 'hover'} updateFixList={setFixList} updateRecentList={setRecentList} fillSearchValue={fillSearchValue} popupContainer={popContainerRef.current} />
+									}
 									<Input
 										ref={searchInputRef}
 										id="swe_searchInput"
 										autoFocus
 										placeholder={i18n('输入文本以查找')}
+										className={(sweSetting.isShowHistory??true) ? '' : 'pl-[8px]'}
 										value={searchValue}
 										onChange={handleSearchValueChange}
 										onKeyDown={handleEnter}
