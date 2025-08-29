@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Input } from '../../components/Input'
-import { reCheckTree, closePop, observerAllExceptMe, doSearchOutside, useDebounce } from './features'
+import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, doSearchOutside, useDebounce } from './features'
 import { i18n } from '../i18n'
 import { Tooltip, Button, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
@@ -192,7 +192,7 @@ export const Pop = () => {
 			return
 		}
 		if (isLive) {
-			observerAllExceptMe()
+			observerBodyAndOpenShadowRoot()
 		} else {
 			window.__swe_observer?.disconnect()
 		}

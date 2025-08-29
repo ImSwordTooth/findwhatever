@@ -34,6 +34,7 @@ export const reCheckTree = () => {
 					const normalizedTagArr = ['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']
 
 					let clonedContainer = node
+					const childNodesArr = Array.from(node.childNodes)
 					// 最后一层，并且有可以 normalize 的部分，并且没有换行
 					/**
 					 * 规范化的条件：
@@ -45,10 +46,10 @@ export const reCheckTree = () => {
 					 *
 					 * */
 					if (
-						Array.from(node.childNodes).every(child => !child.children || child.children.length === 0)
-						&& Array.from(node.childNodes).some(child => normalizedTagArr.includes(child.nodeName))
+						childNodesArr.every(child => !child.children || child.children.length === 0)
+						&& childNodesArr.some(child => normalizedTagArr.includes(child.nodeName))
 						&& !node.textContent.includes('\n')
-						&& node.childNodes.length > 1
+						&& childNodesArr.filter(c => c.nodeName !== '#comment').length > 1
 					) {
 						clonedContainer = node.cloneNode(true); // 克隆源节点，因为要执行一些 dom 的操作，不能改页面中的
 						clonedContainer.sourceNode = node // 把源节点备份一下，后面要用
@@ -132,21 +133,33 @@ export const closePop = () => {
 	})
 }
 
-export const observerAllExceptMe = () => {
+export const observerBodyAndOpenShadowRoot = () => {
 	if (!document) {
 		return
 	}
-	for (let child of document.body.children) {
-		if (child.tagName === 'SCRIPT' || child.id === '__swe_container') {
-			continue
-		}
-		window.__swe_observer.observe(child, {
-			subtree: true,
-			childList: true,
-			attributes: false,
-			characterData: true
-		})
+	window.__swe_observer.observe(document.body, {
+		subtree: true,
+		childList: true,
+		attributes: false,
+		characterData: true
+	})
+
+	function observeAllShadowRoots(startNode) {
+		const elements = startNode.querySelectorAll('*');
+		elements.forEach(element => {
+			const shadowRoot = element.shadowRoot;
+			if (shadowRoot && shadowRoot.mode === 'open') {
+				window.__swe_observer.observe(shadowRoot, {
+					subtree: true,
+					childList: true,
+					attributes: false,
+					characterData: true
+				});
+				observeAllShadowRoots(shadowRoot);
+			}
+		});
 	}
+	observeAllShadowRoots(document)
 }
 
 export const doSearchOutside = async (isAuto = false, cb) => {
@@ -325,4 +338,4 @@ window.__swe_doSearchOutside = doSearchOutside
 // 获取元素的隐藏状态，返回一个描述元素不可见的原因的字符串，如果不为空，说明元素不可见
 window.__swe_isElementVisible = isElementVisible
 
-window.observerAllExceptMe = observerAllExceptMe
+window.observerBodyAndOpenShadowRoot = observerBodyAndOpenShadowRoot

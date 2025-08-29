@@ -316,7 +316,7 @@ chrome.tabs.onActivated.addListener(async () => {
 								window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
 							}
 						})
-						window.observerAllExceptMe()
+						window.observerBodyAndOpenShadowRoot()
 					}
 				})
 			}
@@ -331,7 +331,7 @@ chrome.tabs.onActivated.addListener(async () => {
 							window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
 						}
 					})
-					window.observerAllExceptMe()
+					window.observerBodyAndOpenShadowRoot()
 				}
 			})
 		}
