@@ -130,102 +130,102 @@ export const FindResult = () => {
 							</div>
 						</>
 					}
+				</div>
 
-					<h3 className="mt-[12px]">search-results-active</h3>
-					<div className="setting-area">
-						<div className="setting-row">
-							<div>
-								{i18n('背景色')}
+				<h3 className="mt-[12px]">search-results-active</h3>
+				<div className="setting-area">
+					<div className="setting-row">
+						<div>
+							{i18n('背景色')}
+						</div>
+						<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.bgColorActive} onChange={e => updateSetting('bgColorActive', colorFormat(e))} />}>
+							<div className="color-picker">
+								<div className="color-block" style={{ backgroundColor: setting.bgColorActive }} />
+								{setting.bgColorActive}
 							</div>
-							<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.bgColorActive} onChange={e => updateSetting('bgColorActive', colorFormat(e))} />}>
-								<div className="color-picker">
-									<div className="color-block" style={{ backgroundColor: setting.bgColorActive }} />
-									{setting.bgColorActive}
-								</div>
-							</Popover>
-						</div>
-						<div className="setting-row">
-							<div>{i18n('字体颜色')}</div>
-							<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.textColorActive} onChange={ e => updateSetting('textColorActive', colorFormat(e))} />}>
-								<div className="color-picker">
-									<div className="color-block" style={{ backgroundColor: setting.textColorActive }} />
-									{setting.textColorActive}
-								</div>
-							</Popover>
-						</div>
-						<div className="setting-row">
-							<div>{i18n('下划线是否和 search-results 一致')}</div>
-							<Switch size="small" checked={setting.isSame} onChange={ e => updateSetting('isSame', e) } />
-						</div>
-
-						{
-							!setting.isSame &&
-							<>
-								<div className="setting-row">
-									<div>{i18n('是否启用下划线')}</div>
-									<Switch size="small" checked={setting.isOpenUnderlineActive} onChange={ e => updateSetting('isOpenUnderlineActive', e) } />
-								</div>
-								{
-									setting.isOpenUnderlineActive &&
-									<>
-										<div className="setting-row">
-											<div>{i18n('下划线间距')}</div>
-											<div className="flex items-center">
-												<Slider style={{ width: '120px', margin: 0 }} min={0} max={10} value={setting.underlineOffsetActive} onChange={e => updateSetting('underlineOffsetActive', e)} />
-												<div className="ml-2">{setting.underlineOffsetActive}px</div>
-											</div>
-										</div>
-										<div className="setting-row">
-											<div>{i18n('下划线线条高度')}</div>
-											<div className="flex items-center">
-												<Slider style={{ width: '120px', margin: 0 }} min={1} max={10} value={setting.underlineThicknessActive} onChange={e => updateSetting('underlineThicknessActive', e)} />
-												<div className="ml-2">{setting.underlineThicknessActive}px</div>
-											</div>
-										</div>
-										<div className="setting-row">
-											<div>{i18n('下划线样式')}</div>
-											<Select
-												value={setting.underlineStyleActive}
-												onChange={e => updateSetting('underlineStyleActive', e)}
-												size="small"
-												getPopupContainer={e => e.parentNode}
-												options={[
-													{
-														label: 'solid',
-														value: 'solid'
-													},
-													{
-														label: 'double',
-														value: 'double'
-													},
-													{
-														label: 'dotted',
-														value: 'dotted'
-													},
-													{
-														label: 'dashed',
-														value: 'dashed'
-													},
-													{
-														label: 'wavy',
-														value: 'wavy'
-													},
-												]} />
-										</div>
-										<div className="setting-row">
-											<div>{i18n('下划线颜色')}</div>
-											<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.underlineColorActive} onChange={ e => updateSetting('underlineColorActive', colorFormat(e))} />}>
-												<div className="color-picker">
-													<div className="color-block" style={{ backgroundColor: setting.underlineColorActive }} />
-													{setting.underlineColorActive}
-												</div>
-											</Popover>
-										</div>
-									</>
-								}
-							</>
-						}
+						</Popover>
 					</div>
+					<div className="setting-row">
+						<div>{i18n('字体颜色')}</div>
+						<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.textColorActive} onChange={ e => updateSetting('textColorActive', colorFormat(e))} />}>
+							<div className="color-picker">
+								<div className="color-block" style={{ backgroundColor: setting.textColorActive }} />
+								{setting.textColorActive}
+							</div>
+						</Popover>
+					</div>
+					<div className="setting-row">
+						<div>{i18n('下划线是否和 search-results 一致')}</div>
+						<Switch size="small" checked={setting.isSame} onChange={ e => updateSetting('isSame', e) } />
+					</div>
+
+					{
+						!setting.isSame &&
+						<>
+							<div className="setting-row">
+								<div>{i18n('是否启用下划线')}</div>
+								<Switch size="small" checked={setting.isOpenUnderlineActive} onChange={ e => updateSetting('isOpenUnderlineActive', e) } />
+							</div>
+							{
+								setting.isOpenUnderlineActive &&
+								<>
+									<div className="setting-row">
+										<div>{i18n('下划线间距')}</div>
+										<div className="flex items-center">
+											<Slider style={{ width: '120px', margin: 0 }} min={0} max={10} value={setting.underlineOffsetActive} onChange={e => updateSetting('underlineOffsetActive', e)} />
+											<div className="ml-2">{setting.underlineOffsetActive}px</div>
+										</div>
+									</div>
+									<div className="setting-row">
+										<div>{i18n('下划线线条高度')}</div>
+										<div className="flex items-center">
+											<Slider style={{ width: '120px', margin: 0 }} min={1} max={10} value={setting.underlineThicknessActive} onChange={e => updateSetting('underlineThicknessActive', e)} />
+											<div className="ml-2">{setting.underlineThicknessActive}px</div>
+										</div>
+									</div>
+									<div className="setting-row">
+										<div>{i18n('下划线样式')}</div>
+										<Select
+											value={setting.underlineStyleActive}
+											onChange={e => updateSetting('underlineStyleActive', e)}
+											size="small"
+											getPopupContainer={e => e.parentNode}
+											options={[
+												{
+													label: 'solid',
+													value: 'solid'
+												},
+												{
+													label: 'double',
+													value: 'double'
+												},
+												{
+													label: 'dotted',
+													value: 'dotted'
+												},
+												{
+													label: 'dashed',
+													value: 'dashed'
+												},
+												{
+													label: 'wavy',
+													value: 'wavy'
+												},
+											]} />
+									</div>
+									<div className="setting-row">
+										<div>{i18n('下划线颜色')}</div>
+										<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.underlineColorActive} onChange={ e => updateSetting('underlineColorActive', colorFormat(e))} />}>
+											<div className="color-picker">
+												<div className="color-block" style={{ backgroundColor: setting.underlineColorActive }} />
+												{setting.underlineColorActive}
+											</div>
+										</Popover>
+									</div>
+								</>
+							}
+						</>
+					}
 				</div>
 				{/*<Appearance />*/}
 			</div>

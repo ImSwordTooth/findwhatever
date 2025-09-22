@@ -15,3 +15,6 @@
 
 ## Others
 Automatically set the text language according to the language of your browser. Currently, only Chinese and English versions are available. If you need more languages, please leave a comment in the Chrome Store or leave an issue.
+
+## License
+[GPL-3.0-only](LICENSE)
