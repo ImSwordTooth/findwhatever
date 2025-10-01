@@ -6,8 +6,8 @@ import { i18n } from '../i18n'
 export const reCheckTree = () => {
 	const createTreeWalkerWithShadowDOM = (root) => {
 		return document.createTreeWalker(root, NodeFilter.SHOW_TEXT, (node) => {
-			// 父元素是 svg、script、script 的时候，不置入范围
-			if (['svg', 'STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
+			// 父元素是 script、script 的时候，不置入范围
+			if (['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
 				return NodeFilter.FILTER_REJECT
 			} else {
 				return NodeFilter.FILTER_ACCEPT
@@ -19,7 +19,7 @@ export const reCheckTree = () => {
 		if (node.nodeName === '#text') {
 			yield node
 		} else {
-			if (['svg', 'STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.nodeName)) { // 跳过 svg、style、script 等元素，加速
+			if (['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.nodeName)) { // 跳过 style、script 等元素，加速
 				yield null
 			} else {
 				const treeWalker = createTreeWalkerWithShadowDOM(node)
