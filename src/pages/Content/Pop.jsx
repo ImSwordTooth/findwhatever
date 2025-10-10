@@ -382,13 +382,21 @@ export const Pop = () => {
 		}
 	}
 
+	const getColorMode = () => {
+		if (sweSetting.colorMode === 'auto') {
+			return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+		} else {
+			return sweSetting.colorMode || 'light'
+		}
+	}
+
 	const getShortcutText = (key, isBottom = false) => {
 		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
 		let text = `Ctrl + Shift + ${key.toUpperCase()}`
 		if (isMac) {
 			text = `Ctrl + ${key.toUpperCase()}`
 		}
-		return <span className={`italic scale-90 origin-${isBottom ? 'bottom' : 'center'} text-[#ffd700] inline-block opacity-90`}>{text}</span>
+		return <span className={`italic scale-90 origin-${isBottom ? 'bottom' : 'center'} rounded-[6px] p-[1px_6px] bg-[rgba(81,81,81,83%)] shadow-[2px_2px_6px_3px_rgba(158,157,157,27%)] inline-block opacity-90`}>{text}</span>
 	}
 
 	return (
@@ -414,7 +422,7 @@ export const Pop = () => {
 									type: "spring",
 									duration: 0.3
 								}}
-								className={`mainPanel ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
+								className={`mainPanel ${getColorMode()} ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
 					>
 						<div id="searchWhateverPopup" ref={popContainerRef}>
 							{
@@ -449,20 +457,20 @@ export const Pop = () => {
 										ringColor={sweSetting.ringColor ?? '#3b82f6'}
 										textWidth={sweSetting.textWidth}
 									>
-										<div className="flex items-center bg-[rgba(255,255,255,0.9)] rounded-lg p-0.5 absolute right-[6px] top-[6px]">
+										<div className="flex items-center bg-[rgba(255,255,255,0.9)] dark:bg-[rgba(58,58,58,0.9)] rounded-lg p-0.5 absolute right-[6px] top-[6px]">
 											{
 												isReg && !isDebounceOk &&
-												<div className="absolute -left-[36px] top-[0px] h-full flex items-center"><Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 12 }} spin />} /></div>
+												<div className="absolute -left-[36px] top-[0px] h-full flex items-center"><Spin size="small" indicator={<LoadingOutlined className="dark:text-[#fff]" style={{ fontSize: 12 }} spin />} /></div>
 											}
 											{
 												searchValue &&
-												<ClearSvg className="absolute -left-[18px] w-3 h-3 opacity-25 hover:opacity-45 cursor-pointer"  onClick={clearInput} />
+												<ClearSvg className="absolute -left-[18px] w-3 h-3 opacity-25 hover:opacity-45 cursor-pointer dark:*:fill-[#fff]" onClick={clearInput} />
 											}
 											<Button type="text" className="w-5 !h-5 min-w-5 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={goPrev}>
-												<UpArrowSvg className="w-3.5 h-3.5 peer/svg" />
+												<UpArrowSvg className="w-3.5 h-3.5 dark:*:fill-[#fff]" />
 											</Button>
 											<Button type="text" className="w-5 !h-5 min-w-5 ml-1 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={goNext}>
-												<DownArrowSvg className="w-3.5 h-3.5" />
+												<DownArrowSvg className="w-3.5 h-3.5 dark:*:fill-[#fff]" />
 											</Button>
 											<div className="w-[1px] h-3.5 bg-[#dfdfdf] mx-1.5"></div>
 											<Tooltip
@@ -521,10 +529,24 @@ export const Pop = () => {
 												)}
 											>
 												<div
-													className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center ml-1 ${isLive ? 'activeButton' : ''}`}
+													className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center ml-1 dark:[path]:fill-[#fff] ${isLive ? 'activeLive' : ''}`}
 													onClick={handleIsLiveChange}
 												>
-													<LiveSvg className="w-4 h-4 will-change-transform" />
+													<svg className="w-4 h-4 will-change-transform" viewBox="0 0 1024 1024" version="1.1"
+														 xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+														<path
+															d="M432.877037 518.755668a88.046876 88.046876 0 0 0 175.973139 0 85.755245 85.755245 0 0 0-10.734482-42.093643l353.031788-180.918238a21.951413 21.951413 0 0 0 12.061216-14.111623 24.122432 24.122432 0 0 0-1.567958-18.333048c-31.359161-59.341182-82.619329-116.631957-152.212544-170.063143S649.978922 8.325013 546.252466 0.123386a22.554474 22.554474 0 0 0-18.333048 6.513057A24.122432 24.122432 0 0 0 520.320852 24.245818v406.462974a88.2881 88.2881 0 0 0-87.443815 88.046876z m88.046876 39.922624A39.922624 39.922624 0 1 1 560.846537 518.755668a39.802012 39.802012 0 0 1-39.922624 39.922624z"
+															className="fill-[#444] dark:fill-[#ababab]" />
+														<path
+															d="M253.285533 358.100273a312.626715 312.626715 0 0 0 267.035319 473.402722 334.095679 334.095679 0 0 0 76.106272-9.166524 312.867939 312.867939 0 0 0 227.836367-378.963402 24.122432 24.122432 0 0 0-10.975706-14.714684 24.122432 24.122432 0 0 0-35.459975 26.655288 264.502464 264.502464 0 1 1-483.654755-72.367296 261.004711 261.004711 0 0 1 162.464577-119.888485 23.157534 23.157534 0 0 0 14.714684-10.975707 24.122432 24.122432 0 0 0-8.322239-32.927119 24.122432 24.122432 0 0 0-18.212436-2.532855A307.922841 307.922841 0 0 0 253.285533 358.100273z"
+															className="fill-[#444] dark:fill-[#ababab]" />
+														<path
+															d="M1015.916211 413.220029a24.122432 24.122432 0 0 0-10.131421-15.07652 24.122432 24.122432 0 0 0-17.971212-3.618364 24.122432 24.122432 0 0 0-15.197132 10.131421 23.157534 23.157534 0 0 0-3.618364 17.971212A464.598035 464.598035 0 1 1 423.710513 54.157633a24.122432 24.122432 0 0 0 15.317744-10.010809 24.122432 24.122432 0 0 0 3.618365-17.971212 24.122432 24.122432 0 0 0-10.131422-15.317744 24.122432 24.122432 0 0 0-17.971211-3.618364 511.878001 511.878001 0 0 0-326.497113 217.101885 512.239837 512.239837 0 0 0 138.100921 711.611735 510.310043 510.310043 0 0 0 285.609592 88.046876 522.491871 522.491871 0 0 0 98.781357-9.769585 512.601674 512.601674 0 0 0 405.377465-601.010386z"
+															className="fill-[#444] dark:fill-[#ababab]" />
+														<path
+															d="M567.842042 50.418656a429.982345 429.982345 0 0 1 211.674339 80.930759 511.395552 511.395552 0 0 1 126.763378 133.397047L566.877145 438.548582V50.418656z"
+															fill="#50B3EA" />
+													</svg>
 												</div>
 											</Tooltip>
 										</div>

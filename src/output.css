@@ -430,6 +430,23 @@ button {
     -webkit-backdrop-filter: blur(4px);
             backdrop-filter: blur(4px);
   }
+  &.dark {
+    background-color: rgba(28, 28, 28, 1);
+    border-color: rgb(65 65 65 / 47%);
+    box-shadow: 0 0 6px 3px rgb(0 0 0 / 27%);
+    &.glass {
+      background-color: rgba(14, 14, 14, 0.76);
+      -webkit-backdrop-filter: blur(4px);
+              backdrop-filter: blur(4px);
+    }
+    .normalButton {
+      background-color: #383838;
+      color: white;
+    }
+    .activeButton {
+      background-color: rgb(119 134 144 / 16%)!important;
+    }
+  }
   &.lessPT {
     padding-top: 12px;
   }
@@ -447,6 +464,9 @@ button {
   background-color: rgba(183, 217, 239, 0.16) !important;
   color: #0788dc!important;
   font-weight: bold;
+}
+
+.activeLive {
   & > svg {
     filter: drop-shadow(4px -4px 4px #3aa9e3);
     animation: rotateInf 10s infinite linear;
@@ -474,6 +494,7 @@ button {
   bottom: -4px;
   width: 100%;
   height: 2px;
+  border-radius: 2px;
   transition: background-color .1s ease;
 }
 
@@ -481,6 +502,7 @@ button {
   height: 2px;
   flex: 1;
   margin-right: 4px;
+  border-radius: 2px;
   transition: background-color .1s ease;
 }
 
@@ -695,8 +717,16 @@ button {
   left: 0px;
 }
 
+.left-\[23px\] {
+  left: 23px;
+}
+
 .left-\[24px\] {
   left: 24px;
+}
+
+.left-\[4px\] {
+  left: 4px;
 }
 
 .left-\[5px\] {
@@ -774,6 +804,10 @@ button {
 
 .mb-2 {
   margin-bottom: 8px;
+}
+
+.mb-\[10px\] {
+  margin-bottom: 10px;
 }
 
 .mb-\[40px\] {
@@ -928,6 +962,10 @@ button {
   height: 32px;
 }
 
+.h-\[36px\] {
+  height: 36px;
+}
+
 .h-\[3px\] {
   height: 3px;
 }
@@ -1030,6 +1068,10 @@ button {
 
 .shrink-0 {
   flex-shrink: 0;
+}
+
+.origin-left {
+  transform-origin: left;
 }
 
 .origin-right {
@@ -1175,6 +1217,11 @@ button {
   border-color: rgba(232,232,232,0.8);
 }
 
+.bg-\[\#000000\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+}
+
 .bg-\[\#888888\] {
   --tw-bg-opacity: 1;
   background-color: rgb(136 136 136 / var(--tw-bg-opacity));
@@ -1183,6 +1230,11 @@ button {
 .bg-\[\#dfdfdf\] {
   --tw-bg-opacity: 1;
   background-color: rgb(223 223 223 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#e0e0e0\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(224 224 224 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#f1f1f1\] {
@@ -1199,9 +1251,17 @@ button {
   background-color: rgba(255,255,255,0.9);
 }
 
+.bg-\[rgba\(81\2c 81\2c 81\2c 83\%\)\] {
+  background-color: rgba(81,81,81,83%);
+}
+
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.fill-\[\#444\] {
+  fill: #444;
 }
 
 .p-0\.5 {
@@ -1214,6 +1274,10 @@ button {
 
 .p-\[12px\] {
   padding: 12px;
+}
+
+.p-\[1px_6px\] {
+  padding: 1px 6px;
 }
 
 .p-\[2px\] {
@@ -1307,6 +1371,10 @@ button {
   font-size: 11px;
 }
 
+.text-\[12px\] {
+  font-size: 12px;
+}
+
 .text-\[14px\] {
   font-size: 14px;
 }
@@ -1358,11 +1426,6 @@ button {
   color: rgb(255 77 79 / var(--tw-text-opacity));
 }
 
-.text-\[\#ffd700\] {
-  --tw-text-opacity: 1;
-  color: rgb(255 215 0 / var(--tw-text-opacity));
-}
-
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
@@ -1390,6 +1453,12 @@ button {
 
 .opacity-90 {
   opacity: 0.9;
+}
+
+.shadow-\[2px_2px_6px_3px_rgba\(158\2c 157\2c 157\2c 27\%\)\] {
+  --tw-shadow: 2px 2px 6px 3px rgba(158,157,157,27%);
+  --tw-shadow-colored: 2px 2px 6px 3px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .filter {
@@ -1583,12 +1652,111 @@ button {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.dark\:border-\[rgba\(93\2c 93\2c 93\2c 0\.8\)\]:is(.dark *) {
+  border-color: rgba(93,93,93,0.8);
+}
+
+.dark\:bg-\[\#242424\]:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(36 36 36 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-\[\#282828\]:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(40 40 40 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-\[\#383838\]:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(56 56 56 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-\[\#555\]:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(85 85 85 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-\[\#cbcbcb\]:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(203 203 203 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-\[rgba\(58\2c 58\2c 58\2c 0\.9\)\]:is(.dark *) {
+  background-color: rgba(58,58,58,0.9);
+}
+
 .dark\:bg-zinc-800:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(39 39 42 / var(--tw-bg-opacity));
 }
 
+.dark\:fill-\[\#ababab\]:is(.dark *) {
+  fill: #ababab;
+}
+
+.dark\:text-\[\#b0b0b0\]:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(176 176 176 / var(--tw-text-opacity));
+}
+
+.dark\:text-\[\#b7b4b4\]:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(183 180 180 / var(--tw-text-opacity));
+}
+
+.dark\:text-\[\#ddd\]:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(221 221 221 / var(--tw-text-opacity));
+}
+
+.dark\:text-\[\#fff\]:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.dark\:text-\[\#ffffff\]:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
 .dark\:text-white:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.dark\:\*\:fill-\[\#9f9f9f\] > *:is(.dark *) {
+  fill: #9f9f9f;
+}
+
+.dark\:\*\:fill-\[\#b0b0b0\] > *:is(.dark *) {
+  fill: #b0b0b0;
+}
+
+.dark\:\*\:fill-\[\#fff\] > *:is(.dark *) {
+  fill: #fff;
+}
+
+.dark\:hover\:bg-\[\#2c2c2c\]:hover:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(44 44 44 / var(--tw-bg-opacity));
+}
+
+.dark\:hover\:bg-\[\#353535\]:hover:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(53 53 53 / var(--tw-bg-opacity));
+}
+
+.dark\:hover\:text-\[\#3aa9e3\]:hover:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(58 169 227 / var(--tw-text-opacity));
+}
+
+.dark\:focus-visible\:ring-\[\#313131\]:focus-visible:is(.dark *) {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(49 49 49 / var(--tw-ring-opacity));
+}
+
+.dark\:\[\&_\.ant-dropdown-menu\]\:bg-\[\#242424\] .ant-dropdown-menu:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(36 36 36 / var(--tw-bg-opacity));
 }

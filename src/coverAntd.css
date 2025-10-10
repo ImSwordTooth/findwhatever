@@ -57,3 +57,18 @@
 .ant-select-item-option-selected {
 	color: #fff!important;
 }
+
+
+.dark {
+	.ant-dropdown-menu {
+		background-color: #242424;
+	}
+
+	.ant-dropdown-menu-item-active {
+		background-color: black;
+	}
+
+	.ant-dropdown-arrow::before {
+		background: #242424;
+	}
+}

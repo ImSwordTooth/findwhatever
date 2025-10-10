@@ -64,7 +64,7 @@ export const ExtraArea = (props) => {
 			{
 				isShowSetting &&
 				<div className="flex items-center text-xs text-[#a0a0a0] cursor-pointer opacity-80 z-30" onClick={openSetting}>
-					<SettingSvg className="w-3 h-3" />
+					<SettingSvg className="w-3 h-3 dark:*:fill-[#9f9f9f]" />
 				</div>
 			}
 		</div>

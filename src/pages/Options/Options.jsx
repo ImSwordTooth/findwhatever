@@ -14,6 +14,7 @@ import { Total } from './Parts/Total'
 export const SettingContext = createContext(null)
 
 const INIT_SETTING = {
+	colorMode: 'auto',
 	isUseGlassEffect: true,
 
 	dragArea: 'bar', // 可拖拽区域

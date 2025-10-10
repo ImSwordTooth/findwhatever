@@ -8,7 +8,7 @@ export const DragBar = () => {
 
 	return (
 		<div>
-			<div className="areaTitle">{i18n('拖拽条')}</div>
+			<div className="areaTitle mt-[30px]">{i18n('拖拽条')}</div>
 
 			<div>
 				<div>{i18n('点击并拖拽此处可调整面板位置，会自动记忆位置。')}</div>
