@@ -1736,6 +1736,22 @@ button {
   fill: #fff;
 }
 
+.dark\:selection\:bg-\[rgba\(255\2c 255\2c 255\2c 0\.2\)\] *:is(.dark *)::-moz-selection {
+  background-color: rgba(255,255,255,0.2);
+}
+
+.dark\:selection\:bg-\[rgba\(255\2c 255\2c 255\2c 0\.2\)\] *:is(.dark *)::selection {
+  background-color: rgba(255,255,255,0.2);
+}
+
+.dark\:selection\:bg-\[rgba\(255\2c 255\2c 255\2c 0\.2\)\]:is(.dark *)::-moz-selection {
+  background-color: rgba(255,255,255,0.2);
+}
+
+.dark\:selection\:bg-\[rgba\(255\2c 255\2c 255\2c 0\.2\)\]:is(.dark *)::selection {
+  background-color: rgba(255,255,255,0.2);
+}
+
 .dark\:hover\:bg-\[\#2c2c2c\]:hover:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(44 44 44 / var(--tw-bg-opacity));

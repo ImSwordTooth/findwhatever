@@ -123,8 +123,8 @@ export const FakePanel = (props) => {
 					padding:'0 12px 10px',
 					background: isDark ? '#1c1c1c' : '#fff',
 					borderRadius: '14px',
-					boxShadow: '0 0 6px 3px rgb(233 233 233 / 27%)',
-					border: 'solid 1px rgb(211 211 211 / 47%)',
+					boxShadow: isDark ? '0 0 6px 3px rgb(0 0 0 / 27%)' : '0 0 6px 3px rgb(233 233 233 / 27%)',
+					border: isDark ? 'solid 1px rgb(65 65 65 / 47%)' : 'solid 1px rgb(211 211 211 / 47%)',
 					opacity: (isHidePanel || isHidePanelTemporarily) ? setting.tempOpacity : 1,
 					paddingTop: `${!setting.isShowSetting && !setting.isShowOpacity && !setting.isShowStatus && setting.dragArea === 'total' ? '12px' : '18px'}`
 			}}>
