@@ -1,6 +1,6 @@
-import React, {useEffect, useState, createContext, useRef} from 'react'
+import React, { useEffect, useState, createContext, useRef } from 'react'
 import { i18n } from '../i18n'
-import {Button, message, Popover} from 'antd'
+import { message, Popover } from 'antd'
 import { DragBar } from './Parts/DragBar';
 import { ExtraArea } from './Parts/ExtraArea';
 import { FrameList } from './Parts/FrameList';
@@ -9,12 +9,22 @@ import { FakePanel } from './fakePanel';
 import { Input } from './Parts/Input';
 import { History } from './Parts/History'
 import { Feature } from './Parts/Feature'
+import { Total } from './Parts/Total'
 
 export const SettingContext = createContext(null)
 
 const INIT_SETTING = {
+	colorMode: 'auto',
+	isUseGlassEffect: true,
+
+	dragArea: 'bar', // 可拖拽区域
+
+	isShowStatus: true, // 是否显示状态
+	isShowOpacity: true, // 是否显示临时透明度
 	tempOpacity: 0.7, // 临时透明度
 	isShowSetting: true, // 是否显示设置按钮
+
+	isShowResultText: true, // 是否显示查找结果的文本
 
 	bgColor: '#ffff37',
 	textColor: '#000000',
@@ -33,10 +43,18 @@ const INIT_SETTING = {
 	underlineStyleActive:'solid',
 	underlineColorActive: '#000000',
 
+	textWidth: 340, // 文本框长度
+	retentionTime: -1, // 历史记录保留时间
+	isShowRing: true, // 是否显示文本框光圈
+	ringColor: '#3b82f6', // 光圈颜色
+
+	isShowHistory: true, // 是否显示历史记录
 	openHistoryMode: 'hover', // 历史记录打开方式
 	debounceDuration: 200, // 非正则模式防抖时长
-	regexDebounceDuration: 1000, // 正则模式防抖时长
+	regexDebounceDuration: 2000, // 正则模式防抖时长
 	isOpenUnicode: false, // 是否开启 unicode 模式
+
+	isShowClose: true, // 是否显示设置按钮
 }
 
 export const Options = () => {
@@ -57,6 +75,13 @@ export const Options = () => {
 		setSetting({
 			...INIT_SETTING,
 			...swe_setting
+		})
+
+		chrome.storage.sync.set({
+			swe_setting: {
+				...INIT_SETTING,
+				...swe_setting
+			}
 		})
 	}
 
@@ -89,8 +114,8 @@ export const Options = () => {
 			clearTimeout(timerRef.current);
 		}
 		timerRef.current = setTimeout(() => {
-			chrome.storage.sync.set({ swe_setting: setting, styleText: generateStyleText(setting) })
-		}, 2000);
+			chrome.storage.sync.set({ swe_setting: newSetting, styleText: generateStyleText(newSetting) })
+		}, 300);
 	}
 
 	const resetSetting = () => {
@@ -101,7 +126,7 @@ export const Options = () => {
 
 	return (
 		<SettingContext.Provider value={{setting, updateSetting}}>
-			<div className="flex flex-col" style={{ height: '100%', padding:'20px 0' }}>
+			<div className="flex flex-col optionWrap" style={{ height: '100%', padding:'20px 0' }}>
 				<div className="flex items-center justify-between mb-[40px] px-[40px]">
 					<div className="flex items-center">
 						<img className="w-[48px] h-[48px] mr-2" src="https://i2.letvimg.com/lc18_lemf/202503/31/13/43/icon.png"
@@ -110,6 +135,9 @@ export const Options = () => {
 					</div>
 
 					<div className="flex items-center">
+						<a href="https://www.producthunt.com/products/find-whatever-regex-auto-re-find?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-find&#0045;whatever" target="_blank" style={{ marginRight: '16px' }}>
+							<img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=987390&theme=light&t=1752202780162" alt="Find&#0032;whatever - Enhance&#0032;your&#0032;browser&#0039;s&#0032;find&#0032;capabilities | Product Hunt" style={{ width: '180px' }} />
+						</a>
 						<Popover
 							placement="bottomRight"
 							content={
@@ -161,6 +189,7 @@ export const Options = () => {
 
 				<div className="relative overflow-auto flex-1">
 					<div className="mainOption">
+						<Total />
 						<DragBar/>
 						<ExtraArea/>
 						<FrameList/>

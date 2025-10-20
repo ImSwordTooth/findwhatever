@@ -1,5 +1,4 @@
 import React from 'react'
-import {Tabs} from "antd";
 import PropTypes from 'prop-types'
 import { i18n } from '../../i18n'
 
@@ -47,10 +46,10 @@ export const FrameList = (props) => {
 	}
 
 	return (
-		<div className="flex items-center border-solid border-0 border-b border-[#f0f0f0] h-full flex-1 mr-1">
-			<div className="flex items-center text-xs mr-2 text-[#000000] relative cursor-pointer select-none" onClick={() => handleTabChange('0')}>
+		<div className="flex items-center border-solid border-0 border-b border-[rgba(232,232,232,0.8)] dark:border-[rgba(93,93,93,0.8)] h-full flex-1 mr-1">
+			<div className="flex items-center text-xs mr-2 text-[#000000] dark:text-[#ffffff] relative cursor-pointer select-none" onClick={() => handleTabChange('0')}>
 				{i18n('当前页')}
-				<span className="bg-[#f4f4f4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
+				<span className="bg-[#f4f4f4] dark:bg-[#282828] dark:text-[#b7b4b4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
 					{total.find(a => a.frameId === 0) ? total.find(a => a.frameId === 0).sum : 0}
 				</span>
 				{
@@ -58,8 +57,8 @@ export const FrameList = (props) => {
 					?
 					(
 						tabIndex === '0'
-							? <div className="pageTabStatusBar" style={{ backgroundColor: '#000000' }} />
-							: <div className="pageTabStatusBar" style={{ backgroundColor: '#e0e0e0' }} />
+							? <div className="pageTabStatusBar bg-[#000000] dark:bg-[#cbcbcb]" />
+							: <div className="pageTabStatusBar bg-[#e0e0e0] dark:bg-[#555]" />
 					)
 						: <div className="pageTabStatusBar" style={{ height: '1px' }} />
 
@@ -71,16 +70,16 @@ export const FrameList = (props) => {
 				<div className="flex items-center text-xs select-none cursor-pointer" onClick={nextFrame}>
 					<div className=" relative">
 						<span className="scale-90 inline-block mr-1 text-[#808080]">iframe</span>
-						<span className="font-mono">{frames.findIndex(f => f.frameId == tabIndex)}/{frames.length - 1}</span>
+						<span className="font-mono text-[#808080] text-[12px] inline-block scale-90 origin-left">{frames.findIndex(f => f.frameId == tabIndex)}/{frames.length - 1}</span>
 
 						<div className="flex items-center text-xs absolute w-full -bottom-[4px]">
 							{
 								frames.slice(1).map((frame) => {
 									if (total.find(a => a.frameId === frame.frameId)?.sum !== 0) {
 										if (frame.frameId.toString() === tabIndex) {
-											return <div key={frame.frameId} className="framesTabStatusBar" style={{ backgroundColor: '#000000' }}></div>
+											return <div key={frame.frameId} className="framesTabStatusBar bg-[#000000] dark:bg-[#cbcbcb]"></div>
 										} else {
-											return <div key={frame.frameId} className="framesTabStatusBar" style={{ backgroundColor: '#e0e0e0' }}></div>
+											return <div key={frame.frameId} className="framesTabStatusBar bg-[#e0e0e0] dark:bg-[#555]"></div>
 										}
 									} else {
 										return <div key={frame.frameId} className="framesTabStatusBar"></div>
@@ -91,7 +90,7 @@ export const FrameList = (props) => {
 					</div>
 					{
 						tabIndex !== '0' &&
-						<span className="bg-[#f4f4f4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
+						<span className="bg-[#f4f4f4] dark:bg-[#282828] dark:text-[#b7b4b4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
 							{total.find(a => a.frameId.toString() === tabIndex) ? total.find(a => a.frameId.toString() === tabIndex).sum : 0}
 						</span>
 					}

@@ -23,7 +23,7 @@ export const createOrUpdatePopup = (props) => {
 			<style type="text/css">{CoverAntdStyle[0][1].toString()}</style>
 		</ShadowRoot.div>
 	)
-	document.body.appendChild(dom)
+	document.documentElement.appendChild(dom)
 	const style = document.createElement('style')
 	style.innerText = `
 	.fade-out {

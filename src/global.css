@@ -7,6 +7,43 @@
 		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 	}
 
+	.mainPanel {
+		padding: 18px 12px 10px;
+		border-radius: 14px;
+		background-color: rgba(255, 255, 255, 1);
+		border: solid 1px rgb(211 211 211 / 47%);
+		box-shadow: 0 0 6px 3px rgb(233 233 233 / 27%);
+
+		&.glass {
+			background-color: rgba(255, 255, 255, 0.8);
+			backdrop-filter: blur(4px);
+		}
+
+		&.dark {
+			background-color: rgba(28, 28, 28, 1);
+			border-color: rgb(65 65 65 / 47%);
+			box-shadow: 0 0 6px 3px rgb(0 0 0 / 27%);
+
+			&.glass {
+				background-color: rgba(14, 14, 14, 0.76);
+				backdrop-filter: blur(4px);
+			}
+
+			.normalButton {
+				background-color: #383838;
+				color: white;
+			}
+
+			.activeButton {
+				background-color: rgb(119 134 144 / 16%)!important;
+			}
+		}
+
+		&.lessPT {
+			padding-top: 12px;
+		}
+	}
+
 	.monofont {
 		font-family: 'JetBrainsMono', monospace;
 	}
@@ -19,7 +56,9 @@
 		background-color: rgba(183, 217, 239, 0.16) !important;
 		color: #0788dc!important;
 		font-weight: bold;
+	}
 
+	.activeLive {
 		& > svg {
 			filter: drop-shadow(4px -4px 4px #3aa9e3);
 			animation: rotateInf 10s infinite linear;
@@ -47,6 +86,7 @@
 		bottom: -4px;
 		width: 100%;
 		height: 2px;
+		border-radius: 2px;
 		transition: background-color .1s ease;
 	}
 
@@ -54,6 +94,7 @@
 		height: 2px;
 		flex: 1;
 		margin-right: 4px;
+		border-radius: 2px;
 		transition: background-color .1s ease;
 	}
 
@@ -88,6 +129,10 @@
 			border-top: dashed 1px rgba(150, 64, 222, 0.08);
 			box-shadow: none;
 			border-radius: 0;
+
+			& > div {
+				line-height: 14px;
+			}
 
 			&:nth-of-type(1) {
 				border-top: dashed 1px #9640de52;
@@ -154,8 +199,6 @@
 	.sketch-picker * {
 		box-sizing: unset!important;
 	}
-
-
 
 	/* 设置页的 */
 	.mainOption {
@@ -228,6 +271,20 @@
 		padding: 2px 12px;
 		border-radius: 8px;
 		margin-left: -12px;
+	}
+
+	.shortcut {
+		font-size: 12px;
+		border-radius: 6px;
+		border: dashed 1px #87e8de;
+		display: inline-block;
+		padding: 0 8px;
+		color: #08979c;
+		background: #e6fffb;
+
+		.key {
+			font-size: 13px;
+		}
 	}
 }
 

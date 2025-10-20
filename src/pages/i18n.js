@@ -34,10 +34,26 @@ const textJson = {
 	"重置成功": "Reset successfully",
 	"保存成功": "Saved successfully",
 
+	"整体": "Overall",
+	"现在打开面板的默认快捷键为 Alt+F。": "The default shortcut key to open the panel is now Alt+F.",
+	"当前快捷键为": "The current shortcut key is",
+	"无": "null",
+	"未设置快捷键会导致面板只能通过点击图标打开。": "Not setting a shortcut key will cause the panel to only be able to be opened by clicking the icon.",
+	"设置 Command+F(macOS) 或者 Ctrl+F(windows等) 时会覆盖浏览器自带的查找。": "Setting Command+F (macOS) or Ctrl+F (Windows, etc.) will override the browser's built-in find function.",
+	"颜色模式": "Color mode",
+	"跟随系统": "auto",
+	"浅色": "light",
+	"深色": "dark",
+	"是否使用毛玻璃效果面板": "Whether or not to use a frosted glass effect panel",
+	"我不是专业的UI设计师，所以颜色搭配做的很不自信。如果你有更好的想法，欢迎帮助我做出更美观的界面。": "I'm not a professional UI designer, so my color combinations aren't very confident. If you have better ideas, welcome to help me create a more beautiful interface.",
+
 	"拖拽条": "Drag Bar",
 	"点击并拖拽此处可调整面板位置，会自动记忆位置。": "Click and drag here to adjust the panel position; it will automatically remember the location.",
 	"如果因为修改了浏览器窗口宽高导致面板位置异常（如修改窗口大小、打开控制台等），会在下一次打开时自动临时重置位置。": "If the panel position becomes abnormal due to changes in the browser window size and height (such as resizing the window, opening the console, etc.), it will automatically temporarily reset the position upon the next opening.",
 	"如果超过了设备的宽高，会在下一次打开时自动重置位置并清除记忆的位置。": "If it exceeds the device's width and height, it will automatically reset the position and clear the remembered position upon the next opening.",
+	"可拖拽区域": "Draggable area",
+	"仅拖拽条": "Drag bar only",
+	"整个面板": "The entire panel",
 
 	"右上角功能区": "Top-right Functional Area",
 	"元素存在页面中，但是宽度和高度都为 0。": "The element exists on the page, but both its width and height are 0.",
@@ -51,7 +67,8 @@ const textJson = {
 	"进入": "Go to",
 	"找到 Find whatever，点击“详情”-“扩展程序选项”。": "Find whatever, click \"Details\" - \"Extension Options\".",
 	"是否显示设置按钮": "Whether or not to display the settings button",
-
+	"是否显示元素状态": "Whether or not to display the element status",
+	"是否显示透明按钮": "Whether or not to display the opacity button",
 
 	"页面列表": "Page List",
 	"包含当前页，和页面中的 iframe，每个页面在右侧列出了匹配结果的数量。": "Contains the current page, and the iframes within the page, each with the number of matches listed on the right.",
@@ -66,6 +83,7 @@ const textJson = {
 	"子节点长度大于 1，": "Child node length greater than 1, ",
 	"这种结构，没必要规范化": "This structure doesn't need to be standardized",
 	"核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！": "Core and complex features, if there is a page with the wrong search results, please contact me in time, thank you!",
+	"是否显示查找结果的文本": "Whether or not to display the text of the search results",
 
 	"输入框": "Input",
 	"本插件比较适用于简短的词语搜索，": "This plugin is more suitable for short word searches and ",
@@ -76,7 +94,17 @@ const textJson = {
 	"如果上次搜索的结果会产生bug，而新面板又自动填入了，产生了新的 bug 导致插件不可用，可以": "If the results of the last search would cause bugs, and the new panel automatically fills in, creating new bugs that make the plugin unusable, you can",
 	"点击此处删去上一次的文本": "Click here to delete the last text",
 	"记得把 bug 反馈给我~": "Remember to feedback the bug to me~",
-
+	"上一次的搜索条件保留时间（包含搜索词、筛选项）": "The retention time of the last search condition (including search word and filter items)",
+	"一直保留": "Always keep",
+	"一直不保留": "Never keep",
+	"5分钟": "5 minutes",
+	"30分钟": "30 minutes",
+	"1小时": "1 hour",
+	"5小时": "5 hours",
+	"24小时": "24 hours",
+	"文本框宽度": "Input box width",
+	"是否显示文本框光圈": "Whether or not to display the input box halo",
+	"光圈颜色": "Halo color",
 
 	"历史记录": "History",
 	"点击列表项可以把文本填入输入框中。": "Click on a list item to fill in the text in the input box.",
@@ -87,6 +115,7 @@ const textJson = {
 	"历史记录打开方式": "How the history is opened",
 	"鼠标移入": "hover",
 	"鼠标点击": "click",
+	"是否显示历史记录": "Whether or not to display the history",
 
 	"功能区": "Function Area",
 	"切换当前定位的结果的下标(search-results-active)，切换时会尽量地把对应的元素滚动到视口内。": "Switch the index of the current located result (search-results-active), and when switching, try to scroll the corresponding element into the viewport.",
@@ -100,6 +129,7 @@ const textJson = {
 	"但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。": "However, the DOM change of the web page is a very common behavior, and it is impossible to judge whether the changes are frequent or whether it needs to be monitored, so it is up to the user to judge here, if you feel that it has no effect, you can turn it on, and if you don't feel that you don't need it, or if the DOM changes frequently under a certain page, you can turn it off.",
 	"点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。": "Click to remove the MutationObserver, clear the highlight, close the panel, zero the search result, and save the search record.",
 	"也可以在页面中按 Esc 键达到同样的效果。": "You can also press the Esc key in the middle of the page to achieve the same effect.",
+	"是否显示关闭按钮": "Whether or not to display the close button",
 
 	"设置项自动保存，但需要重新打开面板才能生效": "Auto-save settings, but need to reopen the panel to take effect",
 	"修改高亮样式后，可能需要刷新页面才能生效": "After you modify the highlight style, you may need to refresh the page for it to take effect",
@@ -108,6 +138,7 @@ const textJson = {
 
 export const i18n = (text) => {
 	const isChinese = navigator.language === 'zh' || navigator.language === 'zh-CN'
+	// const isChinese = false
 
 	if (isChinese) {
 		return text

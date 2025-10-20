@@ -4,45 +4,40 @@ let pageFrames = [] // 当前页面中的 frames
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
     const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(a => !a.errorOccurred); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
-
-	console.log(frames)
-
 	activeTabIdHistoryList[1] = tab.id
-	let visibleFrames = frames // 有内容的 frames
+	let visibleFrames = [] // 有内容的 frames
 
-    // for (let i of frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 )) {
-	// 	const res = await chrome.scripting.executeScript({
-	// 		target: { tabId: tab.id, frameIds: [i.frameId] },
-	// 		func: () => {
-	// 			function hasVisibleText() {
-	// 				const treeWalker = document.createTreeWalker(
-	// 					document.body,
-	// 					NodeFilter.SHOW_TEXT
-	// 				);
-	//
-	// 				while (treeWalker.nextNode()) {
-	// 					const text = treeWalker.currentNode.textContent.trim();
-	// 					const parent = treeWalker.currentNode.parentElement; // 检查文本节点是否在可见元素内
-	//
-	// 					if (text.length > 0 &&
-	// 						parent.tagName !== 'SCRIPT' &&
-	// 						parent.tagName !== 'STYLE' &&
-	// 						parent.tagName !== 'NOSCRIPT') {
-	// 						return true;
-	// 					}
-	// 				}
-	// 				return false;
-	// 			}
-	// 			return hasVisibleText()
-	// 		}
-	// 	})
-	//
-	// 	if (res[0].result) {
-	// 		visibleFrames.push(i)
-	// 	}
-    // }
-	//
-	console.log(visibleFrames, 'visibleFrames')
+    for (let i of frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 )) {
+		const res = await chrome.scripting.executeScript({
+			target: { tabId: tab.id, frameIds: [i.frameId] },
+			func: () => {
+				function hasVisibleText() {
+					const treeWalker = document.createTreeWalker(
+						document.body,
+						NodeFilter.SHOW_TEXT
+					);
+
+					while (treeWalker.nextNode()) {
+						const text = treeWalker.currentNode.textContent.trim();
+						const parent = treeWalker.currentNode.parentElement; // 检查文本节点是否在可见元素内
+
+						if (text.length > 0 &&
+							parent.tagName !== 'SCRIPT' &&
+							parent.tagName !== 'STYLE' &&
+							parent.tagName !== 'NOSCRIPT') {
+							return true;
+						}
+					}
+					return false;
+				}
+				return hasVisibleText()
+			}
+		})
+
+		if (res[0].result) {
+			visibleFrames.push(i)
+		}
+    }
 
 	const index = visibleFrames.findIndex(r => r.frameId === 0);
 	if (index > 0) {
@@ -57,24 +52,33 @@ chrome.action.onClicked.addListener(async (tab) => {
 	}))
 
 	// 重置查找总数，并设置 frames
-	await chrome.storage.sync.set({
+	await chrome.storage.session.set({
 		frames: pageFrames,
 		resultSum
 	})
 
-	for (let i of visibleFrames) {
-		// 插入脚本
+	if (visibleFrames.length > 0) {
+		for (let i of visibleFrames) {
+			// 插入脚本
+			await chrome.scripting.executeScript({
+				target: { tabId: tab.id, frameIds: [i.frameId] },
+				files: ['./action.bundle.js']
+			})
+		}
+	} else {
 		await chrome.scripting.executeScript({
-			target: { tabId: tab.id, frameIds: [i.frameId] },
+			target: { tabId: tab.id, frameIds: [0] },
 			files: ['./action.bundle.js']
 		})
 	}
 })
 
-chrome.runtime.onInstalled.addListener(async () => {
-    chrome.storage.sync.set({ searchValue: '', isMatchCase: false, isWord: false, isReg: false, isLive: true })
-    chrome.storage.sync.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
-	chrome.runtime.openOptionsPage()
+chrome.runtime.onInstalled.addListener(async (res) => {
+	if (res.reason === 'install') {
+		chrome.storage.sync.set({ searchValue: '', isMatchCase: false, isWord: false, isReg: false, isLive: true })
+		chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
+		chrome.runtime.openOptionsPage()
+	}
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -94,16 +98,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			resultSum.splice(currentResultIndex, 1)
 		}
 
-		const finalSession = { resultSum }
+		// 记录下上次搜索的时间，打开面板后判断超过一定时间后清除查找条件
+		const finalSession = { resultSum, lastSearchTime: Date.now() }
 
-		chrome.storage.sync.get(['activeResult'], (res) => {
+		chrome.storage.session.get(['activeResult'], (res) => {
 			if (isAuto) {
 				finalSession.activeResult = res.activeResult
 				finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
 			} else {
 				finalSession.activeResult = 0;
 			}
-			chrome.storage.sync.set(finalSession);
+			chrome.storage.session.set(finalSession);
 			sendResponse({ current: finalSession.activeResult, total: resultSum })
 		})
 		return true;
@@ -146,14 +151,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 	if (action === 'openAction') {
 		chrome.storage.sync.get('styleText', (res) => {
-			console.log(res)
-			console.log(pageFrames)
-
-			for (let i in pageFrames) {
-				console.log(pageFrames[i].frameId)
-				chrome.scripting.insertCSS({
-					target: { tabId: activeTabIdHistoryList[1], frameIds: [pageFrames[i].frameId] },
-					css: res?.styleText || `
+			chrome.scripting.insertCSS({
+				target: { tabId: activeTabIdHistoryList[1], allFrames: true },
+				css: res?.styleText || `
             ::highlight(search-results) {
     			background-color: #ffff37;
     			color: black;
@@ -163,8 +163,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     			color: black;
 			}
 		`
-				})
-			}
+			})
 		})
 	}
 
@@ -174,10 +173,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 const handleStorageChange = async (changes, areaName) => {
-    if (areaName === 'sync') {
-		console.log(changes)
+    if (areaName === 'session') {
         if (changes.activeResult || changes.force) {
-            const { resultSum, activeResult: activeResultFromStorage } = await chrome.storage.sync.get(['resultSum', 'activeResult']);
+            const { resultSum, activeResult: activeResultFromStorage } = await chrome.storage.session.get(['resultSum', 'activeResult']);
             const activeResult = changes.activeResult ? changes.activeResult.newValue : activeResultFromStorage
 
 			for (let i in pageFrames) {
@@ -202,7 +200,6 @@ const handleStorageChange = async (changes, areaName) => {
 						target: { tabId: activeTabIdHistoryList[1], frameIds: [Number(resultSum[i].frameId)] },
 						args: [activeResult - temp + resultSum[i].sum, !changes.force],
 						func: (realIndex, isAuto) => {
-							console.log(window.rangesFlat, window.filteredRangeList)
 							if (!window.rangesFlat) {
 								return
 							}
@@ -221,7 +218,7 @@ const handleStorageChange = async (changes, areaName) => {
 									dom.scrollIntoView({ behavior: 'instant', block: 'center' })
 								}
 							}
-							chrome.storage.sync.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList.value[realIndex - 1]) })
+							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList.value[realIndex - 1]) })
 						}
 					})
 					break;
@@ -242,11 +239,6 @@ chrome.tabs.onActivated.addListener(async () => {
 	if (currentTab.url.indexOf('http') < 0) {
 		return;
 	}
-    let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
-	frames = frames.filter(a => !a.errorOccurred).filter(f => f.url.indexOf('http') > -1)
-    resultSum = []
-	pageFrames = frames
-    await chrome.storage.sync.set({ resultSum: [], frames })
 
 	// 停用旧的标签页的isLive
 	if (activeTabIdHistoryList[0]) {
@@ -266,9 +258,71 @@ chrome.tabs.onActivated.addListener(async () => {
     })
 
     if (res[0].result) {
-		for (let i in frames) {
+		let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
+		frames = frames.filter(a => !a.errorOccurred)
+
+		let visibleFrames = [] // 有内容的 frames
+
+		for (let i of frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 )) {
+			const res = await chrome.scripting.executeScript({
+				target: { tabId: currentTab.id, frameIds: [i.frameId] },
+				func: () => {
+					function hasVisibleText() {
+						const treeWalker = document.createTreeWalker(
+							document.body,
+							NodeFilter.SHOW_TEXT
+						);
+
+						while (treeWalker.nextNode()) {
+							const text = treeWalker.currentNode.textContent.trim();
+							const parent = treeWalker.currentNode.parentElement; // 检查文本节点是否在可见元素内
+
+							if (text.length > 0 &&
+								parent.tagName !== 'SCRIPT' &&
+								parent.tagName !== 'STYLE' &&
+								parent.tagName !== 'NOSCRIPT') {
+								return true;
+							}
+						}
+						return false;
+					}
+					return hasVisibleText()
+				}
+			})
+
+			if (res[0].result) {
+				visibleFrames.push(i)
+			}
+		}
+
+		const index = visibleFrames.findIndex(r => r.frameId === 0);
+		if (index > 0) {
+			visibleFrames.unshift(visibleFrames.splice(index, 1)[0])
+		}
+
+		resultSum = []
+		pageFrames = visibleFrames
+		await chrome.storage.session.set({ resultSum: [], frames: visibleFrames })
+
+		if (visibleFrames.length > 0) {
+			for (let i in visibleFrames) {
+				chrome.scripting.executeScript({
+					target: {tabId: currentTab.id, frameIds: [frames[i].frameId]},
+					func: async () => {
+						window.__swe_doSearchOutside(false, (response) => {
+							if (window.isFrame) {
+								window.parent.postMessage({ type: 'swe_updateSettings', data: response }, '*')
+							} else {
+								window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
+							}
+						})
+						window.observerBodyAndOpenShadowRoot()
+					}
+				})
+			}
+		} else {
 			chrome.scripting.executeScript({
-				target: {tabId: currentTab.id, frameIds: [frames[i].frameId]},
+				target: {tabId: currentTab.id, frameIds: [0]},
 				func: async () => {
 					window.__swe_doSearchOutside(false, (response) => {
 						if (window.isFrame) {
@@ -277,7 +331,7 @@ chrome.tabs.onActivated.addListener(async () => {
 							window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
 						}
 					})
-					window.observerAllExceptMe()
+					window.observerBodyAndOpenShadowRoot()
 				}
 			})
 		}

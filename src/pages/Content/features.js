@@ -6,8 +6,8 @@ import { i18n } from '../i18n'
 export const reCheckTree = () => {
 	const createTreeWalkerWithShadowDOM = (root) => {
 		return document.createTreeWalker(root, NodeFilter.SHOW_TEXT, (node) => {
-			// 父元素是 svg、script、script 的时候，不置入范围
-			if (['svg', 'STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
+			// 父元素是 script、script 的时候，不置入范围
+			if (['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
 				return NodeFilter.FILTER_REJECT
 			} else {
 				return NodeFilter.FILTER_ACCEPT
@@ -19,7 +19,7 @@ export const reCheckTree = () => {
 		if (node.nodeName === '#text') {
 			yield node
 		} else {
-			if (['svg', 'STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.nodeName)) { // 跳过 svg、style、script 等元素，加速
+			if (['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.nodeName)) { // 跳过 style、script 等元素，加速
 				yield null
 			} else {
 				const treeWalker = createTreeWalkerWithShadowDOM(node)
@@ -34,6 +34,7 @@ export const reCheckTree = () => {
 					const normalizedTagArr = ['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']
 
 					let clonedContainer = node
+					const childNodesArr = Array.from(node.childNodes)
 					// 最后一层，并且有可以 normalize 的部分，并且没有换行
 					/**
 					 * 规范化的条件：
@@ -45,25 +46,27 @@ export const reCheckTree = () => {
 					 *
 					 * */
 					if (
-						Array.from(node.childNodes).every(child => !child.children || child.children.length === 0)
-						&& Array.from(node.childNodes).some(child => normalizedTagArr.includes(child.nodeName))
+						childNodesArr.every(child => !child.children || child.children.length === 0)
+						&& childNodesArr.some(child => normalizedTagArr.includes(child.nodeName))
 						&& !node.textContent.includes('\n')
-						&& node.childNodes.length > 1
+						&& childNodesArr.filter(c => c.nodeName !== '#comment').length > 1
 					) {
 						clonedContainer = node.cloneNode(true); // 克隆源节点，因为要执行一些 dom 的操作，不能改页面中的
 						clonedContainer.sourceNode = node // 把源节点备份一下，后面要用
 						clonedContainer.dataset.__swe__normalized = '777' // 标记一下，这个 dom 是规范化过的，名和值都是防重复
 
 						// 开始规范化，先把所有的标签换成文本节点
-						clonedContainer.childNodes.forEach((c) => {
-							if (c.nodeName === '#comment') { // 注释也算一个节点哦，直接干掉
-								c.remove()
+						for (let i=0; i<clonedContainer.childNodes.length; i++) {
+							const child = clonedContainer.childNodes[i]
+							if (child.nodeName === '#comment') { // 注释也算一个节点哦，直接干掉
+								child.remove()
+								i-- // 因为删除了一个节点，所以索引要减一
 							} else {
-								if (c.nodeName !== '#text') {
-									clonedContainer.replaceChild(document.createTextNode(c.textContent), c)
+								if (child.nodeName !== '#text') {
+									clonedContainer.replaceChild(document.createTextNode(child.textContent), child)
 								}
 							}
-						})
+						}
 
 						clonedContainer.normalize(); // 调用 normalize() 合并文本节点
 					}
@@ -87,7 +90,7 @@ export const reCheckTree = () => {
 		let genReturnNext = genReturn.next()
 		while (!genReturnNext.done) {
 			if (genReturnNext.value && genReturnNext.value.textContent && !/^\s+$/g.test(genReturnNext.value.textContent)) { // 如果一个元素的有内容，并且内容全都是空白，跳过之
-				if (genReturnNext.value.parentElement.dataset.__swe__normalized === '777') { // 规范化的元素是克隆的，所以在页面中必然是隐藏的，所以需要特殊处理
+				if (genReturnNext.value.parentElement?.dataset.__swe__normalized === '777') { // 规范化的元素是克隆的，所以在页面中必然是隐藏的，所以需要特殊处理
 					window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
 				} else {
 					if (isElementVisible(genReturnNext.value.parentElement) !== i18n('隐藏中')) {
@@ -130,21 +133,33 @@ export const closePop = () => {
 	})
 }
 
-export const observerAllExceptMe = () => {
+export const observerBodyAndOpenShadowRoot = () => {
 	if (!document) {
 		return
 	}
-	for (let child of document.body.children) {
-		if (child.tagName === 'SCRIPT' || child.id === '__swe_container') {
-			continue
-		}
-		window.__swe_observer.observe(child, {
-			subtree: true,
-			childList: true,
-			attributes: false,
-			characterData: true
-		})
+	window.__swe_observer.observe(document.body, {
+		subtree: true,
+		childList: true,
+		attributes: false,
+		characterData: true
+	})
+
+	function observeAllShadowRoots(startNode) {
+		const elements = startNode.querySelectorAll('*');
+		elements.forEach(element => {
+			const shadowRoot = element.shadowRoot;
+			if (shadowRoot && shadowRoot.mode === 'open') {
+				window.__swe_observer.observe(shadowRoot, {
+					subtree: true,
+					childList: true,
+					attributes: false,
+					characterData: true
+				});
+				observeAllShadowRoots(shadowRoot);
+			}
+		});
 	}
+	observeAllShadowRoots(document)
 }
 
 export const doSearchOutside = async (isAuto = false, cb) => {
@@ -215,7 +230,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 					let startTextLength = 0
 					let endTextLength = 0
-
+					let startIndex = 0
 					const children = el.parentNode.sourceNode.childNodes
 
 					for (let i=0; i<children.length; i++) {
@@ -231,10 +246,11 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 						startTextLength += currentLength
 						if (startTextLength >= index) {
 							range.setStart(currentNode, index - (startTextLength - currentLength))
+							startIndex = i
 							break
 						}
-
 					}
+
 					for (let i=0; i<children.length; i++) {
 						let currentNode = children[i]
 						if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了
@@ -322,4 +338,4 @@ window.__swe_doSearchOutside = doSearchOutside
 // 获取元素的隐藏状态，返回一个描述元素不可见的原因的字符串，如果不为空，说明元素不可见
 window.__swe_isElementVisible = isElementVisible
 
-window.observerAllExceptMe = observerAllExceptMe
+window.observerBodyAndOpenShadowRoot = observerBodyAndOpenShadowRoot

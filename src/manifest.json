@@ -1,8 +1,9 @@
 {
 	"manifest_version": 3,
 	"name": "Find whatever - regex & auto re-find",
-	"description": "Enhance your browser's find capabilities.",
-	"version": "3.0.0",
+	"short_name": "Find whatever",
+	"description": "Enhance your browser's find capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
+	"version": "3.5.0",
 	"icons": {
 		"16": "popup.png",
 		"32": "popup.png",
@@ -38,9 +39,9 @@
 	"commands": {
 		"_execute_action": {
 			"suggested_key": {
-				"windows": "Ctrl+F",
-				"mac": "Command+F",
-				"linux": "Ctrl+F"
+				"windows": "Alt+F",
+				"mac": "Alt+F",
+				"linux": "Alt+F"
 			}
 		}
 	},
@@ -51,3 +52,4 @@
 		}
 	]
 }
+

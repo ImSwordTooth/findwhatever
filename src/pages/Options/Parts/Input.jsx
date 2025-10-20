@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { InputNumber, Button, Spin, message } from 'antd'
+import {InputNumber, Button, Spin, message, Select, Switch, Popover} from 'antd'
 import { i18n } from '../../i18n';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SettingContext } from '../Options'
+import {SketchPicker} from 'react-color';
 
 export const Input = () => {
 	const { setting, updateSetting } = useContext(SettingContext)
@@ -21,6 +22,14 @@ export const Input = () => {
 		})
 	}
 
+	const colorFormat = (colorObj) => {
+		if (colorObj.rgb.a !== 1) {
+			return `rgba(${colorObj.rgb.r}, ${colorObj.rgb.g}, ${colorObj.rgb.b}, ${colorObj.rgb.a})`
+		} else {
+			return colorObj.hex
+		}
+	}
+
 	return (
 		<div>
 			<div className="areaTitle mt-[30px]">{i18n('输入框')}</div>
@@ -34,13 +43,55 @@ export const Input = () => {
 						: <>When debouncing is triggered, a <div className="inline-flex items-center"><Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 12 }} spin />} /></div> will appear on the right side of the input box</>
 				}
 			</div>
-			<div className="newPart">
-				<div className="new">new</div>
-				{i18n('如果上次搜索的结果会产生bug，而新面板又自动填入了，产生了新的 bug 导致插件不可用，可以')} <Button type="dashed" disabled={!lastValue} danger onClick={clearLast}><span className="px-[8px]">{i18n('点击此处删去上一次的文本')}（{lastValue || '空'}）</span></Button> 。
+			<div>
+				<div>{i18n('如果上次搜索的结果会产生bug，而新面板又自动填入了，产生了新的 bug 导致插件不可用，可以')} <Button type="dashed" disabled={!lastValue} danger onClick={clearLast}><span className="px-[8px]">{i18n('点击此处删去上一次的文本')}（{lastValue || '空'}）</span></Button> 。</div>
 				<div className="text-xs"><em>{i18n('记得把 bug 反馈给我~')}</em></div>
 			</div>
 
 			<div className="setting-area">
+				<div className="setting-row">
+					<div>{i18n('文本框宽度')}</div>
+					<InputNumber size="small" style={{ width: '140px' }} addonAfter="px" min={340} value={setting.textWidth} onChange={e => updateSetting('textWidth', e)} />
+				</div>
+				<div className="setting-row">
+					<div>{i18n('上一次的搜索条件保留时间（包含搜索词、筛选项）')}</div>
+					<Select
+						value={setting.retentionTime}
+						onChange={e => updateSetting('retentionTime', e)}
+						dropdownMatchSelectWidth={false}
+						size="small"
+						getPopupContainer={e => e.parentNode}
+						options={[
+							{
+								label: i18n('一直保留'),
+								value: -1
+							},
+							{
+								label: i18n('一直不保留'),
+								value: 0
+							},
+							{
+								label: i18n('5分钟'),
+								value: 5
+							},
+							{
+								label: i18n('30分钟'),
+								value: 30
+							},
+							{
+								label: i18n('1小时'),
+								value: 60
+							},
+							{
+								label: i18n('5小时'),
+								value: 300
+							},
+							{
+								label: i18n('24小时'),
+								value: 1440
+							},
+						]} />
+				</div>
 				<div className="setting-row">
 					<div>{i18n('非正则模式防抖时长')}</div>
 					<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={0} value={setting.debounceDuration} onChange={e => updateSetting('debounceDuration', e)} />
@@ -49,6 +100,22 @@ export const Input = () => {
 					<div>{i18n('正则模式防抖时长')}</div>
 					<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={500} value={setting.regexDebounceDuration} onChange={e => updateSetting('regexDebounceDuration', e)} />
 				</div>
+				<div className="setting-row">
+					<div>{i18n('是否显示文本框光圈')}</div>
+					<Switch size="small" checked={setting.isShowRing} onChange={e => updateSetting('isShowRing', e)} />
+				</div>
+				{
+					setting.isShowRing &&
+					<div className="setting-row">
+						<div>{i18n('光圈颜色')}</div>
+						<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.ringColor} onChange={ e => updateSetting('ringColor', colorFormat(e))} />}>
+							<div className="color-picker">
+								<div className="color-block" style={{ backgroundColor: setting.ringColor }} />
+								{setting.ringColor}
+							</div>
+						</Popover>
+					</div>
+				}
 			</div>
 		</div>
 	)
