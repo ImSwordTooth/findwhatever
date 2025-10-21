@@ -52,7 +52,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 	}))
 
 	// 重置查找总数，并设置 frames
-	await chrome.storage.session.set({
+	await chrome.storage.sync.set({
 		frames: pageFrames,
 		resultSum
 	})
@@ -76,7 +76,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 chrome.runtime.onInstalled.addListener(async (res) => {
 	if (res.reason === 'install') {
 		chrome.storage.sync.set({ searchValue: '', isMatchCase: false, isWord: false, isReg: false, isLive: true })
-		chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
+		chrome.storage.sync.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
 		chrome.runtime.openOptionsPage()
 	}
 })
@@ -101,14 +101,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		// 记录下上次搜索的时间，打开面板后判断超过一定时间后清除查找条件
 		const finalSession = { resultSum, lastSearchTime: Date.now() }
 
-		chrome.storage.session.get(['activeResult'], (res) => {
+		chrome.storage.sync.get(['activeResult'], (res) => {
 			if (isAuto) {
 				finalSession.activeResult = res.activeResult
 				finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
 			} else {
 				finalSession.activeResult = 0;
 			}
-			chrome.storage.session.set(finalSession);
+			chrome.storage.sync.set(finalSession);
 			sendResponse({ current: finalSession.activeResult, total: resultSum })
 		})
 		return true;
@@ -173,9 +173,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 const handleStorageChange = async (changes, areaName) => {
-    if (areaName === 'session') {
+    if (areaName === 'sync') {
         if (changes.activeResult || changes.force) {
-            const { resultSum, activeResult: activeResultFromStorage } = await chrome.storage.session.get(['resultSum', 'activeResult']);
+            const { resultSum, activeResult: activeResultFromStorage } = await chrome.storage.sync.get(['resultSum', 'activeResult']);
             const activeResult = changes.activeResult ? changes.activeResult.newValue : activeResultFromStorage
 
 			for (let i in pageFrames) {
@@ -218,7 +218,7 @@ const handleStorageChange = async (changes, areaName) => {
 									dom.scrollIntoView({ behavior: 'instant', block: 'center' })
 								}
 							}
-							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList.value[realIndex - 1]) })
+							chrome.storage.sync.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList.value[realIndex - 1]) })
 						}
 					})
 					break;
@@ -302,7 +302,7 @@ chrome.tabs.onActivated.addListener(async () => {
 
 		resultSum = []
 		pageFrames = visibleFrames
-		await chrome.storage.session.set({ resultSum: [], frames: visibleFrames })
+		await chrome.storage.sync.set({ resultSum: [], frames: visibleFrames })
 
 		if (visibleFrames.length > 0) {
 			for (let i in visibleFrames) {

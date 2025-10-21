@@ -26,7 +26,7 @@ window.filteredRangeList = new Proxy({ value: [] }, {
 			await reCheckTree()
 
 			const [{ lastSearchTime }, { swe_setting }] = await Promise.all([
-				chrome.storage.session.get(['lastSearchTime']),
+				chrome.storage.sync.get(['lastSearchTime']),
 				chrome.storage.sync.get(['swe_setting'])
 			])
 
