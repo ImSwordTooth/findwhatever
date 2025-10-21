@@ -3,7 +3,7 @@
 	"name": "Find whatever - regex & auto re-find",
 	"short_name": "Find whatever",
 	"description": "Enhance your browser's find capabilities.Case recognition、Word recognition、regular expressions、Listen for DOM changes in real time",
-	"version": "3.5.0",
+	"version": "3.5.1",
 	"icons": {
 		"16": "popup.png",
 		"32": "popup.png",

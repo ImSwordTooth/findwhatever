@@ -51,7 +51,7 @@ const INIT_SETTING = {
 	isShowHistory: true, // 是否显示历史记录
 	openHistoryMode: 'hover', // 历史记录打开方式
 	debounceDuration: 200, // 非正则模式防抖时长
-	regexDebounceDuration: 2000, // 正则模式防抖时长
+	regexDebounceDuration: 1000, // 正则模式防抖时长
 	isOpenUnicode: false, // 是否开启 unicode 模式
 
 	isShowClose: true, // 是否显示设置按钮
@@ -126,7 +126,8 @@ export const Options = () => {
 
 	return (
 		<SettingContext.Provider value={{setting, updateSetting}}>
-			<div className="flex flex-col optionWrap" style={{ height: '100%', padding:'20px 0' }}>
+			<div className="flex flex-col optionWrap" style={{ height: '100%', padding:'20px 0', backgroundColor: 'rgb(206 238 238 / 40%)' }}>
+				<div className="circle"></div>
 				<div className="flex items-center justify-between mb-[40px] px-[40px]">
 					<div className="flex items-center">
 						<img className="w-[48px] h-[48px] mr-2" src="https://i2.letvimg.com/lc18_lemf/202503/31/13/43/icon.png"

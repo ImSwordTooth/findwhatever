@@ -119,14 +119,14 @@
 	}
 
 	.setting-area {
-		box-shadow: 2px 2px 6px 2px #e3e3e31c;
+		box-shadow: 2px 2px 1px 2px rgb(221 183 225 / 32%);
 		margin-top: 12px;
 		width: 450px;
 
 		.setting-row {
 			margin: -1px 0 0 0;
-			border-bottom: dashed 1px rgba(150, 64, 222, 0.08);
-			border-top: dashed 1px rgba(150, 64, 222, 0.08);
+			border-bottom: dashed 1px rgba(150, 64, 222, 0.15);
+			border-top: dashed 1px rgba(150, 64, 222, 0.15);
 			box-shadow: none;
 			border-radius: 0;
 
@@ -135,11 +135,11 @@
 			}
 
 			&:nth-of-type(1) {
-				border-top: dashed 1px #9640de52;
+				border-top: dashed 1px rgba(150, 64, 222, 0.6);
 				border-radius: 4px 4px 0 0;
 			}
 			&:nth-last-of-type(1) {
-				border-bottom: dashed 1px #9640de52;
+				border-bottom: dashed 1px rgba(150, 64, 222, 0.6);
 				border-radius:0 0 4px 4px;
 			}
 		}
@@ -151,9 +151,9 @@
 		justify-content: space-between;
 		font-size: 13px;
 		padding: 4px 12px;
-		border: dashed 1px #9640de52;
+		border: dashed 1px rgba(150, 64, 222, 0.6);
 		height: 34px;
-		box-shadow: 2px 2px 6px 2px #e3e3e31c;
+		box-shadow: 2px 2px 1px 2px rgb(221 183 225 / 32%);
 		width: 450px;
 		margin: 12px 0;
 		border-radius: 4px;
@@ -231,6 +231,13 @@
 		}
 	}
 
+	.circle {
+		position: absolute;
+		right: 0;
+		top: 0;
+		box-shadow: 0 0 2000px 500px #f2ebce7d;
+	}
+
 
 	.areaTitle {
 		font-size: 20px;
@@ -240,7 +247,6 @@
 		top: 0;
 		color: #000000;
 		margin-bottom: 4px;
-		background-color: #ffffff;
 		padding: 6px 0;
 		text-shadow: 2px 2px 2px rgb(208 208 208 / 46%);
 	}

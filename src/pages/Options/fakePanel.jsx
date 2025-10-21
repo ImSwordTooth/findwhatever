@@ -367,7 +367,7 @@ export const FakePanel = (props) => {
 					</div>
 				</div>
 			</div>
-			<pre ref={textRef} className="mt-[110px] rounded-2xl p-[12px] bg-[#f1f1f1] text-[14px] whitespace-pre-wrap select-none">
+			<pre ref={textRef} className="mt-[110px] rounded-2xl p-[12px] bg-[#e8e8e88c] text-[14px] whitespace-pre-wrap select-none border-solid border-2 border-[#e1e1e1]">
 				{text}
 			</pre>
 

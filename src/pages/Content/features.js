@@ -235,9 +235,9 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 					for (let i=0; i<children.length; i++) {
 						let currentNode = children[i]
-						if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了
+						if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
 							if (children[i].childNodes[0]) {
-								currentNode = children[i].childNodes[0]
+								currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
 							} else {
 								continue
 							}
@@ -253,8 +253,8 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 					for (let i=0; i<children.length; i++) {
 						let currentNode = children[i]
-						if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了
-							currentNode = children[i].childNodes[0]
+						if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
+							currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
 						}
 						const currentLength = currentNode?.length || 0
 						endTextLength += currentLength
