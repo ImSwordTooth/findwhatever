@@ -15,8 +15,9 @@
 		box-shadow: 0 0 6px 3px rgb(233 233 233 / 27%);
 
 		&.glass {
-			background-color: rgba(255, 255, 255, 0.8);
+			background-color: rgba(255, 255, 255, 0.4);
 			backdrop-filter: blur(4px);
+			border-color: rgb(255 255 255 / 36%);
 		}
 
 		&.dark {
@@ -27,6 +28,7 @@
 			&.glass {
 				background-color: rgba(14, 14, 14, 0.76);
 				backdrop-filter: blur(4px);
+				border-color: rgb(63 63 63 / 36%);
 			}
 
 			.normalButton {
@@ -118,6 +120,12 @@
 		}
 	}
 
+	.optionWrap {
+		height: 100%;
+		padding: 20px 0;
+		background: linear-gradient(34deg, rgb(212 238 238 / 57%), transparent 70%, rgba(242, 224, 149, 0.33));
+	}
+
 	.setting-area {
 		box-shadow: 2px 2px 1px 2px rgb(221 183 225 / 32%);
 		margin-top: 12px;
@@ -187,6 +195,75 @@
 		}
 	}
 
+	.info-area {
+		border-left: solid 4px #b7e1cb;
+		padding-left: 8px;
+		margin: 20px 0;
+
+		.title {
+			color: #0f8547;
+			cursor: pointer;
+			margin-bottom: 12px;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+
+			path {
+				fill: #0f8547;
+			}
+		}
+
+		.content {
+			padding-left: 4px;
+
+			.previewWp {
+				display: flex;
+				margin-top: 12px;
+
+				.case {
+					list-style: none;
+					padding: 0;
+					margin: 0 20px 0 0;
+					width: 200px;
+					flex-shrink: 0;
+
+					li {
+						height: 30px;
+						display: flex;
+						align-items: center;
+						cursor: e-resize;
+						font-size: 12px;
+						color: #3a3a3a;
+						transition: all 0.3s ease;
+						padding-left: 12px;
+
+						&.active {
+							color: #0f8547;
+							background-color: #0f854712;
+						}
+
+						&:hover {
+							transform: translateX(4px);
+						}
+					}
+				}
+
+				.preview {
+					flex: 1;
+
+					img {
+						width: 100%;
+						border: solid 2px #d9d9d9;
+						border-radius: 20px;
+						cursor: pointer;
+					}
+				}
+			}
+		}
+	}
+
+
+
 	@keyframes rotateInf {
 		0% {
 			transform: rotate(0deg);
@@ -230,14 +307,6 @@
 			background-color: rgba(239, 239, 239, 0.5);
 		}
 	}
-
-	.circle {
-		position: absolute;
-		right: 0;
-		top: 0;
-		box-shadow: 0 0 2000px 500px #f2ebce7d;
-	}
-
 
 	.areaTitle {
 		font-size: 20px;

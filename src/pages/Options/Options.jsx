@@ -126,8 +126,7 @@ export const Options = () => {
 
 	return (
 		<SettingContext.Provider value={{setting, updateSetting}}>
-			<div className="flex flex-col optionWrap" style={{ height: '100%', padding:'20px 0', backgroundColor: 'rgb(206 238 238 / 40%)' }}>
-				<div className="circle"></div>
+			<div className="flex flex-col optionWrap">
 				<div className="flex items-center justify-between mb-[40px] px-[40px]">
 					<div className="flex items-center">
 						<img className="w-[48px] h-[48px] mr-2" src="https://i2.letvimg.com/lc18_lemf/202503/31/13/43/icon.png"

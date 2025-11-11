@@ -6,6 +6,9 @@ export const FrameList = (props) => {
 	const { frames, total, tabIndex, updateCurrent, updateTabIndex } = props
 
 	const handleTabChange = async (frameid) => {
+		if (!updateCurrent) {
+			return
+		}
 
 		const sum = total.map(a => a.sum).reduce((a, b) => a + b, 0)
 		if (sum > 0) {
