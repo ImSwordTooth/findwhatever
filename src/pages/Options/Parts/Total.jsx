@@ -63,24 +63,30 @@ export const Total = () => {
 			</div>
 
 			<div className="info-area">
-				<div className="title" onClick={() => setIsShowPreview(!isShowPreview)}>点击此处来展开颜色模式、毛玻璃效果面板的说明和预览。<DownSvg style={{ width: '20px', height: '20px', transform: `rotate(${isShowPreview ? 180 : 0}deg)` }} /></div>
+				<div className="title" onClick={() => setIsShowPreview(!isShowPreview)}>{i18n('点击此处来展开颜色模式、毛玻璃效果面板的说明和预览')}<DownSvg style={{ width: '20px', height: '20px', marginLeft: '8px', transition: 'transform .3s ease', transform: `rotate(${isShowPreview ? 180 : 0}deg)` }} /></div>
 				{
 					isShowPreview &&
 					<div className="content">
-						<div style={{ display: 'flex', alignItems: 'center' }}>
-							<TipsSvg style={{ width: '18px', height: '18px', marginRight: '4px' }} />
-							页面的背景色仅以黑白作为示例，切换时小心<span style={{backgroundColor: 'black', color: 'white', padding: '2px 4px', borderRadius: '4px'}}>眩光</span>。毛玻璃效果在相反的色调下不太好看，但是在相同色调下表现非常好，这也是我保留这个功能的原因。
+						<div style={{ paddingLeft: '22px', position: 'relative' }}>
+							<TipsSvg style={{ width: '18px', height: '18px', position: 'absolute', left: '0', top: '2px' }} />
+
+							{
+								navigator.language === 'zh' || navigator.language === 'zh-CN'
+									? <div>页面的背景色仅以黑白作为示例，切换时小心<span style={{backgroundColor: 'black', color: 'white', padding: '2px 4px', borderRadius: '4px'}}>眩光</span>。</div>
+									: <div>The background color of the page is only shown in black and white as an example, be careful with <span style={{backgroundColor: 'black', color: 'white', padding: '2px 4px', borderRadius: '4px'}}>glare</span> when switching.</div>
+							}
+							{i18n('毛玻璃效果在相反的色调下不太好看，但是在相同色调下表现非常好，这也是我保留这个功能的原因。')}
 						</div>
 						<div className="previewWp">
 							<ul className="case">
-								<li className={activeIndex === 0 ? 'active' : ''} onMouseEnter={() => setActiveIndex(0)}>浅色模式-浅色页面</li>
-								<li className={activeIndex === 1 ? 'active' : ''} onMouseEnter={() => setActiveIndex(1)}>浅色模式-深色页面</li>
-								<li className={activeIndex === 2 ? 'active' : ''} onMouseEnter={() => setActiveIndex(2)}>深色模式-浅色页面</li>
-								<li className={activeIndex === 3 ? 'active' : ''} onMouseEnter={() => setActiveIndex(3)}>深色模式-深色页面</li>
-								<li className={activeIndex === 4 ? 'active' : ''} onMouseEnter={() => setActiveIndex(4)}>浅色模式-浅色页面-毛玻璃</li>
-								<li className={activeIndex === 5 ? 'active' : ''} onMouseEnter={() => setActiveIndex(5)}>浅色模式-深色页面-毛玻璃</li>
-								<li className={activeIndex === 6 ? 'active' : ''} onMouseEnter={() => setActiveIndex(6)}>深色模式-浅色页面-毛玻璃</li>
-								<li className={activeIndex === 7 ? 'active' : ''} onMouseEnter={() => setActiveIndex(7)}>深色模式-深色页面-毛玻璃</li>
+								<li className={activeIndex === 0 ? 'active' : ''} onMouseEnter={() => setActiveIndex(0)}>{i18n('浅色模式-浅色页面')}</li>
+								<li className={activeIndex === 1 ? 'active' : ''} onMouseEnter={() => setActiveIndex(1)}>{i18n('浅色模式-深色页面')}</li>
+								<li className={activeIndex === 2 ? 'active' : ''} onMouseEnter={() => setActiveIndex(2)}>{i18n('深色模式-浅色页面')}</li>
+								<li className={activeIndex === 3 ? 'active' : ''} onMouseEnter={() => setActiveIndex(3)}>{i18n('深色模式-深色页面')}</li>
+								<li className={activeIndex === 4 ? 'active' : ''} onMouseEnter={() => setActiveIndex(4)}>{i18n('浅色模式-浅色页面-毛玻璃')}</li>
+								<li className={activeIndex === 5 ? 'active' : ''} onMouseEnter={() => setActiveIndex(5)}>{i18n('浅色模式-深色页面-毛玻璃')}</li>
+								<li className={activeIndex === 6 ? 'active' : ''} onMouseEnter={() => setActiveIndex(6)}>{i18n('深色模式-浅色页面-毛玻璃')}</li>
+								<li className={activeIndex === 7 ? 'active' : ''} onMouseEnter={() => setActiveIndex(7)}>{i18n('深色模式-深色页面-毛玻璃')}</li>
 							</ul>
 							<div className="preview">
 								{GetImage()}
