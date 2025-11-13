@@ -12,6 +12,8 @@
 - chrome：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
 - edge：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
 
+对我最大的支持就是在商店页面留下评分和评论～，<small>还有上面的 producthunt ☺️</small>
+
 ## 其他
 根据您的浏览器语言自动设置文本语言，目前只准备了中文和英语两个版本，如果需要更多，请提 issue 或者在商店页留言。
 

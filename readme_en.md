@@ -12,6 +12,7 @@
 - chrome：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
 - edge：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
 
+The biggest support for me is leaving ratings and reviews on the store page~, <small>and also the producthunt above ☺️</small>
 
 ## Others
 Automatically set the text language according to the language of your browser. Currently, only Chinese and English versions are available. If you need more languages, please leave a comment in the Chrome Store or leave an issue.
