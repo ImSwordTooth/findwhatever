@@ -14,7 +14,6 @@ import * as motion from 'motion/react-client'
 import ClearSvg from '../../assets/svg/clear.svg'
 import UpArrowSvg from '../../assets/svg/upArrow.svg'
 import DownArrowSvg from '../../assets/svg/downArrow.svg'
-import LiveSvg from '../../assets/svg/live.svg'
 import CloseSvg from '../../assets/svg/close.svg'
 
 export const Pop = () => {

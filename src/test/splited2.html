@@ -6,16 +6,12 @@
 </head>
 <body>
 <span class="break-text">
-	<a class="xref" href="">IsChanged</a>
-	<a class="xref" href="">Is<wbr/>Fo<wbr/>cu<span id="shadow"></span>d</a>
-	<a class="xref" id="br" href=""></a>
-	<a class="xref" href="">Is<strong>Fo</strong>cus<span>ed</span></a>
+	<span id="shadow"></span>
 
-	<strong>fuck</strong>
+	<div><span>测</span>所</div>
+	<div>[xx]</div>
+
 </span>
-<script>
-	document.getElementById("br").innerText = "IsFo\ncused";
-</script>
 <script>
 	const shadowHost = document.getElementById('shadow');
 	const shadowRoot = shadowHost.attachShadow({mode: 'open'});
@@ -25,9 +21,13 @@
 	const title = document.createElement('span');
 	title.textContent = '测试';
 
+	const title2 = document.createElement('span');
+	title2.textContent = 'hh';
+
 
 	// 将元素添加到shadow root中
 	shadowRoot.appendChild(title);
+	shadowRoot.appendChild(title2);
 </script>
 </body>
 </html>
