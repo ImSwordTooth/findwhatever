@@ -5,110 +5,12 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>正在防抖中的动画效果</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			height: 100vh;
-			margin: 0;
-			background-color: #f4f4f9;
-		}
 
-		.input-container {
-			position: relative;
-			margin-bottom: 20px;
-		}
-
-		input {
-			padding: 10px;
-			width: 300px;
-			font-size: 16px;
-			border: 1px solid #ccc;
-			border-radius: 4px;
-		}
-
-		.debounce-indicator {
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%);
-			width: 20px;
-			height: 20px;
-			display: none;
-		}
-
-		.dot {
-			position: absolute;
-			width: 6px;
-			height: 6px;
-			background-color: #007BFF;
-			border-radius: 50%;
-			animation: bounce 1.2s infinite ease-in-out both;
-		}
-
-		.dot1 {
-			left: 0;
-			animation-delay: -0.32s;
-		}
-
-		.dot2 {
-			left: 7px;
-			animation-delay: -0.16s;
-		}
-
-		.dot3 {
-			left: 14px;
-		}
-
-		@keyframes bounce {
-
-			0%,
-			80%,
-			100% {
-				transform: scale(0);
-			}
-
-			40% {
-				transform: scale(1.0);
-			}
-		}
-	</style>
 </head>
 
 <body>
-<div class="input-container">
-	<input type="text" id="searchInput" placeholder="输入内容触发防抖...">
-	<div class="debounce-indicator" id="debounceIndicator">
-		<div class="dot dot1"></div>
-		<div class="dot dot2"></div>
-		<div class="dot dot3"></div>
-	</div>
-</div>
-<script>
-	const searchInput = document.getElementById('searchInput');
-	const debounceIndicator = document.getElementById('debounceIndicator');
-	const debounceTime = 500; // 防抖时间，单位：毫秒
-	let timer;
+<p>Vue (发音为 /vjuː/，类似 <strong>view</strong>) 是一款用于构建用户界面的 JavaScript 框架。它基于标准 HTML、CSS 和 JavaScript 构建，并提供了一套声明式的、组件化的编程模型，帮助你高效地开发用户界面。无论是简单还是复杂的界面，Vue 都可以胜任。</p>
 
-	searchInput.addEventListener('input', function () {
-		// 显示防抖动画
-		debounceIndicator.style.display = 'block';
-
-		// 清除之前的定时器
-		clearTimeout(timer);
-
-		// 设置新的定时器
-		timer = setTimeout(() => {
-			// 防抖结束，隐藏动画
-			debounceIndicator.style.display = 'none';
-			// 这里可以添加实际的处理逻辑，比如搜索请求
-			console.log('防抖结束，执行操作，输入内容为：', this.value);
-		}, debounceTime);
-	});
-</script>
 </body>
 
 </html>

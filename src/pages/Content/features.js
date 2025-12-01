@@ -183,102 +183,107 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 			window.filteredRangeList.value = [] // 清除之前搜索到的匹配结果的 DOM 集合
 		}
 
-		window.rangesFlat = window.allNodes.map(({ el, text }) => {
-			const indices = []
-			let startPosition = 0
+		// 根据筛选项，设置正则表达式
+		let reg = null
+		let regContent = searchValue
+		if (!isReg) {
+			regContent = regContent.replace(/([^a-zA-Z0-9_ \n])/g, '\\$1')
+		}
+		if (isWord) {
+			regContent = `\\b${regContent}\\b`
+		}
 
-			// 根据筛选项，设置正则表达式
-			let regContent = searchValue
-			if (!isReg) {
-				regContent = regContent.replace(/([^a-zA-Z0-9_ \n])/g, '\\$1')
-			}
-			if (isWord) {
-				regContent = `\\b${regContent}\\b`
-			}
-			let execResLength = searchValue.value // 匹配结果的长度，一般情况下等于字符串长度，如果是正则，就得是正则结果的长度
-			let reg
-			try {
-				reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${swe_setting?.isOpenUnicode ? 'u' : ''}`);
-			} catch (e) {
-				// 正则表达式不合法
-				return []
-			}
+		try {
+			reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${swe_setting?.isOpenUnicode ? 'u' : ''}`);
+		} catch (e) {
+			// 正则表达式不合法
+			reg = null
+			window.rangesFlat = []
+		}
+		if (reg) {
+			window.rangesFlat = window.allNodes.map(({ el, text }) => {
+				const indices = [] // 对象数组，{ indicesStart: number, indicesLength: number }，分别是起点和长度
+				let startPosition = 0
 
-			while (startPosition < text.length) {
-				let index
-				reg.lastIndex = 0
-				const res = reg.exec(text.substring(startPosition))
+				while (startPosition < text.length) {
+					let index
+					reg.lastIndex = 0
+					const res = reg.exec(text.substring(startPosition))
 
-				if (res) {
-					index = res.indices[0][0]
-					execResLength = res.indices[0][1] - res.indices[0][0]
-					indices.push(startPosition + index)
-					startPosition += index + execResLength
-					matchText.push(res[0])
-				} else {
-					break
-				}
-			}
-
-			return indices.map(index => {
-				const range = new Range()
-				if (el.parentElement) {
-					// 如果有源节点的备份，说明是个规范化的元素，要高亮肯定得高亮源节点
-					window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.sourceNode || el.parentElement]
-				} else {
-					if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
-						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
+					if (res) {
+						index = res.indices[0][0]
+						const execResLength = res.indices[0][1] - res.indices[0][0]
+						indices.push({
+							indicesStart: startPosition + index,
+							indicesLength: execResLength
+						})
+						startPosition += index + execResLength
+						matchText.push(res[0])
+					} else {
+						break
 					}
 				}
 
-				if (el.parentNode.sourceNode) {
-					/**
-					 * 规范化后的元素只有一个文本节点，但是源节点可不是，里面有很多节点、标签，不能直接用 range 标识范围
-					 * 需要根据查找结果，确定起始点和结束点对应的 dom节点，再设置到 range
-					 * */
-					let startTextLength = 0
-					let endTextLength = 0
-					let startIndex = 0
-					const children = el.parentNode.sourceNode.childNodes
+				return indices.map(({ indicesStart, indicesLength }) => {
+					const range = new Range()
+					if (el.parentElement) {
+						// 如果有源节点的备份，说明是个规范化的元素，要高亮肯定得高亮源节点
+						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.sourceNode || el.parentElement]
+					} else {
+						if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
+							window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
+						}
+					}
 
-					for (let i=0; i<children.length; i++) {
-						let currentNode = children[i]
-						if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
-							if (children[i].childNodes[0]) {
-								currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
-							} else {
-								continue
+					if (el.parentNode.sourceNode) {
+						/**
+						 * 规范化后的元素只有一个文本节点，但是源节点可不是，里面有很多节点、标签，不能直接用 range 标识范围
+						 * 需要根据查找结果，确定起始点和结束点对应的 dom节点，再设置到 range
+						 * */
+						let startTextLength = 0
+						let endTextLength = 0
+						let startIndex = 0
+						const children = el.parentNode.sourceNode.childNodes
+
+						for (let i=0; i<children.length; i++) {
+							let currentNode = children[i]
+							if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
+								if (children[i].childNodes[0]) {
+									currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
+								} else {
+									continue
+								}
+							}
+							const currentLength = currentNode?.length || 0
+							startTextLength += currentLength
+							if (startTextLength >= indicesStart) {
+								range.setStart(currentNode, indicesStart - (startTextLength - currentLength))
+								startIndex = i
+								break
 							}
 						}
-						const currentLength = currentNode?.length || 0
-						startTextLength += currentLength
-						if (startTextLength >= index) {
-							range.setStart(currentNode, index - (startTextLength - currentLength))
-							startIndex = i
-							break
+
+						for (let i=0; i<children.length; i++) {
+							let currentNode = children[i]
+							if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
+								currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
+							}
+							const currentLength = currentNode?.length || 0
+							endTextLength += currentLength
+							if (endTextLength >= indicesStart + indicesLength) {
+								range.setEnd(currentNode, indicesStart + indicesLength - (endTextLength - currentLength))
+								break
+							}
 						}
+					} else {
+						range.setStart(el, indicesStart)
+						range.setEnd(el, indicesStart + indicesLength)
 					}
 
-					for (let i=0; i<children.length; i++) {
-						let currentNode = children[i]
-						if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
-							currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
-						}
-						const currentLength = currentNode?.length || 0
-						endTextLength += currentLength
-						if (endTextLength >= index + execResLength) {
-							range.setEnd(currentNode, index + execResLength - (endTextLength - currentLength))
-							break
-						}
-					}
-				} else {
-					range.setStart(el, index)
-					range.setEnd(el, index + execResLength)
-				}
-
-				return range
-			})
-		}).flat()
+					return range
+				})
+			}).flat()
+		}
 	} else {
 		window.rangesFlat = []
 	}
