@@ -11,6 +11,7 @@
 ## 扩展程序链接
 - chrome：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
 - edge：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
+- firefox：https://addons.mozilla.org/zh-CN/firefox/addon/find-whatever/
 
 对我最大的支持就是在商店页面留下评分和评论～，<small>还有上面的 producthunt ☺️</small>
 

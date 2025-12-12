@@ -11,6 +11,7 @@
 ## Extension link
 - chrome：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
 - edge：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
+- firefox：https://addons.mozilla.org/zh-CN/firefox/addon/find-whatever/
 
 The biggest support for me is leaving ratings and reviews on the store page~, <small>and also the producthunt above ☺️</small>
 
