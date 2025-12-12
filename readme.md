@@ -12,6 +12,8 @@
 - chrome：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
 - edge：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
 
+对我最大的支持就是在商店页面留下评分和评论～，<small>还有上面的 producthunt ☺️</small>
+
 ## firefox 的差异
 1. 文本框中的输入优先级高于扩展程序快捷键，因此在聚焦在文本框中时还需要额外的逻辑来关闭面板
 2. 不支持 `storage.session`，换成了 `storage.sync`

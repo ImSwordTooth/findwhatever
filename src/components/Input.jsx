@@ -4,8 +4,7 @@ import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { clsx } from "clsx";
 
-const Input = React.forwardRef(({ className, type, children, ...props }, ref) => {
-	const { isShowRing, ringColor, textWidth } = props
+const Input = React.forwardRef(({ className, type, children, isShowRing, ringColor, textWidth, ...props }, ref) => {
 	const radius = 100; // change this to increase the radius of the hover effect
 	const [visible, setVisible] = React.useState(false);
 

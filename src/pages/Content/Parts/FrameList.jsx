@@ -6,6 +6,9 @@ export const FrameList = (props) => {
 	const { frames, total, tabIndex, updateCurrent, updateTabIndex } = props
 
 	const handleTabChange = async (frameid) => {
+		if (!updateCurrent) {
+			return
+		}
 
 		const sum = total.map(a => a.sum).reduce((a, b) => a + b, 0)
 		if (sum > 0) {
@@ -66,7 +69,7 @@ export const FrameList = (props) => {
 			</div>
 
 			{
-				frames.length > 1 &&
+				frames?.length > 1 &&
 				<div className="flex items-center text-xs select-none cursor-pointer" onClick={nextFrame}>
 					<div className=" relative">
 						<span className="scale-90 inline-block mr-1 text-[#808080]">iframe</span>

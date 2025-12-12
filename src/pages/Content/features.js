@@ -20,64 +20,73 @@ export const reCheckTree = () => {
 			yield node
 		} else {
 			if (['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.nodeName)) { // 跳过 style、script 等元素，加速
-				yield null
-			} else {
-				const treeWalker = createTreeWalkerWithShadowDOM(node)
+				return
+			}
 
-				if (node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
-					yield* walkTextNodes(node.shadowRoot)
-				}
+			const treeWalker = createTreeWalkerWithShadowDOM(node)
 
-				if (node.childNodes?.length > 0) {
+			if (node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
+				yield* walkTextNodes(node.shadowRoot)
+			}
 
-					// 需要规范化的标签，都是行内的小标签
-					const normalizedTagArr = ['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']
+			if (node.childNodes?.length > 0) {
+				// 需要规范化的标签，都是行内的小标签
+				const normalizedTagArr = ['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']
 
-					let clonedContainer = node
-					const childNodesArr = Array.from(node.childNodes)
-					// 最后一层，并且有可以 normalize 的部分，并且没有换行
-					/**
-					 * 规范化的条件：
-					 *
-					 * 1. 没有嵌套结构
-					 * 2. 子节点中包含 normalizedTagArr 中的标签
-					 * 3. 没有换行
-					 * 4. 子节点长度大于 1，防止 <div><a>1111</a></div> 这种结构，没必要规范化
-					 *
-					 * */
-					if (
-						childNodesArr.every(child => !child.children || child.children.length === 0)
-						&& childNodesArr.some(child => normalizedTagArr.includes(child.nodeName))
-						&& !node.textContent.includes('\n')
-						&& childNodesArr.filter(c => c.nodeName !== '#comment').length > 1
-					) {
+				let clonedContainer = node
+				const childNodesArr = Array.from(node.childNodes)
+
+				// check: 是否是 ShadowRoot (ShadowRoot 的 nodeType 是 11)
+				// 最后一层，并且有可以 normalize 的部分，并且没有换行
+				/**
+				 * 规范化的条件：
+				 *
+				 * 1. 没有嵌套结构
+				 * 2. 子节点中包含 normalizedTagArr 中的标签
+				 * 3. 没有换行
+				 * 4. 子节点长度大于 1，防止 <div><a>1111</a></div> 这种结构，没必要规范化
+				 *
+				 * */
+				if (
+					childNodesArr.every(child => !child.children || child.children.length === 0)
+					&& childNodesArr.some(child => normalizedTagArr.includes(child.nodeName))
+					&& !node.textContent.includes('\n')
+					&& childNodesArr.filter(c => c.nodeName !== '#comment').length > 1
+				) {
+
+					const isShadowRoot = node instanceof ShadowRoot || node.nodeType === Node.DOCUMENT_FRAGMENT_NODE;
+					if (isShadowRoot) { // shadowRoot 不能克隆，因此需要特殊对待，把 shadowRoot 里的内容放到一个临时的 div 里
+						const newd = document.createElement('div')
+						newd.innerHTML = node.innerHTML
+						clonedContainer = newd
+					} else {
 						clonedContainer = node.cloneNode(true); // 克隆源节点，因为要执行一些 dom 的操作，不能改页面中的
-						clonedContainer.sourceNode = node // 把源节点备份一下，后面要用
-						clonedContainer.dataset.__swe__normalized = '777' // 标记一下，这个 dom 是规范化过的，名和值都是防重复
+					}
+					clonedContainer.sourceNode = node // 把源节点备份一下，后面要用
+					clonedContainer.dataset.__swe__normalized = '777' // 标记一下，这个 dom 是规范化过的，名和值都是防重复
 
-						// 开始规范化，先把所有的标签换成文本节点
-						for (let i=0; i<clonedContainer.childNodes.length; i++) {
-							const child = clonedContainer.childNodes[i]
-							if (child.nodeName === '#comment') { // 注释也算一个节点哦，直接干掉
-								child.remove()
-								i-- // 因为删除了一个节点，所以索引要减一
-							} else {
-								if (child.nodeName !== '#text') {
-									clonedContainer.replaceChild(document.createTextNode(child.textContent), child)
-								}
+					// 开始规范化，先把所有的标签换成文本节点
+					for (let i=0; i<clonedContainer.childNodes.length; i++) {
+						const child = clonedContainer.childNodes[i]
+						if (child.nodeName === '#comment') { // 注释也算一个节点哦，直接干掉
+							child.remove()
+							i-- // 因为删除了一个节点，所以索引要减一
+						} else {
+							if (child.nodeName !== '#text') {
+								clonedContainer.replaceChild(document.createTextNode(child.textContent), child)
 							}
 						}
-
-						clonedContainer.normalize(); // 调用 normalize() 合并文本节点
 					}
 
-					for (const child of clonedContainer.childNodes) {
-						yield* walkTextNodes(child)
-					}
-				} else {
-					while (treeWalker.nextNode()) {
-						yield treeWalker.currentNode
-					}
+					clonedContainer.normalize(); // 调用 normalize() 合并文本节点
+				}
+
+				for (const child of clonedContainer.childNodes) {
+					yield* walkTextNodes(child)
+				}
+			} else {
+				while (treeWalker.nextNode()) {
+					yield treeWalker.currentNode
 				}
 			}
 		}
@@ -174,103 +183,107 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 			window.filteredRangeList.value = [] // 清除之前搜索到的匹配结果的 DOM 集合
 		}
 
-		window.rangesFlat = window.allNodes.map(({ el, text }) => {
-			const indices = []
-			let startPosition = 0
+		// 根据筛选项，设置正则表达式
+		let reg = null
+		let regContent = searchValue
+		if (!isReg) {
+			regContent = regContent.replace(/([^a-zA-Z0-9_ \n])/g, '\\$1')
+		}
+		if (isWord) {
+			regContent = `\\b${regContent}\\b`
+		}
 
-			// 根据筛选项，设置正则表达式
-			let regContent = searchValue
-			if (!isReg) {
-				regContent = regContent.replace(/([^a-zA-Z0-9_ \n])/g, '\\$1')
-			}
-			if (isWord) {
-				regContent = `\\b${regContent}\\b`
-			}
-			let execResLength = searchValue.value // 匹配结果的长度，一般情况下等于字符串长度，如果是正则，就得是正则结果的长度
-			let reg
-			try {
-				reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${swe_setting?.isOpenUnicode ? 'u' : ''}`);
-			} catch (e) {
-				// 正则表达式不合法
-				return []
-			}
+		try {
+			reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${swe_setting?.isOpenUnicode ? 'u' : ''}`);
+		} catch (e) {
+			// 正则表达式不合法
+			reg = null
+			window.rangesFlat = []
+		}
+		if (reg) {
+			window.rangesFlat = window.allNodes.map(({ el, text }) => {
+				const indices = [] // 对象数组，{ indicesStart: number, indicesLength: number }，分别是起点和长度
+				let startPosition = 0
 
-			while (startPosition < text.length) {
-				let index
-				reg.lastIndex = 0
-				const res = reg.exec(text.substring(startPosition))
+				while (startPosition < text.length) {
+					let index
+					reg.lastIndex = 0
+					const res = reg.exec(text.substring(startPosition))
 
-				if (res) {
-					index = res.indices[0][0]
-					execResLength = res.indices[0][1] - res.indices[0][0]
-					indices.push(startPosition + index)
-					startPosition += index + execResLength
-					matchText.push(res[0])
-				} else {
-					break
-				}
-			}
-
-			return indices.map(index => {
-				const range = new Range()
-				if (el.parentElement) {
-					// 如果有源节点的备份，说明是个规范化的元素，要高亮肯定得高亮源节点
-					window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.sourceNode || el.parentElement]
-				} else {
-					if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
-						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
+					if (res) {
+						index = res.indices[0][0]
+						const execResLength = res.indices[0][1] - res.indices[0][0]
+						indices.push({
+							indicesStart: startPosition + index,
+							indicesLength: execResLength
+						})
+						startPosition += index + execResLength
+						matchText.push(res[0])
+					} else {
+						break
 					}
 				}
 
-				if (el.parentNode.sourceNode) {
-					/**
-					 * 规范化后的元素只有一个文本节点，但是源节点可不是，里面有很多节点、标签，不能直接用 range 标识范围
-					 * 需要根据查找结果，确定起始点和结束点对应的 dom节点，再设置到 range
-					 * */
+				return indices.map(({ indicesStart, indicesLength }) => {
+					const range = new Range()
+					if (el.parentElement) {
+						// 如果有源节点的备份，说明是个规范化的元素，要高亮肯定得高亮源节点
+						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.sourceNode || el.parentElement]
+					} else {
+						if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
+							window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
+						}
+					}
 
-					let startTextLength = 0
-					let endTextLength = 0
-					let startIndex = 0
-					const children = el.parentNode.sourceNode.childNodes
+					if (el.parentNode.sourceNode) {
+						/**
+						 * 规范化后的元素只有一个文本节点，但是源节点可不是，里面有很多节点、标签，不能直接用 range 标识范围
+						 * 需要根据查找结果，确定起始点和结束点对应的 dom节点，再设置到 range
+						 * */
+						let startTextLength = 0
+						let endTextLength = 0
+						let startIndex = 0
+						const children = el.parentNode.sourceNode.childNodes
 
-					for (let i=0; i<children.length; i++) {
-						let currentNode = children[i]
-						if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了
-							if (children[i].childNodes[0]) {
-								currentNode = children[i].childNodes[0]
-							} else {
-								continue
+						for (let i=0; i<children.length; i++) {
+							let currentNode = children[i]
+							if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
+								if (children[i].childNodes[0]) {
+									currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
+								} else {
+									continue
+								}
+							}
+							const currentLength = currentNode?.length || 0
+							startTextLength += currentLength
+							if (startTextLength >= indicesStart) {
+								range.setStart(currentNode, indicesStart - (startTextLength - currentLength))
+								startIndex = i
+								break
 							}
 						}
-						const currentLength = currentNode?.length || 0
-						startTextLength += currentLength
-						if (startTextLength >= index) {
-							range.setStart(currentNode, index - (startTextLength - currentLength))
-							startIndex = i
-							break
+
+						for (let i=0; i<children.length; i++) {
+							let currentNode = children[i]
+							if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
+								currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
+							}
+							const currentLength = currentNode?.length || 0
+							endTextLength += currentLength
+							if (endTextLength >= indicesStart + indicesLength) {
+								range.setEnd(currentNode, indicesStart + indicesLength - (endTextLength - currentLength))
+								break
+							}
 						}
+					} else {
+						range.setStart(el, indicesStart)
+						range.setEnd(el, indicesStart + indicesLength)
 					}
 
-					for (let i=0; i<children.length; i++) {
-						let currentNode = children[i]
-						if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了
-							currentNode = children[i].childNodes[0]
-						}
-						const currentLength = currentNode?.length || 0
-						endTextLength += currentLength
-						if (endTextLength >= index + execResLength) {
-							range.setEnd(currentNode, index + execResLength - (endTextLength - currentLength))
-							break
-						}
-					}
-				} else {
-					range.setStart(el, index)
-					range.setEnd(el, index + execResLength)
-				}
-
-				return range
-			})
-		}).flat()
+					return range
+				})
+			}).flat()
+		}
 	} else {
 		window.rangesFlat = []
 	}

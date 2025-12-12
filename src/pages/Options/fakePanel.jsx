@@ -136,7 +136,7 @@ export const FakePanel = (props) => {
 						</div>
 					}
 					<div className="flex items-center justify-between h-[24px] border-b-1 border-[#f5f5f5] mb-1">
-						<FrameList tabIndex={'0'} frames={[{frameId: '0'}, { frameId: '1' }, { frameId: '2' }]} total={[{frameId: '0', sum: 3}]} updateTabIndex={() => {}} updateCurrent={() => {}} />
+						<FrameList tabIndex={'0'} frames={[{frameId: '0'}, { frameId: '1' }, { frameId: '2' }]} total={[{frameId: '0', sum: 3}]} />
 						<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
 							<div className="inline-flex items-center absolute right-[12px] top-[6px] gap-[6px]">
 								{
@@ -367,7 +367,7 @@ export const FakePanel = (props) => {
 					</div>
 				</div>
 			</div>
-			<pre ref={textRef} className="mt-[110px] rounded-2xl p-[12px] bg-[#f1f1f1] text-[14px] whitespace-pre-wrap select-none">
+			<pre ref={textRef} className="mt-[110px] rounded-2xl p-[12px] bg-[#e8e8e88c] text-[14px] whitespace-pre-wrap select-none border-solid border-2 border-[#e1e1e1]">
 				{text}
 			</pre>
 
