@@ -307,6 +307,12 @@ export const isElementVisible = (el) => {
 	if (!el) {
 		return ''
 	}
+	if (navigator.userAgent.indexOf('Firefox') > -1) {
+		const root = el.getRootNode()
+		if (root instanceof ShadowRoot) {
+			return 'shadow dom'
+		}
+	}
 	const rect = el.getBoundingClientRect();
 	if (rect.width === 0 && rect.height === 0) {
 		return i18n('隐藏中')
