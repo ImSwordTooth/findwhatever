@@ -36,7 +36,6 @@ export const Pop = () => {
 	const [ debounceDuration, setDebounceDuration ] = useState(200)
 	const [ regexDebounceDuration, setRegexDebounceDuration ] = useState(1000)
 	const [ sweSetting, setSweSetting ] = useState({})
-	const [ commandText, setCommandText ] = useState('')
 
 	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration)
 
@@ -82,9 +81,6 @@ export const Pop = () => {
 				setY(syncStorage.y || parseInt(window.innerHeight * 0.1))
 			}
 
-			browser.commands.getAll(res =>  {
-				setCommandText(res[0].shortcut)
-			})
 
 			window.__swe_observer = new MutationObserver((mutationsList, observer) => {
 				// 遍历 mutationsList 数组，处理每个变化
@@ -123,8 +119,6 @@ export const Pop = () => {
 
 		const handleKeyDown = (e) => {
 			if (e.target.parentElement?.id === "__swe_container") {
-
-				console.log(commandText)
 
 				// 根据操作系统判断快捷键组合
 				const isValidModifier = isMac ?
@@ -559,7 +553,7 @@ export const Pop = () => {
 									</Input>
 								</div>
 								{
-									sweSetting.isShowClose &&
+									(sweSetting.isShowClose ?? true) &&
 									<div className="flex items-center">
 										<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer" onClick={closePop}>
 											<CloseSvg className="icon w-2.5 h-2.5" />

@@ -14,12 +14,6 @@
 
 对我最大的支持就是在商店页面留下评分和评论～，<small>还有上面的 producthunt ☺️</small>
 
-## firefox 的差异
-1. 文本框中的输入优先级高于扩展程序快捷键，因此在聚焦在文本框中时还需要额外的逻辑来关闭面板
-2. 不支持 `storage.session`，换成了 `storage.sync`
-3. manifest.json 中的 `background.service_worker` 换成了 `background.scripts`；需要添加 `browser_specific_settings.gecko.id` 字段
-4. shadow-dom 中的文本暂时不能应用高亮样式
-
 ## 其他
 根据您的浏览器语言自动设置文本语言，目前只准备了中文和英语两个版本，如果需要更多，请提 issue 或者在商店页留言。
 
