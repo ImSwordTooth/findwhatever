@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<style>
+		::highlight(shadow-dom-highlight) {
+			background-color: yellow;
+			color: black;
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+
+<div id="doc">
+	this is out Shadow DOM
+</div>
+<div id="shadow">
+
+</div>
+<script>
+	const shadowHost = document.getElementById('shadow');
+	const shadowRoot = shadowHost.attachShadow({mode: 'open'});
+
+	// 创建DOM元素并添加到shadow root中
+	const wrapper = document.createElement('div');
+	wrapper.style.backgroundColor = 'lightblue';
+	wrapper.style.padding = '4px 10px';
+	wrapper.style.borderRadius = '5px';
+
+	const title = document.createElement('div');
+	title.textContent = 'this is in Shadow DOM';
+
+
+	// 将元素添加到shadow root中
+	wrapper.appendChild(title);
+	shadowRoot.appendChild(wrapper);
+
+	// 页面加载完成后执行高亮
+	document.addEventListener('DOMContentLoaded', () => {
+		// 等待Shadow DOM渲染完成
+		const range1 = document.createRange();
+		const node1 = document.getElementById('doc').childNodes[0]
+		range1.setStart(node1, 14);
+		range1.setEnd(node1, 24);
+
+		const range2 = document.createRange();
+		const node2 = document.getElementById('shadow').shadowRoot.childNodes[0].childNodes[0].childNodes[0]
+		console.log(node2)
+		range2.setStart(node2, 11);
+		range2.setEnd(node2, 21);
+
+		const high = new Highlight(range1, range2)
+		CSS.highlights.set('shadow-dom-highlight', high);
+	});
+</script>
+</body>
+</html>
