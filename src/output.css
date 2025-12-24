@@ -1535,6 +1535,12 @@ button {
   opacity: 0.9;
 }
 
+.shadow {
+  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-\[2px_2px_6px_3px_rgba\(158\2c 157\2c 157\2c 27\%\)\] {
   --tw-shadow: 2px 2px 6px 3px rgba(158,157,157,27%);
   --tw-shadow-colored: 2px 2px 6px 3px var(--tw-shadow-color);

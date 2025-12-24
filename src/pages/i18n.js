@@ -1,7 +1,7 @@
 const textJson = {
 	"当前页": "Page",
 	"查找结果": "Results",
-	"输入文本以查找...": "Start typing to search...",
+	"输入文本以查找...": "type to search...",
 	"大小写敏感": "Match case",
 	"匹配单词": "Words",
 	"正则表达式": "Regex",

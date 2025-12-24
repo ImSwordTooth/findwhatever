@@ -447,7 +447,7 @@ export const Pop = () => {
 										ref={searchInputRef}
 										id="swe_searchInput"
 										autoFocus
-										placeholder={i18n('输入文本以查找')}
+										placeholder={i18n('输入文本以查找...')}
 										className={(sweSetting.isShowHistory??true) ? '' : 'pl-[8px]'}
 										value={searchValue}
 										onChange={handleSearchValueChange}
