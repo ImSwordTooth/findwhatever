@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { i18n } from '../../i18n';
-import { Radio, Switch, Tag } from 'antd';
+import { Popover, Radio, Switch, Tag } from 'antd';
 import { SettingContext } from '../Options'
 import TipsSvg from '../../../assets/svg/tips.svg'
 import DownSvg from '../../../assets/svg/down.svg'
+import { SketchPicker } from 'react-color';
 
 export const Total = () => {
 	const { setting, updateSetting } = useContext(SettingContext)
@@ -20,16 +21,31 @@ export const Total = () => {
 	const GetImage = () => {
 		let url = ''
 		switch (activeIndex) {
-			case 0: url = 'https://i2.letvimg.com/lc17_lemf/202511/11/17/59/image2.png'; break;
-			case 1: url = 'https://i0.letvimg.com/lc17_lemf/202511/11/17/59/image1.png'; break;
-			case 2: url = 'https://i0.letvimg.com/lc18_lemf/202511/11/18/00/image6.png'; break;
-			case 3: url = 'https://i3.letvimg.com/lc18_lemf/202511/11/18/00/image5.png'; break;
-			case 4: url = 'https://i3.letvimg.com/lc18_lemf/202511/11/18/00/image4.png'; break;
-			case 5: url = 'https://i0.letvimg.com/lc19_lemf/202511/11/17/59/image3.png'; break;
-			case 6: url = 'https://i0.letvimg.com/lc18_lemf/202511/11/18/00/image7.png'; break;
-			case 7: url = 'https://i0.letvimg.com/lc17_lemf/202511/11/18/01/image8.png'; break;
+			case 0: url = 'https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png'; break;
+			case 1: url = 'https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png'; break;
+			case 2: url = 'https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png'; break;
+			case 3: url = 'https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png'; break;
+			case 4: url = 'https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image4.png'; break;
+			case 5: url = 'https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image3.png'; break;
+			case 6: url = 'https://i0.letvimg.com/lc21_lemf/202601/29/10/45/image7.png'; break;
+			case 7: url = 'https://i0.letvimg.com/lc20_lemf/202601/29/10/45/image8.png'; break;
 		}
 		return <img onClick={() => window.open(url)} src={url} />
+	}
+
+	const updateColor = (propName, colorObj) => {
+		const colorText = colorObj.hex
+		if (propName === 'primaryColor') {
+			updateSetting({
+				colorMode: 'light',
+				primaryColor: colorText
+			})
+		} else{
+			updateSetting({
+				colorMode: 'dark',
+				primaryColor_dark: colorText
+			})
+		}
 	}
 
 	return (
@@ -55,6 +71,55 @@ export const Total = () => {
 						<Radio value={'light'}>{i18n('浅色')}</Radio>
 						<Radio value={'dark'}>{i18n('深色')}</Radio>
 					</Radio.Group>
+				</div>
+				<div className="setting-row">
+					<div>
+						{i18n('主题色')}：
+						<span className="smallTip">{i18n('强烈建议尝试预设色')}</span>
+					</div>
+					<Popover
+						trigger={['click']}
+						placement="rightTop"
+						content={
+							<SketchPicker
+								disableAlpha={true}
+								color={setting.primaryColor}
+								onChange={e => updateColor('primaryColor', e)}
+								onChangeComplete={e => updateColor('primaryColor', e)}
+								presetColors={['#1677ff', '#ff8096', '#8d48fb', '#20a7a5', '#20a722', '#a2dd02', '#ef1f1f']}
+							/>
+						}
+					>
+						<div className="color-picker">
+							<div className="color-block" style={{ backgroundColor: setting.primaryColor }} />
+							{setting.primaryColor}
+						</div>
+					</Popover>
+				</div>
+				<div className="setting-row">
+					<div>
+						{i18n('深色模式下的主题色')}：
+						<span className="smallTip">{i18n('强烈建议尝试预设色')}</span>
+					</div>
+					<Popover
+						trigger={['click']}
+						placement="rightTop"
+						content={
+							<SketchPicker
+								disableAlpha={true}
+								color={setting.primaryColor_dark}
+								onChange={e => updateColor('primaryColor_dark', e)}
+								onChangeComplete={e => updateColor('primaryColor_dark', e)}
+								presetColors={['#44d62c', '#fb7213', '#de8e8e', '#ffffff', '#0fffa0', '#ffd906' ]}
+							/>
+						}
+					>
+						<div className="color-picker">
+							<div className="color-block" style={{ backgroundColor: setting.primaryColor_dark }} />
+							{setting.primaryColor_dark}
+						</div>
+					</Popover>
+
 				</div>
 				<div className="setting-row">
 					<div>{i18n('是否使用毛玻璃效果面板')}：</div>

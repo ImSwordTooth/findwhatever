@@ -447,6 +447,8 @@ button {
     }
     .activeButton {
       background-color: rgb(119 134 144 / 16%)!important;
+      font-weight: normal!important;
+      text-shadow: 0 0 6px var(--swe-color-primary)!important;
     }
   }
   &.lessPT {
@@ -464,13 +466,14 @@ button {
 
 .activeButton {
   background-color: rgba(183, 217, 239, 0.16) !important;
-  color: #0788dc!important;
+  color: var(--swe-color-primary)!important;
   font-weight: bold;
+  text-shadow: none;
 }
 
 .activeLive {
   & > svg {
-    filter: drop-shadow(4px -4px 4px #3aa9e3);
+    filter: drop-shadow(4px -4px 4px var(--swe-color-primary));
     animation: rotateInf 10s infinite linear;
   }
 }
@@ -498,6 +501,7 @@ button {
   height: 2px;
   border-radius: 2px;
   transition: background-color .1s ease;
+  background-color: var(--swe-color-primary);
 }
 
 .framesTabStatusBar {
@@ -529,6 +533,9 @@ button {
   height: 100%;
   padding: 20px 0;
   background: linear-gradient(34deg, rgb(212 238 238 / 57%), transparent 70%, rgba(242, 224, 149, 0.33));
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 .setting-area {
@@ -590,6 +597,15 @@ button {
       border-radius: 2px;
       margin-right: 4px;
     }
+  }
+  .smallTip {
+    font-size: 12px;
+    transform: scale(0.8);
+    display: inline-block;
+    transform-origin: left bottom;
+    color: #7d7d7d;
+    position: relative;
+    bottom: 1px;
   }
 }
 
@@ -981,6 +997,10 @@ button {
   height: 20px;
 }
 
+.h-\[11px\] {
+  height: 11px;
+}
+
 .h-\[12px\] {
   height: 12px;
 }
@@ -1071,6 +1091,10 @@ button {
 
 .w-6 {
   width: 24px;
+}
+
+.w-\[11px\] {
+  width: 11px;
 }
 
 .w-\[128px\] {
@@ -1267,6 +1291,10 @@ button {
   border-width: 2px;
 }
 
+.border-\[1px\] {
+  border-width: 1px;
+}
+
 .border-b {
   border-bottom-width: 1px;
 }
@@ -1289,13 +1317,12 @@ button {
   border-color: rgb(245 245 245 / var(--tw-border-opacity));
 }
 
-.border-\[rgba\(232\2c 232\2c 232\2c 0\.8\)\] {
-  border-color: rgba(232,232,232,0.8);
+.border-\[rgba\(204\2c 204\2c 204\2c 0\.38\)\] {
+  border-color: rgba(204,204,204,0.38);
 }
 
-.bg-\[\#000000\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+.border-\[rgba\(232\2c 232\2c 232\2c 0\.8\)\] {
+  border-color: rgba(232,232,232,0.8);
 }
 
 .bg-\[\#888888\] {
@@ -1333,6 +1360,10 @@ button {
 
 .bg-\[rgba\(81\2c 81\2c 81\2c 83\%\)\] {
   background-color: rgba(81,81,81,83%);
+}
+
+.bg-\[var\(--swe-color-primary\)\] {
+  background-color: var(--swe-color-primary);
 }
 
 .bg-white {
@@ -1541,6 +1572,12 @@ button {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-\[1px_1px_3px_1px_rgba\(60\2c 60\2c 60\2c 0\.78\)\] {
+  --tw-shadow: 1px 1px 3px 1px rgba(60,60,60,0.78);
+  --tw-shadow-colored: 1px 1px 3px 1px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-\[2px_2px_6px_3px_rgba\(158\2c 157\2c 157\2c 27\%\)\] {
   --tw-shadow: 2px 2px 6px 3px rgba(158,157,157,27%);
   --tw-shadow-colored: 2px 2px 6px 3px var(--tw-shadow-color);
@@ -1581,6 +1618,14 @@ button {
 
 .will-change-transform {
   will-change: transform;
+}
+
+:root {
+  --swe-color-primary: unset;
+}
+
+:host {
+  --swe-color-primary: unset;
 }
 
 .file\:border-0::file-selector-button {
@@ -1684,6 +1729,10 @@ button {
   color: rgb(80 163 210 / var(--tw-text-opacity));
 }
 
+.hover\:text-\[var\(--swe-color-primary\)\]:hover {
+  color: var(--swe-color-primary);
+}
+
 .hover\:opacity-100:hover {
   opacity: 1;
 }
@@ -1762,11 +1811,6 @@ button {
   background-color: rgb(85 85 85 / var(--tw-bg-opacity));
 }
 
-.dark\:bg-\[\#cbcbcb\]:is(.dark *) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(203 203 203 / var(--tw-bg-opacity));
-}
-
 .dark\:bg-\[rgba\(58\2c 58\2c 58\2c 0\.9\)\]:is(.dark *) {
   background-color: rgba(58,58,58,0.9);
 }
@@ -1810,10 +1854,6 @@ button {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.dark\:\*\:fill-\[\#9f9f9f\] > *:is(.dark *) {
-  fill: #9f9f9f;
-}
-
 .dark\:\*\:fill-\[\#b0b0b0\] > *:is(.dark *) {
   fill: #b0b0b0;
 }
@@ -1848,9 +1888,8 @@ button {
   background-color: rgb(53 53 53 / var(--tw-bg-opacity));
 }
 
-.dark\:hover\:text-\[\#3aa9e3\]:hover:is(.dark *) {
-  --tw-text-opacity: 1;
-  color: rgb(58 169 227 / var(--tw-text-opacity));
+.dark\:hover\:text-\[var\(--swe-color-primary\)\]:hover:is(.dark *) {
+  color: var(--swe-color-primary);
 }
 
 .dark\:focus-visible\:ring-\[\#313131\]:focus-visible:is(.dark *) {

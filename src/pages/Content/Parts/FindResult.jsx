@@ -37,7 +37,7 @@ export const FindResult = (props) => {
 				isShowResultText &&
 				<>
 					<div
-						className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[#3aa9e3] dark:text-[#b7b4b4] dark:hover:text-[#3aa9e3] transition-colors"
+						className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[var(--swe-color-primary)] dark:text-[#b7b4b4] dark:hover:text-[var(--swe-color-primary)] transition-colors"
 						onClick={copyResult}>
 						<div className="scale-90 origin-right">{i18n('查找结果')}</div>
 						<CopySvg className="w-2.5 h-2.5 ml-[1px]" />

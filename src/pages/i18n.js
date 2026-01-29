@@ -55,6 +55,9 @@ const textJson = {
 	"浅色模式-深色页面-毛玻璃": "light mode - dark page - frosted glass effect",
 	"深色模式-浅色页面-毛玻璃": "dark mode - light page - frosted glass effect",
 	"深色模式-深色页面-毛玻璃": "dark mode - dark page - frosted glass effect",
+	"主题色": "Primary color mode",
+	"深色模式下的主题色": "Primary color mode in dark mode",
+	"强烈建议尝试预设色": "Strongly recommend trying preset colors",
 	"我不是专业的UI设计师，所以颜色搭配做的很不自信。如果你有更好的想法，欢迎帮助我做出更美观的界面。": "I'm not a professional UI designer, so my color combinations aren't very confident. If you have better ideas, welcome to help me create a more beautiful interface.",
 
 	"拖拽条": "Drag Bar",

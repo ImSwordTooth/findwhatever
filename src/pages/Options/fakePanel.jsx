@@ -115,8 +115,9 @@ export const FakePanel = (props) => {
 	}
 
 	return (
-		<div className={`fixed top-[108px] right-[40px] w-[400px] ${isDark ? 'dark' : ''}`}>
+		<div className={`fixed top-[108px] right-[40px] w-[400px]`}>
 			<div
+				className={`mainPanel ${isDark ? 'dark' : ''}`}
 				style={{
 					position: 'absolute',
 					right: '0',
@@ -157,14 +158,14 @@ export const FakePanel = (props) => {
 								{
 									setting.isShowSetting &&
 									<div className="flex items-center text-xs text-[#a0a0a0] cursor-pointer opacity-80 z-30">
-										<SettingSvg className="w-3 h-3 dark:*:fill-[#9f9f9f]" />
+										<SettingSvg className="w-[11px] h-[11px]" />
 									</div>
 								}
 							</div>
 							{
 								setting.isShowResultText &&
 								<>
-									<div className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[#3aa9e3] dark:text-[#b7b4b4] dark:hover:text-[#3aa9e3] transition-colors">
+									<div className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[var(--swe-color-primary)] dark:text-[#b7b4b4] dark:hover:text-[var(--swe-color-primary)] transition-colors">
 										<div className="scale-90 origin-right">{i18n('查找结果')}</div>
 										<CopySvg className="w-2.5 h-2.5 ml-[1px]" />
 									</div>
@@ -293,7 +294,7 @@ export const FakePanel = (props) => {
 										getPopupContainer={(e) => e.parentElement}
 										title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('大小写敏感')} {getShortcutText('c', true)}</div>}
 									>
-										<button className="normalButton dark:bg-[#383838] dark:text-[#fff]">
+										<button className="normalButton activeButton dark:bg-[#383838] dark:text-[#fff]">
 											<span className="text-xs select-none">Cc</span>
 										</button>
 									</Tooltip>
@@ -349,7 +350,7 @@ export const FakePanel = (props) => {
 													className="fill-[#444] dark:fill-[#ababab]" />
 												<path
 													d="M567.842042 50.418656a429.982345 429.982345 0 0 1 211.674339 80.930759 511.395552 511.395552 0 0 1 126.763378 133.397047L566.877145 438.548582V50.418656z"
-													fill="#50B3EA" />
+													fill="var(--swe-color-primary)" />
 											</svg>
 										</div>
 									</Tooltip>

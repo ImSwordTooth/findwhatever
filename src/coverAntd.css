@@ -34,7 +34,7 @@
 	padding: unset !important;
 }
 .ant-btn-text:not(.ant-btn-dangerous):active path {
-	fill: #3aa9e3!important;
+	fill: var(--swe-color-primary)!important;
 }
 
 .ant-tabs > .ant-tabs-nav .ant-tabs-nav-more {

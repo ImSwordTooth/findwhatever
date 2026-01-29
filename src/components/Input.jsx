@@ -4,13 +4,13 @@ import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { clsx } from "clsx";
 
-const Input = React.forwardRef(({ className, type, children, isShowRing, ringColor, textWidth, ...props }, ref) => {
+const Input = React.forwardRef(({ className, type, children, isShowRing, textWidth, ...props }, ref) => {
 	const radius = 100; // change this to increase the radius of the hover effect
 	const [visible, setVisible] = React.useState(false);
 
 	let mouseX = useMotionValue(0);
 	let mouseY = useMotionValue(0);
-	const background = useMotionTemplate`radial-gradient(${visible ? radius + "px" : "0px"} circle at ${mouseX}px ${mouseY}px, ${ringColor}, transparent 60%)`
+	const background = useMotionTemplate`radial-gradient(${visible ? radius + "px" : "0px"} circle at ${mouseX}px ${mouseY}px, var(--swe-color-primary), transparent 60%)`
 
 	const handleMouseMove = ({ currentTarget, clientX, clientY }) => {
 		let { left, top } = currentTarget.getBoundingClientRect();

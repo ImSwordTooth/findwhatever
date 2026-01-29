@@ -60,7 +60,7 @@ export const FrameList = (props) => {
 					?
 					(
 						tabIndex === '0'
-							? <div className="pageTabStatusBar bg-[#000000] dark:bg-[#cbcbcb]" />
+							? <div className="pageTabStatusBar bg-[var(--swe-color-primary)]" />
 							: <div className="pageTabStatusBar bg-[#e0e0e0] dark:bg-[#555]" />
 					)
 						: <div className="pageTabStatusBar" style={{ height: '1px' }} />
@@ -80,7 +80,7 @@ export const FrameList = (props) => {
 								frames.slice(1).map((frame) => {
 									if (total.find(a => a.frameId === frame.frameId)?.sum !== 0) {
 										if (frame.frameId.toString() === tabIndex) {
-											return <div key={frame.frameId} className="framesTabStatusBar bg-[#000000] dark:bg-[#cbcbcb]"></div>
+											return <div key={frame.frameId} className="framesTabStatusBar bg-[var(--swe-color-primary)]"></div>
 										} else {
 											return <div key={frame.frameId} className="framesTabStatusBar bg-[#e0e0e0] dark:bg-[#555]"></div>
 										}

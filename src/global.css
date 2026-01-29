@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+	--swe-color-primary: unset;
+}
+:host {
+	--swe-color-primary: unset;
+}
+
 @layer components {
 	#searchWhateverPopup {
 		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
@@ -38,6 +45,8 @@
 
 			.activeButton {
 				background-color: rgb(119 134 144 / 16%)!important;
+				font-weight: normal!important;
+				text-shadow: 0 0 6px var(--swe-color-primary)!important;
 			}
 		}
 
@@ -56,13 +65,14 @@
 
 	.activeButton {
 		background-color: rgba(183, 217, 239, 0.16) !important;
-		color: #0788dc!important;
+		color: var(--swe-color-primary)!important;
 		font-weight: bold;
+		text-shadow: none;
 	}
 
 	.activeLive {
 		& > svg {
-			filter: drop-shadow(4px -4px 4px #3aa9e3);
+			filter: drop-shadow(4px -4px 4px var(--swe-color-primary));
 			animation: rotateInf 10s infinite linear;
 		}
 	}
@@ -90,6 +100,7 @@
 		height: 2px;
 		border-radius: 2px;
 		transition: background-color .1s ease;
+		background-color: var(--swe-color-primary);
 	}
 
 	.framesTabStatusBar {
@@ -124,6 +135,7 @@
 		height: 100%;
 		padding: 20px 0;
 		background: linear-gradient(34deg, rgb(212 238 238 / 57%), transparent 70%, rgba(242, 224, 149, 0.33));
+		user-select: none;
 	}
 
 	.setting-area {
@@ -192,6 +204,16 @@
 				border-radius: 2px;
 				margin-right: 4px;
 			}
+		}
+
+		.smallTip {
+			font-size: 12px;
+			transform: scale(0.8);
+			display: inline-block;
+			transform-origin: left bottom;
+			color: #7d7d7d;
+			position: relative;
+			bottom: 1px;
 		}
 	}
 
@@ -378,4 +400,6 @@
 	*::placeholder {
 		user-select: none;
 	}
+
+
 }

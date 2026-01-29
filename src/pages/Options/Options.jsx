@@ -14,8 +14,10 @@ import { Total } from './Parts/Total'
 export const SettingContext = createContext(null)
 
 const INIT_SETTING = {
-	colorMode: 'auto',
-	isUseGlassEffect: true,
+	colorMode: 'dark',
+	isUseGlassEffect: false, // 是否使用玻璃效果
+	primaryColor: '#1677ff', // 主题色
+	primaryColor_dark: '#44d62c', // 深色模式下的主题色
 
 	dragArea: 'bar', // 可拖拽区域
 
@@ -46,7 +48,6 @@ const INIT_SETTING = {
 	textWidth: 340, // 文本框长度
 	retentionTime: -1, // 历史记录保留时间
 	isShowRing: true, // 是否显示文本框光圈
-	ringColor: '#3b82f6', // 光圈颜色
 
 	isShowHistory: true, // 是否显示历史记录
 	openHistoryMode: 'hover', // 历史记录打开方式
@@ -69,19 +70,29 @@ export const Options = () => {
 		};
 	}, [])
 
+	useEffect(() => {
+		if (
+			setting.colorMode === 'dark' ||
+			(setting.colorMode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+		) {
+			document.documentElement.style.setProperty('--swe-color-primary', setting.primaryColor_dark)
+		} else {
+			document.documentElement.style.setProperty('--swe-color-primary', setting.primaryColor)
+		}
+	}, [setting.colorMode, setting.primaryColor, setting.primaryColor_dark]);
+
 	const init = async () => {
 		const { swe_setting  } = (await chrome.storage.sync.get(['swe_setting'])) || { swe_setting: {} }
 
-		setSetting({
+		const finalSetting = {
 			...INIT_SETTING,
 			...swe_setting
-		})
+		}
+
+		setSetting(finalSetting)
 
 		chrome.storage.sync.set({
-			swe_setting: {
-				...INIT_SETTING,
-				...swe_setting
-			}
+			swe_setting: finalSetting
 		})
 	}
 
@@ -105,9 +116,17 @@ export const Options = () => {
 	}
 
 	const updateSetting = (name, value) => {
-		const newSetting = {
-			...setting,
-			[name]: value
+		let newSetting
+		if (typeof name === 'string') {
+			newSetting = {
+				...setting,
+				[name]: value
+			}
+		} else {
+			newSetting = {
+				...setting,
+				...name
+			}
 		}
 		setSetting(newSetting)
 		if (timerRef.current) {

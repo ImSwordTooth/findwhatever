@@ -35,6 +35,7 @@ export const Pop = () => {
 	const [ y, setY ] = useState(parseInt(window.innerHeight * 0.1))
 	const [ debounceDuration, setDebounceDuration ] = useState(200)
 	const [ regexDebounceDuration, setRegexDebounceDuration ] = useState(1000)
+	const [ colorMode, setColorMode ] = useState('light')
 	const [ sweSetting, setSweSetting ] = useState({})
 
 	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration)
@@ -64,6 +65,21 @@ export const Pop = () => {
 			setRegexDebounceDuration(syncStorage.swe_setting?.regexDebounceDuration || 2000)
 			setSweSetting(syncStorage.swe_setting || { tempOpacity: 0.3 })
 			setIsReady(true)
+
+			let color = ''
+			if (syncStorage.swe_setting?.colorMode === 'auto') {
+				color = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+			} else {
+				color = syncStorage.swe_setting?.colorMode || 'dark'
+			}
+			setColorMode(color)
+
+			const dom = document.querySelector('#__swe_container > div')
+			if (color === 'light') {
+				dom.style.setProperty('--swe-color-primary', syncStorage.swe_setting?.primaryColor || '#1677ff')
+			} else {
+				dom.style.setProperty('--swe-color-primary', syncStorage.swe_setting?.primaryColor_dark || '#44d62c')
+			}
 
 			if (window.innerHeight < syncStorage.y + 94 || window.innerWidth < syncStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置(右下)
 				setX(parseInt(window.innerWidth * 0.9 - 400))
@@ -381,21 +397,13 @@ export const Pop = () => {
 		}
 	}
 
-	const getColorMode = () => {
-		if (sweSetting.colorMode === 'auto') {
-			return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-		} else {
-			return sweSetting.colorMode || 'light'
-		}
-	}
-
 	const getShortcutText = (key, isBottom = false) => {
 		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
 		let text = `Ctrl + Shift + ${key.toUpperCase()}`
 		if (isMac) {
 			text = `Ctrl + ${key.toUpperCase()}`
 		}
-		return <span className={`italic scale-90 origin-${isBottom ? 'bottom' : 'center'} rounded-[6px] p-[1px_6px] bg-[rgba(81,81,81,83%)] shadow-[2px_2px_6px_3px_rgba(158,157,157,27%)] inline-block opacity-90`}>{text}</span>
+		return <span className={`italic scale-90 origin-${isBottom ? 'bottom' : 'center'} rounded-[6px] p-[1px_6px] bg-[rgba(81,81,81,83%)] shadow-[1px_1px_3px_1px_rgba(60,60,60,0.78)] inline-block opacity-90 border-solid border-[1px] border-[rgba(204,204,204,0.38)]`}>{text}</span>
 	}
 
 	return (
@@ -421,7 +429,7 @@ export const Pop = () => {
 									type: "spring",
 									duration: 0.3
 								}}
-								className={`mainPanel ${getColorMode()} ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
+								className={`mainPanel ${colorMode} ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
 					>
 						<div id="searchWhateverPopup" ref={popContainerRef}>
 							{
@@ -453,7 +461,6 @@ export const Pop = () => {
 										onChange={handleSearchValueChange}
 										onKeyDown={handleEnter}
 										isShowRing={sweSetting.isShowRing ?? true}
-										ringColor={sweSetting.ringColor ?? '#3b82f6'}
 										textWidth={sweSetting.textWidth}
 									>
 										<div className="flex items-center bg-[rgba(255,255,255,0.9)] dark:bg-[rgba(58,58,58,0.9)] rounded-lg p-0.5 absolute right-[6px] top-[6px]">
@@ -544,7 +551,7 @@ export const Pop = () => {
 															className="fill-[#444] dark:fill-[#ababab]" />
 														<path
 															d="M567.842042 50.418656a429.982345 429.982345 0 0 1 211.674339 80.930759 511.395552 511.395552 0 0 1 126.763378 133.397047L566.877145 438.548582V50.418656z"
-															fill="#50B3EA" />
+															fill="var(--swe-color-primary)" />
 													</svg>
 												</div>
 											</Tooltip>

@@ -3,7 +3,6 @@ import {InputNumber, Button, Spin, message, Select, Switch, Popover} from 'antd'
 import { i18n } from '../../i18n';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SettingContext } from '../Options'
-import {SketchPicker} from 'react-color';
 
 export const Input = () => {
 	const { setting, updateSetting } = useContext(SettingContext)
@@ -20,14 +19,6 @@ export const Input = () => {
 			setLastValue('')
 			message.success('清除成功')
 		})
-	}
-
-	const colorFormat = (colorObj) => {
-		if (colorObj.rgb.a !== 1) {
-			return `rgba(${colorObj.rgb.r}, ${colorObj.rgb.g}, ${colorObj.rgb.b}, ${colorObj.rgb.a})`
-		} else {
-			return colorObj.hex
-		}
 	}
 
 	return (
@@ -104,18 +95,6 @@ export const Input = () => {
 					<div>{i18n('是否显示文本框光圈')}</div>
 					<Switch size="small" checked={setting.isShowRing} onChange={e => updateSetting('isShowRing', e)} />
 				</div>
-				{
-					setting.isShowRing &&
-					<div className="setting-row">
-						<div>{i18n('光圈颜色')}</div>
-						<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.ringColor} onChange={ e => updateSetting('ringColor', colorFormat(e))} />}>
-							<div className="color-picker">
-								<div className="color-block" style={{ backgroundColor: setting.ringColor }} />
-								{setting.ringColor}
-							</div>
-						</Popover>
-					</div>
-				}
 			</div>
 		</div>
 	)
