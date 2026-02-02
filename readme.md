@@ -9,6 +9,15 @@
 > **超越浏览器原生搜索的极致体验。**
 > 这是一个功能强大、界面美观、深度定制的网页文本查找工具。它不仅支持传统的关键词搜索，还引入了跨标签搜索、正则匹配、动态监听等高级功能。
 
+<div>
+	<img width="410" height="100" alt="image" src="https://github.com/user-attachments/assets/c5ffc073-1986-4267-85fd-d9d5f7b28487" />
+	<img width="410" height="100" alt="image" src="https://github.com/user-attachments/assets/9eda61e8-8157-40ba-b9af-1270d5c32619" />
+</div>
+<div>
+	<img width="407" height="100" alt="image" src="https://github.com/user-attachments/assets/048c1c49-d3e4-46ab-b9e0-04b0c2c4c942" />
+	<img width="407" height="100" alt="image" src="https://github.com/user-attachments/assets/4c7ba082-68a7-4800-b070-90d9bf010c9e" />
+</div>
+
 ## ✨ 核心特性
 
 | 🎨 **极致视觉** | 🚀 **强大搜索** | ⌨️ **快捷操作** |

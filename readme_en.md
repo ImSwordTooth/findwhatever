@@ -9,6 +9,15 @@ Automatically set the text language according to the language of your browser. C
 > **The ultimate search experience beyond native browser limits.**
 > A powerful, aesthetically pleasing, and highly customizable text-finding tool for your browser. It doesn't just find words; it redefines how you interact with content through cross-tag matching, regex support, and dynamic DOM monitoring.
 
+<div>
+	<img width="410" height="100" alt="image" src="https://github.com/user-attachments/assets/c5ffc073-1986-4267-85fd-d9d5f7b28487" />
+	<img width="410" height="100" alt="image" src="https://github.com/user-attachments/assets/9eda61e8-8157-40ba-b9af-1270d5c32619" />
+</div>
+<div>
+	<img width="407" height="100" alt="image" src="https://github.com/user-attachments/assets/048c1c49-d3e4-46ab-b9e0-04b0c2c4c942" />
+	<img width="407" height="100" alt="image" src="https://github.com/user-attachments/assets/4c7ba082-68a7-4800-b070-90d9bf010c9e" />
+</div>
+
 ## ✨ Key Features
 
 | 🎨 **Stunning UI** | 🚀 **Advanced Search** | ⌨️ **Total Control** |
