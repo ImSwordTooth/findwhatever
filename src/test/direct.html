@@ -6,6 +6,13 @@
 </head>
 <body>
 <h1>Popconfirm<span class="subtitle">气泡确认框confirm</span>confirm</h1>
-<div>confirm</div>
+<div onclick="remove()">confirm</div>
+
+<script>
+	function remove(e) {
+		document.body.innerHTML+=('<div>confirm</div>')
+	}
+</script>
+
 </body>
 </html>

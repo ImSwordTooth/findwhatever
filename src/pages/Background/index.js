@@ -109,7 +109,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 				finalSession.activeResult = 0;
 			}
 			chrome.storage.session.set(finalSession);
-			sendResponse({ current: finalSession.activeResult, total: resultSum })
+			sendResponse({ current: finalSession.activeResult, total: resultSum, error: data.error, errorType: data.errorType })
 		})
 		return true;
 	}

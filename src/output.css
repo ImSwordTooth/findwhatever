@@ -856,6 +856,10 @@ button {
   top: 7px;
 }
 
+.right-\[calc\(100\%_\+_4px\)\] {
+  right: calc(100% + 4px);
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -1542,6 +1546,11 @@ button {
   color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
 .underline {
   text-decoration-line: underline;
 }
@@ -1582,6 +1591,11 @@ button {
   --tw-shadow: 2px 2px 6px 3px rgba(158,157,157,27%);
   --tw-shadow-colored: 2px 2px 6px 3px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.drop-shadow-\[0px_0px_4px_red\] {
+  --tw-drop-shadow: drop-shadow(0px 0px 4px red);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .filter {
@@ -1741,6 +1755,10 @@ button {
   opacity: 0.45;
 }
 
+.hover\:opacity-90:hover {
+  opacity: 0.9;
+}
+
 .focus-visible\:outline-none:focus-visible {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -1824,6 +1842,14 @@ button {
   fill: #ababab;
 }
 
+.dark\:fill-\[\#ff6969\]:is(.dark *) {
+  fill: #ff6969;
+}
+
+.dark\:fill-\[\#ff4141\]:is(.dark *) {
+  fill: #ff4141;
+}
+
 .dark\:text-\[\#b0b0b0\]:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(176 176 176 / var(--tw-text-opacity));
@@ -1860,6 +1886,10 @@ button {
 
 .dark\:\*\:fill-\[\#fff\] > *:is(.dark *) {
   fill: #fff;
+}
+
+.dark\:\*\:fill-\[\#ff6969\] > *:is(.dark *) {
+  fill: #ff6969;
 }
 
 .dark\:selection\:bg-\[rgba\(255\2c 255\2c 255\2c 0\.2\)\] *:is(.dark *)::-moz-selection {

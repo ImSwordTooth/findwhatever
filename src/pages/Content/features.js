@@ -171,11 +171,66 @@ export const observerBodyAndOpenShadowRoot = () => {
 	observeAllShadowRoots(document)
 }
 
+const isDangerousReg = (reg) => {
+	if (reg.source === '.') {
+		return true
+	}
+
+	// 任意字符类
+	const anyCharClassPatterns = ['.', '[\\S\\s]', '[\\s\\S]', '[\\d\\D]', '[\\D\\d]', '[\\w\\W]', '[\\W\\w]', '[^]',]
+	// 所有量词模式
+	const quantifierPatterns = ['*', '+', '?', '*?', '+?', '??', '{0,}', '{1,}', '{0,1}', '{0,}?', '{1,}?', '{0,1}?', '{2,}', '{3,}', '{4,}', '{5,}', '{0,d+}', '{1,d+}', '{2,d+}',];
+	// 检查完全匹配：任意字符类 + 量词
+	for (const charClass of anyCharClassPatterns) {
+		for (const quantifier of quantifierPatterns) {
+			const testStr = `${charClass}${quantifier}`
+			if (reg.source === testStr) {
+				return true
+			}
+		}
+	}
+
+	/**
+	 * 如果侥幸过了黑名单，再维护一个基本上普通的正则表达式不会全部覆盖的文本。然后用当前正则判断，如果全都匹配覆盖到了，就说明太宽泛了，拒绝实际匹配
+	 * 🤖检测文本由 ai 生成
+	 * 去除了换行符，因为 .* 不匹配换行
+	 * */
+	const testStr = [
+		// 普通文本
+		'Hello World', '123456', 'test@example.com',
+		// 特殊字符
+		'!@#$%^&*()', '[]{}|\\', '`~-_=+',
+		// Unicode 字符
+		'中文', '日本語', '한국어', 'Русский', 'العربية', 'עברית', '🌍🌎🌏', '🚀💻🎉',
+		// 空白字符
+		'   ','\t\t',
+		// 边界情况
+		'', 'a', 'A', '0', '.', '*', '+', '?',
+		// 混合内容
+		'a1B2c3', 'test123!@#', 'tab\tseparated\tvalues',
+		// 长文本
+		'a'.repeat(100), 'test '.repeat(50),
+		// 各种引号
+		`'single'`, `"double"`, '`backtick`', '«guillemets»', '„quotes"',
+		// 数学符号
+		'∑∏∫√∞', 'αβγδε', '≤≥≠≈',
+		// 控制字符（部分）
+		String.fromCharCode(0), String.fromCharCode(1), String.fromCharCode(7), String.fromCharCode(27),
+		// 零宽字符
+		'\u200B', '\u200C', '\u200D', '\uFEFF',
+	].join(''); // 用分隔符连接，避免全部连在一起
+
+	const res = reg.exec(testStr)
+	return !!(res && res.indices[0][1] - res.indices[0][0] === testStr.length);
+}
+
 export const doSearchOutside = async (isAuto = false, cb) => {
 	CSS.highlights.clear() // 清除所有高亮
 
 	const { searchValue, isMatchCase, isWord, isReg, swe_setting } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting'])
 	const matchText = []
+	let error = false
+	let errorType = ''
 
 	if (searchValue && window.allNodes) { // 如果有搜索词
 
@@ -195,12 +250,25 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 		try {
 			reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${swe_setting?.isOpenUnicode ? 'u' : ''}`);
+			const isDanger = isDangerousReg(reg)
+
+			if (isDanger) {
+				error = true
+				errorType = 'danger reg'
+				if (!window.rangesFlat) {
+					window.rangesFlat = []
+				}
+			}
 		} catch (e) {
 			// 正则表达式不合法
-			reg = null
-			window.rangesFlat = []
+			error = true
+			errorType = 'invalid reg'
+			if (!window.rangesFlat) {
+				window.rangesFlat = []
+			}
 		}
-		if (reg) {
+
+		if (reg && !error) {
 			window.rangesFlat = window.allNodes.map(({ el, text }) => {
 				const indices = [] // 对象数组，{ indicesStart: number, indicesLength: number }，分别是起点和长度
 				let startPosition = 0
@@ -213,6 +281,9 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 					if (res) {
 						index = res.indices[0][0]
 						const execResLength = res.indices[0][1] - res.indices[0][0]
+						if (execResLength < 1) { // 即使 res 有值，也可能是没匹配到，所以要判断一下
+							break
+						}
 						indices.push({
 							indicesStart: startPosition + index,
 							indicesLength: execResLength
@@ -298,7 +369,9 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 			isFrame: window.isFrame,
 			resultNum: window.rangesFlat.length,
 			matchText,
-			isAuto
+			isAuto,
+			error,
+			errorType
 		}
 	}, cb ? cb : () => {})
 }

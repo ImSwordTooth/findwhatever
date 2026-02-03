@@ -15,6 +15,7 @@ import ClearSvg from '../../assets/svg/clear.svg'
 import UpArrowSvg from '../../assets/svg/upArrow.svg'
 import DownArrowSvg from '../../assets/svg/downArrow.svg'
 import CloseSvg from '../../assets/svg/close.svg'
+import WarnSvg from '../../assets/svg/warn.svg'
 
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
@@ -31,6 +32,8 @@ export const Pop = () => {
 	const [ isReady, setIsReady ] = useState(false)
 	const [ recentList, setRecentList ] = useState([])
 	const [ fixList, setFixList ] = useState([])
+	const [ isShowWarn, setIsShowWarn ] = useState(false)
+	const [ warnReason, setWarnReason ] = useState(false)
 	const [ x, setX ] = useState(parseInt(window.innerWidth * 0.9 - 400))
 	const [ y, setY ] = useState(parseInt(window.innerHeight * 0.1))
 	const [ debounceDuration, setDebounceDuration ] = useState(200)
@@ -107,8 +110,14 @@ export const Pop = () => {
 				// 重新生成节点树
 				reCheckTree().then(() => {
 					doSearchOutside(true, (response) => {
-						setCurrent(response.current)
-						setTotal(response.total)
+						if (response.error) {
+							setIsShowWarn(true)
+							setWarnReason(response.errorType)
+						} else {
+							setIsShowWarn(false)
+							setCurrent(response.current)
+							setTotal(response.total)
+						}
 					}) // 然后执行搜索
 				})
 			})
@@ -268,8 +277,14 @@ export const Pop = () => {
 
 	const handleMessage = async (e) => {
 		if (e.data.type === 'swe_updateSearchResult') {
-			setCurrent(e.data.data.current)
-			setTotal(e.data.data.total)
+			if (e.data.data.error) {
+				setIsShowWarn(true)
+				setWarnReason(e.data.data.errorType)
+			} else {
+				setIsShowWarn(false)
+				setCurrent(e.data.data.current)
+				setTotal(e.data.data.total)
+			}
 		}
 		if (e.data.type === 'swe_updateSettings') {
 			const [ sessionStorage, syncStorage ] = await Promise.all([
@@ -406,6 +421,13 @@ export const Pop = () => {
 		return <span className={`italic scale-90 origin-${isBottom ? 'bottom' : 'center'} rounded-[6px] p-[1px_6px] bg-[rgba(81,81,81,83%)] shadow-[1px_1px_3px_1px_rgba(60,60,60,0.78)] inline-block opacity-90 border-solid border-[1px] border-[rgba(204,204,204,0.38)]`}>{text}</span>
 	}
 
+	const getErrorText = () => {
+		switch (warnReason) {
+			case 'danger reg': return '正则表达式过于宽泛，可能导致查找过程中卡死，已暂停搜索，请重新输入'
+			case 'invalid reg': return '不合法的正则表达式'
+		}
+	}
+
 	return (
 		<div className="fixed z-[10000] top-0 left-0">
 			{
@@ -464,14 +486,31 @@ export const Pop = () => {
 										textWidth={sweSetting.textWidth}
 									>
 										<div className="flex items-center bg-[rgba(255,255,255,0.9)] dark:bg-[rgba(58,58,58,0.9)] rounded-lg p-0.5 absolute right-[6px] top-[6px]">
-											{
-												isReg && !isDebounceOk &&
-												<div className="absolute -left-[36px] top-[0px] h-full flex items-center"><Spin size="small" indicator={<LoadingOutlined className="dark:text-[#fff]" style={{ fontSize: 12 }} spin />} /></div>
-											}
-											{
-												searchValue &&
-												<ClearSvg className="absolute -left-[18px] w-3 h-3 opacity-25 hover:opacity-45 cursor-pointer dark:*:fill-[#fff]" onClick={clearInput} />
-											}
+											<div className="absolute right-[calc(100%_+_4px)] top-0 bottom-0 flex items-center gap-[6px]">
+												{
+													isReg && !isDebounceOk &&
+													<div className="h-full flex items-center"><Spin size="small" indicator={<LoadingOutlined className="dark:text-[#fff]" style={{ fontSize: 12 }} spin />} /></div>
+												}
+												{
+													searchValue &&
+													<ClearSvg className=" w-3 h-3 opacity-25 hover:opacity-45 cursor-pointer dark:*:fill-[#fff]" onClick={clearInput} />
+												}
+												{
+													isShowWarn &&
+													<Tooltip
+														arrowPointAtCenter={true}
+														placement="bottom"
+														getPopupContainer={(e) => e.parentElement}
+														title={
+															<div className="scale-90" style={{ padding: '4px 0' }}>
+																<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n(getErrorText())}</div>
+															</div>
+														}
+													>
+														<WarnSvg className=" w-3 h-3 opacity-80 drop-shadow-[0px_0px_4px_red] hover:opacity-90 cursor-pointer fill-red dark:fill-[#ff4141]" />
+													</Tooltip>
+												}
+											</div>
 											<Button type="text" className="w-5 !h-5 min-w-5 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={goPrev}>
 												<UpArrowSvg className="w-3.5 h-3.5 dark:*:fill-[#fff]" />
 											</Button>

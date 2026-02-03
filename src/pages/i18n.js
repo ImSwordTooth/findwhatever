@@ -33,6 +33,8 @@ const textJson = {
 	"正则表达式是否启用 Unicode 模式": "Whether the regular expression enables Unicode mode",
 	"重置成功": "Reset successfully",
 	"保存成功": "Saved successfully",
+	"正则表达式过于宽泛，可能导致查找过程中卡死，已暂停搜索，请重新输入": "The regular expression is too broad, which may cause the search process to freeze. The search has been paused. Please enter a new one",
+	"不合法的正则表达式": "Invalid regular expression",
 
 	"整体": "Overall",
 	"现在打开面板的默认快捷键为 Alt+F。": "The default shortcut key to open the panel is now Alt+F.",
