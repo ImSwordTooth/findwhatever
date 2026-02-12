@@ -1,12 +1,14 @@
 import React, { useContext } from 'react'
 import { i18n } from '../../i18n';
-import { Button, Switch, InputNumber } from 'antd';
+import { Button, Switch, InputNumber, Tooltip } from 'antd';
 import { SettingContext } from '../Options'
 import { Shortcut } from '../Shortcut';
+import { NewPart } from '../NewPart';
 import UpArrowSvg from '../../../assets/svg/upArrow.svg'
 import DownArrowSvg from '../../../assets/svg/downArrow.svg'
 import LiveSvg from '../../../assets/svg/live.svg'
 import CloseSvg from '../../../assets/svg/close.svg'
+import WarnSvg from '../../../assets/svg/warn.svg';
 
 export const Feature = () => {
 
@@ -70,6 +72,32 @@ export const Feature = () => {
 					<div>{i18n('激活后可以使用正则表达式的语法进行搜索，为了避免输入过程中出现 .* 这种会匹配所有字符的情况出现，正则模式开启后，会有一段较长的防抖时间，默认 1000ms。')}</div>
 				</div>
 			</div>
+
+
+			<NewPart>
+				<div>
+					{i18n('v3.9.0 添加了检测过于宽泛和不合法的正则表达式的功能，出现这种情况后，文本框的右侧会出现')}
+					<Tooltip
+						arrowPointAtCenter={true}
+						placement="bottom"
+						getPopupContainer={(e) => e.parentElement}
+						title={
+							<div className="scale-90" style={{ padding: '4px 0' }}>
+								<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('正则表达式过于宽泛，可能导致查找过程中卡死，已暂停搜索，请重新输入')}</div>
+							</div>
+						}
+					>
+						<WarnSvg className="m-[0px_4px] w-3 h-3 opacity-80 drop-shadow-[0px_0px_4px_red] hover:opacity-90 cursor-pointer fill-red dark:fill-[#ff4141]" />
+					</Tooltip>{i18n('并拒绝实际匹配。此功能不可关闭。')}
+				</div>
+
+				<div>{i18n('不合法的正则表达式即为会报错的。')}</div>
+				<div>{i18n('我是这样判断一个正则表达式是否“过于宽泛的”：')}</div>
+				<div className="ml-[20px]">
+					<div>1. {i18n('是否为全量匹配加任意量词，如')} <code>.*</code>、<code>.+</code>、<code>[\s\S]?</code></div>
+					<div>2. {i18n('如果侥幸过了黑名单，再维护一个基本上普通的正则表达式不会全部覆盖的文本。然后用当前正则判断，如果全都匹配覆盖到了，就说明太宽泛了。')}</div>
+				</div>
+			</NewPart>
 
 			<div className="setting-area">
 				<div className="setting-row">

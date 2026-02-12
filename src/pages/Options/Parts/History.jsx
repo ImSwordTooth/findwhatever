@@ -31,7 +31,7 @@ export const History = () => {
 			</div>
 			<div>{i18n('点击列表项可以把文本填入输入框中。')}{i18n('也可以点击右侧的')}
 				<div
-					className="inline-flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2]">.*
+					className="inline-flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[var(--swe-color-primary)]">.*
 				</div>
 				{i18n('，填入的同时开启正则模式。')}
 

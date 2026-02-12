@@ -18,21 +18,6 @@ export const Total = () => {
 		})
 	}, []);
 
-	const GetImage = () => {
-		let url = ''
-		switch (activeIndex) {
-			case 0: url = 'https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png'; break;
-			case 1: url = 'https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png'; break;
-			case 2: url = 'https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png'; break;
-			case 3: url = 'https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png'; break;
-			case 4: url = 'https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image4.png'; break;
-			case 5: url = 'https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image3.png'; break;
-			case 6: url = 'https://i0.letvimg.com/lc21_lemf/202601/29/10/45/image7.png'; break;
-			case 7: url = 'https://i0.letvimg.com/lc20_lemf/202601/29/10/45/image8.png'; break;
-		}
-		return <img onClick={() => window.open(url)} src={url} />
-	}
-
 	const updateColor = (propName, colorObj) => {
 		const colorText = colorObj.hex
 		if (propName === 'primaryColor') {
@@ -154,7 +139,14 @@ export const Total = () => {
 								<li className={activeIndex === 7 ? 'active' : ''} onMouseEnter={() => setActiveIndex(7)}>{i18n('深色模式-深色页面-毛玻璃')}</li>
 							</ul>
 							<div className="preview">
-								{GetImage()}
+								<img className={activeIndex === 0 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png')} src="https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png" />
+								<img className={activeIndex === 1 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png')} src="https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png" />
+								<img className={activeIndex === 2 ? 'block' : 'hidden'} onClick={() => window.open('https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png')} src="https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png" />
+								<img className={activeIndex === 3 ? 'block' : 'hidden'} onClick={() => window.open('https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png')} src="https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png" />
+								<img className={activeIndex === 4 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image4.png')} src="https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image4.png" />
+								<img className={activeIndex === 5 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image3.png')} src="https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image3.png" />
+								<img className={activeIndex === 6 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/45/image7.png')} src="https://i0.letvimg.com/lc21_lemf/202601/29/10/45/image7.png" />
+								<img className={activeIndex === 7 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc20_lemf/202601/29/10/45/image8.png')} src="https://i0.letvimg.com/lc20_lemf/202601/29/10/45/image8.png" />
 							</div>
 						</div>
 					</div>

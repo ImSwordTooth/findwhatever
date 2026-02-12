@@ -145,6 +145,12 @@ const textJson = {
 	"点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。": "Click to remove the MutationObserver, clear the highlight, close the panel, zero the search result, and save the search record.",
 	"也可以在页面中按 Esc 键达到同样的效果。": "You can also press the Esc key in the middle of the page to achieve the same effect.",
 	"是否显示关闭按钮": "Whether or not to display the close button",
+	"v3.9.0 添加了检测过于宽泛和不合法的正则表达式的功能，出现这种情况后，文本框的右侧会出现": "v3.9.0 added the ability to detect overly broad and illegal regular expressions. When this occurs, a icon will appear on the right side of the text box:",
+	"并拒绝实际匹配。此功能不可关闭。": "It will reject any actual matches. This feature cannot be turned off.",
+	"不合法的正则表达式即为会报错的。": "Invalid regular expressions are those that will cause errors.",
+	"我是这样判断一个正则表达式是否“过于宽泛的”：": "Here's how I judge whether a regular expression is \"too broad\":",
+	"是否为全量匹配加任意量词，如": "Is it a full match with any quantifier, such as: ",
+	"如果侥幸过了黑名单，再维护一个基本上普通的正则表达式不会全部覆盖的文本。然后用当前正则判断，如果全都匹配覆盖到了，就说明太宽泛了。": "If it happens to slip past the blacklist, maintain a text that is basically ordinary and not fully covered by a regular expression. Then use the current regular expression to judge, if it all matches and covers, it means it's too broad.",
 
 	"设置项自动保存，但需要重新打开面板才能生效": "Auto-save settings, but need to reopen the panel to take effect",
 	"修改高亮样式后，可能需要刷新页面才能生效": "After you modify the highlight style, you may need to refresh the page for it to take effect",

@@ -26,7 +26,7 @@ export const FindResult = () => {
 						: <div>Displays the number of search-results and the subscript of the currently targeted results (search-results-active).</div>
 				}
 				<div>{i18n('点击')}
-					<span className="inline-flex items-center cursor-grab active:cursor-grabbing hover:text-[#3aa9e3] transition-colors">
+					<span className="inline-flex items-center cursor-grab active:cursor-grabbing hover:text-[var(--swe-color-primary)] transition-colors">
 						<div className="scale-90 origin-right">{i18n('查找结果')}</div>
 						<CopySvg className="w-2.5 h-2.5 ml-[1px]" />
 					</span>

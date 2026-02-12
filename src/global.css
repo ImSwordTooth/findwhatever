@@ -371,12 +371,13 @@
 
 	.shortcut {
 		font-size: 12px;
-		border-radius: 6px;
-		border: dashed 1px #87e8de;
+		border-radius: 4px;
+		border: dashed 1px #61c4ba;
 		display: inline-block;
 		padding: 0 8px;
-		color: #08979c;
-		background: #e6fffb;
+		color: #55a3a6;
+		background: #effdfb;
+		box-shadow: 1px 1px 4px 1px #c8eee8;
 
 		.key {
 			font-size: 13px;
