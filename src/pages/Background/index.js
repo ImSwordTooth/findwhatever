@@ -204,9 +204,19 @@ const handleStorageChange = async (changes, areaName) => {
 								return
 							}
 							CSS.highlights.set('search-results-active', new Highlight(window.rangesFlat[realIndex - 1]))
+
+							let currentActiveRangeDOM = filteredRangeList.value[realIndex - 1]
+							if (!currentActiveRangeDOM) {
+								return;
+							}
+							// dom 有可能是 shadow-dom，好多 dom api 都不能用，所以指向为其父元素
+							if (currentActiveRangeDOM instanceof ShadowRoot || currentActiveRangeDOM.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+								currentActiveRangeDOM = currentActiveRangeDOM.host
+							}
+
 							if (isAuto) {
-								let parents = [filteredRangeList.value[realIndex - 1]];
-								let currentDom = filteredRangeList.value[realIndex - 1].parentElement;
+								let parents = [currentActiveRangeDOM];
+								let currentDom = currentActiveRangeDOM.parentElement;
 								while (currentDom) {
 									parents.unshift(currentDom);
 									currentDom = currentDom.parentElement;
@@ -218,7 +228,7 @@ const handleStorageChange = async (changes, areaName) => {
 									dom.scrollIntoView({ behavior: 'instant', block: 'center' })
 								}
 							}
-							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(filteredRangeList.value[realIndex - 1]) })
+							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(currentActiveRangeDOM) })
 						}
 					})
 					break;

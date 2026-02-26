@@ -242,14 +242,15 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 		let reg = null
 		let regContent = searchValue
 		if (!isReg) {
-			regContent = regContent.replace(/([^a-zA-Z0-9_ \n])/g, '\\$1')
+			regContent = regContent.replace(/([.*+?^${}()|[\]\\])/g, '\\$1');
 		}
 		if (isWord) {
-			regContent = `\\b${regContent}\\b`
+			// regContent = `\\b${regContent}\\b`
+			regContent = `(?<![\\p{L}\\p{N}])${regContent}(?![\\p{L}\\p{N}])`
 		}
 
 		try {
-			reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dg${swe_setting?.isOpenUnicode ? 'u' : ''}`);
+			reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`);
 			const isDanger = isDangerousReg(reg)
 
 			if (isDanger) {

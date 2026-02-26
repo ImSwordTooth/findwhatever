@@ -10,6 +10,7 @@ import { Input } from './Parts/Input';
 import { History } from './Parts/History'
 import { Feature } from './Parts/Feature'
 import { Total } from './Parts/Total'
+import { Changelog } from './Parts/Changelog'
 
 export const SettingContext = createContext(null)
 
@@ -53,7 +54,6 @@ const INIT_SETTING = {
 	openHistoryMode: 'hover', // 历史记录打开方式
 	debounceDuration: 200, // 非正则模式防抖时长
 	regexDebounceDuration: 1000, // 正则模式防抖时长
-	isOpenUnicode: false, // 是否开启 unicode 模式
 
 	isShowClose: true, // 是否显示设置按钮
 }
@@ -218,6 +218,7 @@ export const Options = () => {
 						<Feature/>
 					</div>
 					<FakePanel onReset={resetSetting}/>
+					<Changelog />
 				</div>
 			</div>
 		</SettingContext.Provider>

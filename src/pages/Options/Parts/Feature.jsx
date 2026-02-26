@@ -17,7 +17,7 @@ export const Feature = () => {
 	return (
 		<div>
 			<div className="areaTitle mt-[30px]">{i18n('功能区')}</div>
-			<div className="mt-[6px]">
+			<div className="mt-[12px]">
 				<UpArrowSvg className="w-[16px] h-[16px]" />
 				<DownArrowSvg className="w-[16px] h-[16px]" />
 				<div>{i18n('切换当前定位的结果的下标(search-results-active)，切换时会尽量地把对应的元素滚动到视口内。')}</div>
@@ -25,7 +25,7 @@ export const Feature = () => {
 				<div className="text-[#ff4d4f]"><strong>{i18n('切换 search-results-active 时，需要更新缓存来执行高亮和定位的动作，浏览器的 MAX_WRITE_OPERATIONS_PER_MINUTE 限制了一分钟只能更新 120 次，所以切换的时候最好别“幻影键舞”，否则可能会更新失败。')}</strong></div>
 			</div>
 
-			<div className="mt-[6px]">
+			<div className="mt-[12px]">
 				<div className="flex items-center mt-2 mb-2">
 					<button className="normalButton ml-[0px]">
 						<span className="text-xs select-none">Cc</span>
@@ -41,7 +41,7 @@ export const Feature = () => {
 				</div>
 			</div>
 
-			<div className="mt-[6px]">
+			<div className="mt-[12px]">
 				<div className="flex items-center mt-2 mb-2">
 					<button className="normalButton ml-[0px]">
 						<span className="text-xs select-none">W</span>
@@ -57,7 +57,7 @@ export const Feature = () => {
 				</div>
 			</div>
 
-			<div className="mt-[6px]">
+			<div className="mt-[12px]">
 				<div className="flex items-center mt-2 mb-2">
 					<button className="normalButton ml-[0px]">
 						<span className="text-xs select-none">.*</span>
@@ -104,13 +104,9 @@ export const Feature = () => {
 					<div>{i18n('正则模式防抖时长')}</div>
 					<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={500} value={setting.regexDebounceDuration} onChange={e => updateSetting('regexDebounceDuration', e)} />
 				</div>
-				<div className="setting-row">
-					<div>{i18n('正则表达式是否启用 Unicode 模式')}</div>
-					<Switch size="small" checked={setting.isOpenUnicode} onChange={ e => updateSetting('isOpenUnicode', e) } />
-				</div>
 			</div>
 
-			<div className="mt-[6px]">
+			<div className="mt-[12px]">
 				<div className="flex items-center mt-2 mb-2">
 					<div className={`w-5 h-5 justify-center rounded-[6px] select-none inline-flex items-center cursor-pointer ml-1`}>
 						<LiveSvg className="w-4 h-4" />
@@ -125,7 +121,7 @@ export const Feature = () => {
 				<div>{i18n('但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。')}</div>
 			</div>
 
-			<div className="mt-[6px]">
+			<div className="mt-[12px]">
 				<div className="mt-1 mb-1">
 					<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 cursor-pointer ">
 						<CloseSvg className="icon w-2.5 h-2.5" />
