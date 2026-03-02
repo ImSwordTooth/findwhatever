@@ -180,7 +180,6 @@ export const Options = () => {
 						<img className="w-[48px] h-[48px] mr-2" src="https://i2.letvimg.com/lc18_lemf/202503/31/13/43/icon.png"
 							 alt=""/>
 						<div className="font-mono text-2xl">Find whatever {t('设置项')}</div>
-						<div>{navigator.language}</div>
 					</div>
 
 					<div className="flex items-center">
