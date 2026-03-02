@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Input } from '../../components/Input'
 import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, doSearchOutside, useDebounce } from './features'
-import { i18n } from '../i18n'
 import { Tooltip, Button, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Rnd } from 'react-rnd'
+import { changeLanguage } from 'i18next'
+import { useTranslation } from 'react-i18next'
 import '../../output.css'
 import { FrameList } from "./Parts/FrameList";
 import { FindResult } from "./Parts/FindResult";
@@ -42,7 +43,7 @@ export const Pop = () => {
 	const [ sweSetting, setSweSetting ] = useState({})
 
 	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration)
-
+	const { t } = useTranslation()
 
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
@@ -68,6 +69,33 @@ export const Pop = () => {
 			setRegexDebounceDuration(syncStorage.swe_setting?.regexDebounceDuration || 2000)
 			setSweSetting(syncStorage.swe_setting || { tempOpacity: 0.3 })
 			setIsReady(true)
+
+			// 设定语言
+			const language = syncStorage.swe_setting?.language
+			if (!language) {
+				changeLanguage('')
+			}
+			if (language !== 'auto') {
+				changeLanguage(language)
+			} else {
+				const lang = /(\w+)-?/g.exec(navigator.language)
+				if (lang && lang[1]) {
+					switch (lang[1]) {
+						case 'zh': changeLanguage(''); break;
+						case 'en': changeLanguage('English'); break;
+						case 'ru': changeLanguage('Russian'); break;
+						case 'ar': changeLanguage('Arabic'); break;
+						case 'pt': changeLanguage('Portuguese'); break;
+						case 'es': changeLanguage('Spanish'); break;
+						case 'fr': changeLanguage('French'); break;
+						case 'de': changeLanguage('German'); break;
+						case 'ko': changeLanguage('Korean'); break;
+						case 'ja': changeLanguage('Japanese'); break;
+					}
+				} else {
+					changeLanguage('')
+				}
+			}
 
 			let color = ''
 			if (syncStorage.swe_setting?.colorMode === 'auto') {
@@ -477,7 +505,7 @@ export const Pop = () => {
 										ref={searchInputRef}
 										id="swe_searchInput"
 										autoFocus
-										placeholder={i18n('输入文本以查找...')}
+										placeholder={t('输入文本...')}
 										className={(sweSetting.isShowHistory??true) ? '' : 'pl-[8px]'}
 										value={searchValue}
 										onChange={handleSearchValueChange}
@@ -503,7 +531,7 @@ export const Pop = () => {
 														getPopupContainer={(e) => e.parentElement}
 														title={
 															<div className="scale-90" style={{ padding: '4px 0' }}>
-																<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n(getErrorText())}</div>
+																<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t(getErrorText())}</div>
 															</div>
 														}
 													>
@@ -522,7 +550,7 @@ export const Pop = () => {
 												arrowPointAtCenter={true}
 												placement="bottom"
 												getPopupContainer={(e) => e.parentElement}
-												title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('大小写敏感')} {getShortcutText('c', true)}</div>}
+												title={<div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div>}
 											>
 												<button
 													className={`normalButton ${isMatchCase ? 'activeButton' : ''}`}
@@ -535,7 +563,7 @@ export const Pop = () => {
 												arrowPointAtCenter={true}
 												placement="bottom"
 												getPopupContainer={(e) => e.parentElement}
-												title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('匹配单词')} {getShortcutText('w', true)}</div>}
+												title={<div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div>}
 											>
 												<button
 													className={`normalButton ${isWord ? 'activeButton' : ''}`}
@@ -550,8 +578,8 @@ export const Pop = () => {
 												getPopupContainer={(e) => e.parentElement}
 												title={
 													<div className="scale-90" style={{ padding: '4px 0' }}>
-														<div>{i18n('正则表达式')} {getShortcutText('r')}</div>
-														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
+														<div>{t('正则表达式')} {getShortcutText('r')}</div>
+														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
 													</div>
 												}
 											>
@@ -568,8 +596,8 @@ export const Pop = () => {
 												getPopupContainer={(e) => e.parentElement}
 												title={(
 													<div className="scale-90" style={{ padding: '4px 0' }}>
-														<div>{i18n('实时监测 DOM 变化')} {getShortcutText('d')}</div>
-														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('在不适合实时监测的情况下请临时关闭此功能')}</div>
+														<div>{t('实时监测 DOM 变化')} {getShortcutText('d')}</div>
+														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('在不适合实时监测的情况下请临时关闭此功能')}</div>
 													</div>
 												)}
 											>

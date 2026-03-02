@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import TimeSvg from '../../../assets/svg/time.svg'
 import { CHANGELOG_ITEMS } from '../changeLogItems'
 
@@ -9,6 +10,8 @@ export const Changelog = () => {
 	const scrollLeftRef = useRef(0)
 	const [ isDragging, setIsDragging ] = useState(false)
 	const [ scrollProgress, setScrollProgress ] = useState(0)
+
+	const { t } = useTranslation()
 
 	const handleMouseDown = (e) => {
 		const container = containerRef.current
@@ -63,10 +66,10 @@ export const Changelog = () => {
 
 	return (
 		<div className="mt-[32px] px-[40px] pb-[32px]">
-			<div className="areaTitle select-none mb-0">更新日志</div>
+			<div className="areaTitle select-none mb-0">{t('更新日志')}</div>
 
 			<div className="mt-1 text-[11px] text-shadow-none text-gray-400 select-none">*
-				鼠标拖拽或滚轮横向来浏览更新内容
+				{t('鼠标拖拽或滚轮横向来浏览更新内容')}
 			</div>
 			<div className="mt-2 h-[3px] rounded-full bg-slate-200/80 overflow-hidden">
 				<div

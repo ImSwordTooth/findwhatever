@@ -1,7 +1,5 @@
 [中文](./readme.md) | [English](./readme_en.md)
 
-根据您的浏览器语言自动设置文本语言，目前只准备了中文和英语两个版本，如果需要更多，请提 issue 或者在商店页留言。
-
 ---
 
 # Find whatever 🔍
@@ -81,9 +79,7 @@
 
 ## 🌟 支持我
 
-如果您觉得这个项目对您有帮助，欢迎给我点个 Star 🌟 或在 Chrome 商店或 Product Hunt 上给我留下评分和评论。这将是我持续创作的最大动力！
-
-<a href="https://www.producthunt.com/products/find-whatever-regex-auto-re-find?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-find&#0045;whatever&#0045;regex&#0045;auto&#0045;re&#0045;find" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=987390&theme=light&t=1751507461541" alt="Find&#0032;whatever&#0032;&#0045;&#0032;regex&#0032;&#0038;&#0032;auto&#0032;re&#0045;find - Enhance&#0032;your&#0032;browser&#0039;s&#0032;find&#0032;capabilities&#0046; | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+如果您觉得这个项目对您有帮助，欢迎给我点个 Star 🌟 或在 Chrome 商店给我留下评分和评论。这将是我持续创作的最大动力！
 
 
 ## 🛠 开发

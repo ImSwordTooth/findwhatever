@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 export const Shortcut = (props) => {
 	const { isMulti = false, shortkey } = props
+	const { t } = useTranslation()
 	const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
-	const isChinese = navigator.language === 'zh' || navigator.language === 'zh-CN'
 
 	const getFinalKey = () => {
 		if (isMulti) {
@@ -19,7 +20,7 @@ export const Shortcut = (props) => {
 	}
 
 	return (
-		<div className="shortcut">{isChinese ? '快捷键' : 'shortcut'}：<span className="key">{getFinalKey()}</span></div>
+		<div className="shortcut">{t('快捷键')}：<span className="key">{getFinalKey()}</span></div>
 	)
 }
 

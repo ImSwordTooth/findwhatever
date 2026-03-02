@@ -1,5 +1,10 @@
 export const CHANGELOG_ITEMS = [
 	{
+		version: 'v4.0.0',
+		date: '2025-03-02',
+		content: '添加 8 国语言，重写 i18n'
+	},
+	{
 		version: 'v3.10.0',
 		date: '2025-02-26',
 		contentList: [

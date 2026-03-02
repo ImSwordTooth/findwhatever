@@ -209,11 +209,8 @@
 		.smallTip {
 			font-size: 12px;
 			transform: scale(0.8);
-			display: inline-block;
 			transform-origin: left bottom;
 			color: #7d7d7d;
-			position: relative;
-			bottom: 1px;
 		}
 	}
 
@@ -380,7 +377,7 @@
 		box-shadow: 1px 1px 4px 1px #c8eee8;
 
 		.key {
-			font-size: 13px;
+			font-size: 12px;
 		}
 	}
 }

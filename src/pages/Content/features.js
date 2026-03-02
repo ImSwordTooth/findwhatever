@@ -1,6 +1,5 @@
 import { destroyPopup } from "./index";
 import { useState, useRef, useEffect } from 'react'
-import { i18n } from '../i18n'
 
 // 生成匹配节点树
 export const reCheckTree = () => {
@@ -102,7 +101,7 @@ export const reCheckTree = () => {
 				if (genReturnNext.value.parentElement?.dataset.__swe__normalized === '777') { // 规范化的元素是克隆的，所以在页面中必然是隐藏的，所以需要特殊处理
 					window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
 				} else {
-					if (isElementVisible(genReturnNext.value.parentElement) !== i18n('隐藏中')) {
+					if (isElementVisible(genReturnNext.value.parentElement) !== '隐藏中') {
 						window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
 					}
 				}
@@ -389,13 +388,13 @@ export const isElementVisible = (el) => {
 	}
 	const rect = el.getBoundingClientRect();
 	if (rect.width === 0 && rect.height === 0) {
-		return i18n('隐藏中')
+		return '隐藏中'
 	} else {
 		const centerX = rect.left + rect.width / 2;
 		const centerY = rect.top + rect.height / 2;
 		const topElement = document.elementFromPoint(centerX, centerY);
 		if (topElement && el !== topElement && !el.contains(topElement) && !topElement.contains(el)) {
-			return i18n('被遮盖')
+			return '被遮盖'
 		}
 	}
 	return '';

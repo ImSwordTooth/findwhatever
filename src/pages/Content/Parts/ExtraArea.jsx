@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {i18n} from "../../i18n";
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import HiddenSvg from '../../../assets/svg/hidden.svg'
 import OpacitySvg from '../../../assets/svg/opacity.svg'
@@ -8,6 +8,8 @@ import SettingSvg from '../../../assets/svg/setting.svg'
 export const ExtraArea = (props) => {
 	const { isHidePanel, isShowSetting, isShowOpacity, isShowStatus, updateIsHidePanel, updateIsHidePanelTemporarily } = props
 	const [ visibleStatus, setVisibleStatus ] = useState(false)
+
+	const { t } = useTranslation()
 
 	useEffect(() => {
 		chrome.storage.onChanged.addListener(handleSessionChange)
@@ -51,7 +53,7 @@ export const ExtraArea = (props) => {
 				<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 h-[12px]">
 					<div className="inline-flex items-center scale-[0.8] origin-right text-xs cursor-grabbing text-[#a0a0a0]">
 						<HiddenSvg className="mr-1 w-[14px] h-[14px]" />
-						{i18n(visibleStatus)}
+						{t(visibleStatus)}
 					</div>
 				</div>
 			}

@@ -1,6 +1,6 @@
 import React from 'react'
 import {Button, Divider, Dropdown, Menu, Tooltip} from "antd";
-import {i18n} from "../../i18n";
+import { useTranslation } from 'react-i18next'
 import PropTypes from "prop-types";
 import FixSvg from '../../../assets/svg/fix.svg'
 import UnfixSvg from '../../../assets/svg/unfix.svg'
@@ -10,6 +10,8 @@ import DownSvg from '../../../assets/svg/down.svg'
 
 export const RecentList = (props) => {
 	const { fillSearchValue, popupContainer, fixList, recentList, openHistoryMode, updateFixList, updateRecentList } = props
+
+	const { t } = useTranslation()
 
 	const addToFix = (e, text) => {
 		e.stopPropagation()
@@ -53,14 +55,14 @@ export const RecentList = (props) => {
 						<div className="relative pr-[32px] group">
 							<div className=" h-5 text-ellipsis whitespace-nowrap overflow-hidden dark:text-[#fff]" onClick={(e) => fillSearchValue(e, r)}>{r}</div>
 							<div className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
-								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('填入并开启正则模式')}</div>}>
+								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('填入并开启正则模式')}</div>}>
 									<div
 										onClick={(e) => fillSearchValue(e, r, true)}
 										className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2] dark:text-[#b0b0b0] dark:hover:bg-[#2c2c2c]">.*
 									</div>
 								</Tooltip>
 
-								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('固定之')}</div>}>
+								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('固定之')}</div>}>
 									<div
 										onClick={(e) => addToFix(e, r)}
 										className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] dark:hover:bg-[#2c2c2c] group/fix ">
@@ -79,7 +81,7 @@ export const RecentList = (props) => {
 					{
 						fixList.length > 0 &&
 						<>
-							<div className="font-bold pl-[10px] pt-[10px] select-none dark:text-[#fff]">{i18n('固定')}</div>
+							<div className="font-bold pl-[10px] pt-[10px] select-none dark:text-[#fff]">{t('固定')}</div>
 							<Menu
 								style={{boxShadow: 'none'}}
 								items={fixList.map((r, i) => ({
@@ -90,14 +92,14 @@ export const RecentList = (props) => {
 											<div className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
 												<Tooltip arrowPointAtCenter={true} placement="top"
 														 getPopupContainer={() => popupContainer}
-														 align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('填入并开启正则模式')}</div>}>
+														 align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('填入并开启正则模式')}</div>}>
 													<div
 														onClick={(e) => fillSearchValue(e, r, true)}
 														className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2] dark:text-[#b0b0b0] dark:hover:bg-[#2c2c2c]">.*
 													</div>
 												</Tooltip>
 
-												<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('取消固定')}</div>}>
+												<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('取消固定')}</div>}>
 													<div
 														onClick={(e) => cancelToFix(e, r)}
 														className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[rgba(216,30,6,0.1)] ">
@@ -112,7 +114,7 @@ export const RecentList = (props) => {
 						</>
 					}
 					<div className="flex items-center justify-between pl-[10px] pr-[10px] pt-[10px] h-[20px] box-content dark:text-[#fff]">
-						<div className="font-bold select-none">{i18n('最近')}</div>
+						<div className="font-bold select-none">{t('最近')}</div>
 						<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer !inline-flex items-center justify-center" onClick={clearRecent}>
 							<TrashSvg className="w-[16px] h-[16px] cursor-pointer" />
 						</Button>
@@ -121,7 +123,7 @@ export const RecentList = (props) => {
 						{
 							recentList.length > 0
 								? React.cloneElement(menu, {style: {boxShadow: 'none'}})
-								: <div className="text-xs h-[30px] text-center scale-90 text-[#cccccc] select-none">{i18n('暂无数据')}</div>
+								: <div className="text-xs h-[30px] text-center scale-90 text-[#cccccc] select-none">{t('暂无数据')}</div>
 						}
 					</div>
 				</div>

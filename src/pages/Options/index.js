@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-
+import '../i18nnext'
 import { Options } from './Options';
 import styles from '../../output.css'
 import antdStyle from 'antd/dist/antd.less'

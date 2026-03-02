@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createContext, useRef } from 'react'
-import { i18n } from '../i18n'
+import { changeLanguage } from 'i18next'
+import { useTranslation } from 'react-i18next'
 import { message, Popover } from 'antd'
 import { DragBar } from './Parts/DragBar';
 import { ExtraArea } from './Parts/ExtraArea';
@@ -15,6 +16,7 @@ import { Changelog } from './Parts/Changelog'
 export const SettingContext = createContext(null)
 
 const INIT_SETTING = {
+	language: 'auto',
 	colorMode: 'dark',
 	isUseGlassEffect: false, // 是否使用玻璃效果
 	primaryColor: '#1677ff', // 主题色
@@ -62,6 +64,8 @@ export const Options = () => {
 	const [ setting, setSetting ] = useState({})
 	const timerRef = useRef(null);
 
+	const { t } = useTranslation()
+
 	useEffect(() => {
 		init()
 
@@ -80,6 +84,31 @@ export const Options = () => {
 			document.documentElement.style.setProperty('--swe-color-primary', setting.primaryColor)
 		}
 	}, [setting.colorMode, setting.primaryColor, setting.primaryColor_dark]);
+
+	useEffect(() => {
+		const language = setting.language
+		if (language !== 'auto') {
+			changeLanguage(language)
+		} else {
+			const lang = /(\w+)-?/g.exec(navigator.language)
+			if (lang && lang[1]) {
+				switch (lang[1]) {
+					case 'zh': changeLanguage(''); break;
+					case 'en': changeLanguage('English'); break;
+					case 'ru': changeLanguage('Russian'); break;
+					case 'ar': changeLanguage('Arabic'); break;
+					case 'pt': changeLanguage('Portuguese'); break;
+					case 'es': changeLanguage('Spanish'); break;
+					case 'fr': changeLanguage('French'); break;
+					case 'de': changeLanguage('German'); break;
+					case 'ko': changeLanguage('Korean'); break;
+					case 'ja': changeLanguage('Japanese'); break;
+				}
+			} else {
+				changeLanguage('')
+			}
+		}
+	}, [setting.language])
 
 	const init = async () => {
 		const { swe_setting  } = (await chrome.storage.sync.get(['swe_setting'])) || { swe_setting: {} }
@@ -140,7 +169,7 @@ export const Options = () => {
 	const resetSetting = () => {
 		chrome.storage.sync.remove(['swe_setting', 'styleText'])
 		setSetting(INIT_SETTING)
-		message.success(i18n('重置成功'))
+		message.success(t('重置成功'))
 	}
 
 	return (
@@ -150,51 +179,11 @@ export const Options = () => {
 					<div className="flex items-center">
 						<img className="w-[48px] h-[48px] mr-2" src="https://i2.letvimg.com/lc18_lemf/202503/31/13/43/icon.png"
 							 alt=""/>
-						<div className="font-mono text-2xl">Find whatever {i18n('设置项')}</div>
+						<div className="font-mono text-2xl">Find whatever {t('设置项')}</div>
+						<div>{navigator.language}</div>
 					</div>
 
 					<div className="flex items-center">
-						<a href="https://www.producthunt.com/products/find-whatever-regex-auto-re-find?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-find&#0045;whatever" target="_blank" style={{ marginRight: '16px' }}>
-							<img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=987390&theme=light&t=1752202780162" alt="Find&#0032;whatever - Enhance&#0032;your&#0032;browser&#0039;s&#0032;find&#0032;capabilities | Product Hunt" style={{ width: '180px' }} />
-						</a>
-						<Popover
-							placement="bottomRight"
-							content={
-								<div style={{padding: '8px', width: '240px'}}>
-									{
-										(navigator.language === 'zh' || navigator.language === 'zh-CN')
-											?
-											<div>
-												根据您的浏览器语言自动设置文本语言。目前只准备了中文和英语两个版本，如果需要更多，请在
-												<a style={{color: '#0788dc'}}
-												   href="https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo/reviews"
-												   target="_blank">chrome 商店</a>或者 <a style={{color: '#0788dc'}}
-																						  href="https://github.com/ImSwordTooth/findwhatever/issues"
-																						  target="_blank">Github</a> 评论留言
-											</div>
-											:
-											<div>
-												Automatically set the text language according to the language of your
-												browser. Currently, only Chinese and English versions are available. If
-												you need more languages, please leave a comment in <a
-												style={{color: '#0788dc'}}
-												href="https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo/reviews"
-												target="_blank">the Chrome Store</a> or on <a style={{color: '#0788dc'}}
-																							  href="https://github.com/ImSwordTooth/findwhatever/issues"
-																							  target="_blank">Github</a>.
-											</div>
-									}
-								</div>
-							}
-						>
-							<svg t="1750141566360" className="icon w-[28px] h-[28px] mr-2 cursor-pointer" viewBox="0 0 1024 1024" version="1.1"
-								 xmlns="http://www.w3.org/2000/svg" p-id="2343" width="200" height="200">
-								<path
-									d="M661.333333 192H423.253333l-18.752-93.696-83.669333 16.725333L336.213333 192H106.666667v85.333333h95.893333c5.696 17.92 14.101333 42.090667 25.578667 69.098667 19.754667 46.464 49.664 104 92.224 152.234667-38.485333 29.141333-81.344 55.594667-118.933334 76.8a1442.346667 1442.346667 0 0 1-84.458666 43.946666l-5.034667 2.346667-1.237333 0.576-0.341334 0.149333 17.642667 38.826667c17.621333 38.869333 17.706667 38.826667 17.706667 38.826667l0.106666-0.042667 0.426667-0.192 1.557333-0.704 5.674667-2.666667c4.906667-2.325333 11.946667-5.696 20.650667-10.026666a1527.829333 1527.829333 0 0 0 69.205333-36.693334c42.581333-24.021333 94.314667-55.936 140.672-92.48 46.336 36.544 98.090667 68.48 140.672 92.48a1527.722667 1527.722667 0 0 0 75.434667 39.765334l-17.002667 40.64-68.096 171.370666 79.317333 31.509334L634.453333 832h181.696l40.170667 101.098667 79.317333-31.509334-67.84-170.666666L767.381333 490.666667h-84.117333l-50.176 120.021333-1.216-0.597333a1441.792 1441.792 0 0 1-65.28-34.624c-37.632-21.205333-80.469333-47.658667-118.954667-76.8 42.56-48.213333 72.469333-105.770667 92.224-152.234667a782.357333 782.357333 0 0 0 25.578667-69.12H661.333333V192z m-200 121.045333c-18.176 42.752-43.776 90.645333-77.333333 128.789334-33.557333-38.144-59.157333-86.037333-77.333333-128.789334A694.805333 694.805333 0 0 1 292.650667 277.333333h182.698666c-3.925333 10.88-8.597333 22.954667-14.016 35.712zM781.909333 746.666667h-113.173333l56.576-135.36L781.909333 746.666667z"
-									fill="#4E5969" p-id="2344"></path>
-							</svg>
-
-						</Popover>
 						<a href="https://github.com/ImSwordTooth/findwhatever" target="_blank">
 							<svg className="w-[26px] h-[26px] cursor-pointer" viewBox="0 0 1024 1024" version="1.1"
 								 xmlns="http://www.w3.org/2000/svg" p-id="4118" width="200" height="200">

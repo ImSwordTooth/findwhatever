@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Button, Divider, Dropdown, Menu, Alert, Tooltip } from "antd";
 import { Input } from "../../components/Input";
 import { FrameList } from '../Content/Parts/FrameList';
-import { i18n } from '../i18n';
+import { useTranslation } from 'react-i18next'
 import { SettingContext } from './Options'
 import HiddenSvg from '../../assets/svg/hidden.svg'
 import OpacitySvg from '../../assets/svg/opacity.svg'
@@ -30,6 +30,8 @@ export const FakePanel = (props) => {
 	const textRef = useRef(null)
 	const popContainerRef = useRef(null)
 	const { setting } = useContext(SettingContext)
+
+	const { t } = useTranslation()
 
 	const text = '   孔乙己是站着喝酒而穿长衫的唯一的人。\n   他身材很高大；青白脸色，皱纹间时常夹些伤痕；一部乱蓬蓬的花白的胡子。\n   穿的虽然是长衫，可是又脏又破，似乎十多年没有补，也没有洗。\n   他对人说话，总是满口之乎者也，教人半懂不懂的。因为他姓孔，别人便从描红纸上的‘上大人孔乙己’这半懂不懂的话里，替他取下一个绰号，叫作孔乙己。'
 
@@ -145,7 +147,7 @@ export const FakePanel = (props) => {
 									<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60">
 										<div className="inline-flex items-center scale-[0.8] origin-right text-xs cursor-grabbing text-[#a0a0a0]">
 											<HiddenSvg className="mr-1 w-[14px] h-[14px]" />
-											{i18n('已隐藏')}
+											{t('已隐藏')}
 										</div>
 									</div>
 								}
@@ -166,7 +168,7 @@ export const FakePanel = (props) => {
 								setting.isShowResultText &&
 								<>
 									<div className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[var(--swe-color-primary)] dark:text-[#b7b4b4] dark:hover:text-[var(--swe-color-primary)] transition-colors">
-										<div className="scale-90 origin-right">{i18n('查找结果')}</div>
+										<div className="scale-90 origin-right">{t('查找结果')}</div>
 										<CopySvg className="w-2.5 h-2.5 ml-[1px]" />
 									</div>
 									<span className="dark:text-[#ddd]">：</span>
@@ -193,11 +195,11 @@ export const FakePanel = (props) => {
 														<div className="w-[128px] h-5 text-ellipsis whitespace-nowrap overflow-hidden dark:text-[#fff]">{r}</div>
 														<div
 															className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
-															<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('填入并开启正则模式')}</div>}>
+															<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('填入并开启正则模式')}</div>}>
 																<div className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2] dark:text-[#b0b0b0] dark:hover:bg-[#2c2c2c]">.*</div>
 															</Tooltip>
 
-															<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('固定之')}</div>}>
+															<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('固定之')}</div>}>
 																<div
 																	className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] dark:hover:bg-[#2c2c2c] group/fix ">
 																	<FixSvg className="w-3 h-3 group-hover/fix:fill-[#50a3d2] dark:*:fill-[#b0b0b0]" />
@@ -215,7 +217,7 @@ export const FakePanel = (props) => {
 												{
 													fixList.length > 0 &&
 													<>
-														<div className="font-bold pl-[10px] pt-[10px] select-none dark:text-[#fff]">{i18n('固定')}</div>
+														<div className="font-bold pl-[10px] pt-[10px] select-none dark:text-[#fff]">{t('固定')}</div>
 														<Menu
 															style={{boxShadow: 'none'}}
 															items={fixList.map((r, i) => ({
@@ -227,11 +229,11 @@ export const FakePanel = (props) => {
 																			className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
 																			<Tooltip arrowPointAtCenter={true} placement="top"
 																					 getPopupContainer={() => popContainerRef.current}
-																					 align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('填入并开启正则模式')}</div>}>
+																					 align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('填入并开启正则模式')}</div>}>
 																				<div className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2] dark:text-[#b0b0b0] dark:hover:bg-[#2c2c2c]">.*</div>
 																			</Tooltip>
 
-																			<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{i18n('取消固定')}</div>}>
+																			<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popContainerRef.current} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('取消固定')}</div>}>
 																				<div
 																					className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[rgba(216,30,6,0.1)] ">
 																					<UnFixSvg className="w-3 h-3" />
@@ -245,7 +247,7 @@ export const FakePanel = (props) => {
 													</>
 												}
 												<div className="flex items-center justify-between pl-[10px] pr-[10px] pt-[10px] h-[20px] box-content dark:text-[#fff]">
-													<div className="font-bold select-none">{i18n('最近')}</div>
+													<div className="font-bold select-none">{t('最近')}</div>
 													<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer !inline-flex items-center justify-center">
 														<TrashSvg className="w-[16px] h-[16px] cursor-pointer" />
 													</Button>
@@ -254,7 +256,7 @@ export const FakePanel = (props) => {
 													{
 														recentList.length > 0
 															? React.cloneElement(menu, {style: {boxShadow: 'none'}})
-															: <div className="text-xs h-[30px] text-center scale-90 text-[#cccccc] select-none">{i18n('暂无数据')}</div>
+															: <div className="text-xs h-[30px] text-center scale-90 text-[#cccccc] select-none">{t('暂无数据')}</div>
 													}
 												</div>
 											</div>
@@ -292,7 +294,7 @@ export const FakePanel = (props) => {
 										arrowPointAtCenter={true}
 										placement="bottom"
 										getPopupContainer={(e) => e.parentElement}
-										title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('大小写敏感')} {getShortcutText('c', true)}</div>}
+										title={<div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div>}
 									>
 										<button className="normalButton activeButton dark:bg-[#383838] dark:text-[#fff]">
 											<span className="text-xs select-none">Cc</span>
@@ -302,7 +304,7 @@ export const FakePanel = (props) => {
 										arrowPointAtCenter={true}
 										placement="bottom"
 										getPopupContainer={(e) => e.parentElement}
-										title={<div className="scale-90" style={{ padding: '4px' }}>{i18n('匹配单词')} {getShortcutText('w', true)}</div>}
+										title={<div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div>}
 									>
 										<button className="normalButton dark:bg-[#383838] dark:text-[#fff]">
 											<span className="text-xs select-none">W</span>
@@ -314,8 +316,8 @@ export const FakePanel = (props) => {
 										getPopupContainer={(e) => e.parentElement}
 										title={
 											<div className="scale-90" style={{ padding: '4px 0' }}>
-												<div>{i18n('正则表达式')} {getShortcutText('r')}</div>
-												<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
+												<div>{t('正则表达式')} {getShortcutText('r')}</div>
+												<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
 											</div>
 										}
 									>
@@ -331,8 +333,8 @@ export const FakePanel = (props) => {
 										getPopupContainer={(e) => e.parentElement}
 										title={(
 											<div className="scale-90" style={{ padding: '4px 0' }}>
-												<div>{i18n('实时监测 DOM 变化')} {getShortcutText('d')}</div>
-												<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('在不适合实时监测的情况下请临时关闭此功能')}</div>
+												<div>{t('实时监测 DOM 变化')} {getShortcutText('d')}</div>
+												<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('在不适合实时监测的情况下请临时关闭此功能')}</div>
 											</div>
 										)}
 									>
@@ -372,10 +374,10 @@ export const FakePanel = (props) => {
 				{text}
 			</pre>
 
-			<Alert message={i18n('设置项自动保存，但需要重新打开面板才能生效')} description={i18n('修改高亮样式后，可能需要刷新页面才能生效')} type="warning" showIcon />
+			<Alert message={t('设置项自动保存，但需要重新打开面板才能生效')} description={t('修改高亮样式后，可能需要刷新页面才能生效')} type="warning" showIcon />
 			<div className="flex justify-end mt-2">
 				<Button type="primary" danger shape="round" onClick={onReset}>
-					<div className="px-[12px]">{i18n('重置设置项')}</div>
+					<div className="px-[12px]">{t('重置设置项')}</div>
 				</Button>
 			</div>
 		</div>

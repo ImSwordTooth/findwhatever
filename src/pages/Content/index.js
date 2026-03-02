@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client'
 import { Pop } from './Pop'
 import ShadowRoot from 'react-shadow'
+import '../i18nnext'
 import styles from '../../output.css'
 import antdStyle from 'antd/dist/antd.less'
 import CoverAntdStyle from '../../coverAntd.css'

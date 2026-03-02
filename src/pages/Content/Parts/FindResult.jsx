@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {i18n} from "../../i18n";
+import { useTranslation } from 'react-i18next'
 import Proptypes from 'prop-types'
 import { animate, motion, useMotionValue, useTransform } from 'motion/react'
 import { circOut } from 'motion'
@@ -7,6 +7,8 @@ import CopySvg from '../../../assets/svg/copy.svg'
 
 export const FindResult = (props) => {
 	const { current, total, isShowResultText } = props
+
+	const { t } = useTranslation()
 
 	const aniCurrent = useMotionValue(total.map(a => a.sum).reduce((a, b) => a + b, 0))
 	const rounded = useTransform(() => Math.round(aniCurrent.get()), { ease: circOut })
@@ -39,7 +41,7 @@ export const FindResult = (props) => {
 					<div
 						className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[var(--swe-color-primary)] dark:text-[#b7b4b4] dark:hover:text-[var(--swe-color-primary)] transition-colors"
 						onClick={copyResult}>
-						<div className="scale-90 origin-right">{i18n('查找结果')}</div>
+						<div className="scale-90 origin-right">{t('查找结果')}</div>
 						<CopySvg className="w-2.5 h-2.5 ml-[1px]" />
 					</div>
 					<span className="dark:text-[#ddd]">：</span>

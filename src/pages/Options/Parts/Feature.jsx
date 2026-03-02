@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { i18n } from '../../i18n';
+import { useTranslation } from 'react-i18next'
 import { Button, Switch, InputNumber, Tooltip } from 'antd';
 import { SettingContext } from '../Options'
 import { Shortcut } from '../Shortcut';
@@ -11,18 +11,19 @@ import CloseSvg from '../../../assets/svg/close.svg'
 import WarnSvg from '../../../assets/svg/warn.svg';
 
 export const Feature = () => {
-
 	const { setting, updateSetting } = useContext(SettingContext)
+
+	const { t } = useTranslation()
 
 	return (
 		<div>
-			<div className="areaTitle mt-[30px]">{i18n('功能区')}</div>
+			<div className="areaTitle mt-[30px]">{t('功能区')}</div>
 			<div className="mt-[12px]">
 				<UpArrowSvg className="w-[16px] h-[16px]" />
 				<DownArrowSvg className="w-[16px] h-[16px]" />
-				<div>{i18n('切换当前定位的结果的下标(search-results-active)，切换时会尽量地把对应的元素滚动到视口内。')}</div>
-				<div>{i18n('在输入框 focus 的状态下，也可以按')} <code>Enter</code> 和 <code>Shift+Enter</code> {i18n('来切换。')}</div>
-				<div className="text-[#ff4d4f]"><strong>{i18n('切换 search-results-active 时，需要更新缓存来执行高亮和定位的动作，浏览器的 MAX_WRITE_OPERATIONS_PER_MINUTE 限制了一分钟只能更新 120 次，所以切换的时候最好别“幻影键舞”，否则可能会更新失败。')}</strong></div>
+				<div>{t('切换当前定位的结果的下标(search-results-active)，切换时会尽量地把对应的元素滚动到视口内。')}</div>
+				<div>{t('在输入框 focus 的状态下，也可以按')} <code>Enter</code> 和 <code>Shift+Enter</code> {t('来切换。')}</div>
+				<div className="text-[#ff4d4f]"><strong>{t('切换 search-results-active 时，需要更新缓存来执行高亮和定位的动作，浏览器的 MAX_WRITE_OPERATIONS_PER_MINUTE 限制了一分钟只能更新 120 次，所以切换的时候最好别“幻影键舞”，否则可能会更新失败。')}</strong></div>
 			</div>
 
 			<div className="mt-[12px]">
@@ -37,7 +38,7 @@ export const Feature = () => {
 
 				<div>
 					<Shortcut isMulti shortkey="c" />
-					<div>{i18n('激活后会严格根据字母的大小写匹配。原理是正则表达式的 i 模式。')}</div>
+					<div>{t('激活后会严格根据字母的大小写匹配。原理是正则表达式的 i 模式。')}</div>
 				</div>
 			</div>
 
@@ -53,7 +54,7 @@ export const Feature = () => {
 
 				<div>
 					<Shortcut shortkey="w" isMulti />
-					<div>{i18n('激活后只能匹配一个完整的单词，比如 special 这个单词，激活单词模式后搜索 spec 是搜不到的。原理是在内容前后加上正则表达式的 \\b。')}</div>
+					<div>{t('激活后只能匹配一个完整的单词，比如 special 这个单词，激活单词模式后搜索 spec 是搜不到的。原理是在内容前后加上正则表达式的 \\b。')}</div>
 				</div>
 			</div>
 
@@ -69,39 +70,39 @@ export const Feature = () => {
 
 				<div>
 					<Shortcut shortkey="r" isMulti />
-					<div>{i18n('激活后可以使用正则表达式的语法进行搜索，为了避免输入过程中出现 .* 这种会匹配所有字符的情况出现，正则模式开启后，会有一段较长的防抖时间，默认 1000ms。')}</div>
+					<div>{t('激活后可以使用正则表达式的语法进行搜索，为了避免输入过程中出现 .* 这种会匹配所有字符的情况出现，正则模式开启后，会有一段较长的防抖时间，默认 1000ms。')}</div>
 				</div>
 			</div>
 
 
 			<NewPart>
 				<div>
-					{i18n('v3.9.0 添加了检测过于宽泛和不合法的正则表达式的功能，出现这种情况后，文本框的右侧会出现')}
+					{t('v3.9.0 添加了检测过于宽泛和不合法的正则表达式的功能，出现这种情况后，文本框的右侧会出现')}
 					<Tooltip
 						arrowPointAtCenter={true}
 						placement="bottom"
 						getPopupContainer={(e) => e.parentElement}
 						title={
 							<div className="scale-90" style={{ padding: '4px 0' }}>
-								<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{i18n('正则表达式过于宽泛，可能导致查找过程中卡死，已暂停搜索，请重新输入')}</div>
+								<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('正则表达式过于宽泛，可能导致查找过程中卡死，已暂停搜索，请重新输入')}</div>
 							</div>
 						}
 					>
 						<WarnSvg className="m-[0px_4px] w-3 h-3 opacity-80 drop-shadow-[0px_0px_4px_red] hover:opacity-90 cursor-pointer fill-red dark:fill-[#ff4141]" />
-					</Tooltip>{i18n('并拒绝实际匹配。此功能不可关闭。')}
+					</Tooltip>{t('并拒绝实际匹配。此功能不可关闭。')}
 				</div>
 
-				<div>{i18n('不合法的正则表达式即为会报错的。')}</div>
-				<div>{i18n('我是这样判断一个正则表达式是否“过于宽泛的”：')}</div>
+				<div>{t('不合法的正则表达式即为会报错的。')}</div>
+				<div>{t('我是这样判断一个正则表达式是否“过于宽泛的”：')}</div>
 				<div className="ml-[20px]">
-					<div>1. {i18n('是否为全量匹配加任意量词，如')} <code>.*</code>、<code>.+</code>、<code>[\s\S]?</code></div>
-					<div>2. {i18n('如果侥幸过了黑名单，再维护一个基本上普通的正则表达式不会全部覆盖的文本。然后用当前正则判断，如果全都匹配覆盖到了，就说明太宽泛了。')}</div>
+					<div>1. {t('是否为全量匹配加任意量词，如')} <code>.*</code>、<code>.+</code>、<code>[\s\S]?</code></div>
+					<div>2. {t('如果侥幸过了黑名单，再维护一个基本上普通的正则表达式不会全部覆盖的文本。然后用当前正则判断，如果全都匹配覆盖到了，就说明太宽泛了。')}</div>
 				</div>
 			</NewPart>
 
 			<div className="setting-area">
 				<div className="setting-row">
-					<div>{i18n('正则模式防抖时长')}</div>
+					<div>{t('正则模式防抖时长')}</div>
 					<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={500} value={setting.regexDebounceDuration} onChange={e => updateSetting('regexDebounceDuration', e)} />
 				</div>
 			</div>
@@ -117,8 +118,8 @@ export const Feature = () => {
 				</div>
 
 				<Shortcut shortkey="d" isMulti />
-				<div>{i18n('激活后会启用一个 MutationObserver，监听页面里的 DOM 变化，变化后会自动更新查找结果。')}</div>
-				<div>{i18n('但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。')}</div>
+				<div>{t('激活后会启用一个 MutationObserver，监听页面里的 DOM 变化，变化后会自动更新查找结果。')}</div>
+				<div>{t('但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。')}</div>
 			</div>
 
 			<div className="mt-[12px]">
@@ -130,11 +131,11 @@ export const Feature = () => {
 
 				<div>
 					<Shortcut shortkey="Esc" />
-					<div>{i18n('点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。')}</div>
+					<div>{t('点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。')}</div>
 				</div>
 
 				<div className="setting-row">
-					<div>{i18n('是否显示关闭按钮')}</div>
+					<div>{t('是否显示关闭按钮')}</div>
 					<Switch size="small" checked={setting.isShowClose} onChange={e => updateSetting('isShowClose', e)} />
 				</div>
 			</div>
