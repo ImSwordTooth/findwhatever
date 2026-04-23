@@ -24,13 +24,14 @@ export const reCheckTree = () => {
 
 			// 剪枝，元素不可见的就不查了
 			if (node.nodeType === Node.ELEMENT_NODE) {
-				if (!node.checkVisibility()) {
-					return
+				const style = window.getComputedStyle(node);
+				if (style.display === 'none') {
+					return;
 				}
 			}
 			const treeWalker = createTreeWalkerWithShadowDOM(node)
 
-			if (node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
+			if (node instanceof HTMLElement && node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
 				yield* walkTextNodes(node.shadowRoot)
 			}
 
