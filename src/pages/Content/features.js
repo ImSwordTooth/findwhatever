@@ -379,18 +379,6 @@ export const doSearchOutside = async (regContent, isAuto = false) => {
 	const searchResultsHighlight = new Highlight(...window.rangesFlat)
 	CSS.highlights.set('search-results', searchResultsHighlight)
 
-	// chrome?.runtime?.sendMessage({
-	// 	action: 'saveResult',
-	// 	data: {
-	// 		isFrame: window.isFrame,
-	// 		resultNum: window.rangesFlat.length,
-	// 		matchText,
-	// 		isAuto,
-	// 		error,
-	// 		errorType
-	// 	}
-	// }, cb ? cb : () => {})
-
 	return {
 		resultNum: window.rangesFlat.length,
 		matchText,

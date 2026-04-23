@@ -68,7 +68,6 @@
 
 - **chrome**：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
 - **edge**：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
-- **firefox**：https://addons.mozilla.org/zh-CN/firefox/addon/find-whatever/
 
 
 ## 🤝 反馈与建议
@@ -88,8 +87,6 @@
 2. 执行 `npm run start`
 3. 执行 `npx tailwindcss -i ./src/global.css -o ./src/output.css --watch`
 4. 打开扩展程序的开发者模式，加载已解压的扩展程序，把 `build` 目录放进去
-
-*firefox 版本特殊命令：`npm run start:ff` 和 `npm run build:ff`*
 
 ## License
 [GPL-3.0-only](LICENSE)

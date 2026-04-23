@@ -63,7 +63,6 @@
 ## 📦 Installation
 - chrome：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
 - edge：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
-- firefox：https://addons.mozilla.org/zh-CN/firefox/addon/find-whatever/
 
 
 ## 🤝 Feedback
@@ -80,8 +79,6 @@ If you find this project helpful, feel free to give me a star 🌟 or leave me a
 2. Run `npm run start`
 3. Run `npx tailwindcss -i ./src/global.css -o ./src/output.css --watch`
 4. Open your browser's extensions page in developer mode, press "load unpacked" and select the `build` directory
-
-*Firefox version special commands: `npm run start:ff` and `npm run build:ff`*
 
 ## License
 [GPL-3.0-only](LICENSE)
