@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 
@@ -6,27 +6,37 @@ export const FrameList = (props) => {
 	const { frames, total, tabIndex, updateCurrent, updateTabIndex } = props
 
 	const { t } = useTranslation()
+	const totalMap = useMemo(() => {
+		return new Map(total.map(item => [item.frameId.toString(), item.sum]))
+	}, [total])
+	const totalSum = useMemo(() => {
+		return total.reduce((acc, b) => acc + b.sum, 0);
+	}, [total]);
+
+	const mainFrameSum = totalMap.get('0') || 0;
+	const activeFrameSum = totalMap.get(tabIndex.toString()) || 0;
+
 
 	const handleTabChange = async (frameid) => {
 		if (!updateCurrent) {
 			return
 		}
 
-		const sum = total.map(a => a.sum).reduce((a, b) => a + b, 0)
-		if (sum > 0) {
+		if (totalSum > 0) {
 			const { resultSum } = await chrome.storage.session.get(['resultSum'])
 			updateTabIndex(frameid)
 
 			let currentNum = 0;
 			for (let item of resultSum) {
-				if (item.frameId !== +frameid) {
+				if (item.frameId.toString() !== frameid.toString()) {
 					currentNum += item.sum;
 				} else {
 					break;
 				}
 			}
-			await chrome.storage.session.set({ activeResult: currentNum + 1})
-			updateCurrent(currentNum + 1)
+			const targetIndex = currentNum + 1;
+			await chrome.storage.session.set({ activeResult: targetIndex })
+			updateCurrent(targetIndex)
 		}
 	}
 
@@ -34,16 +44,16 @@ export const FrameList = (props) => {
 		const first = total.slice(1).find(f => f.sum !== 0)
 		if (tabIndex === '0') {
 			if (first) {
-				handleTabChange(first.frameId.toString())
+				handleTabChange(first.frameId)
 			}
 		} else {
 			const currentIndex = frames.findIndex(f => f.frameId.toString() === tabIndex)
 			const nextFrame = total.slice(currentIndex+1).find(f => f.sum !== 0)
 			if (nextFrame) {
-				handleTabChange(nextFrame.frameId.toString())
+				handleTabChange(nextFrame.frameId)
 			} else {
 				if (first) {
-					handleTabChange(first.frameId.toString())
+					handleTabChange(first.frameId)
 				}
 			}
 
@@ -55,7 +65,7 @@ export const FrameList = (props) => {
 			<div className="flex items-center text-xs mr-2 text-[#000000] dark:text-[#ffffff] relative cursor-pointer select-none" onClick={() => handleTabChange('0')}>
 				{t('当前页')}
 				<span className="bg-[#f4f4f4] dark:bg-[#282828] dark:text-[#b7b4b4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
-					{total.find(a => a.frameId === 0) ? total.find(a => a.frameId === 0).sum : 0}
+					{mainFrameSum}
 				</span>
 				{
 					total.find(a => a.frameId === 0)?.sum !== 0
@@ -80,8 +90,12 @@ export const FrameList = (props) => {
 						<div className="flex items-center text-xs absolute w-full -bottom-[4px]">
 							{
 								frames.slice(1).map((frame) => {
-									if (total.find(a => a.frameId === frame.frameId)?.sum !== 0) {
-										if (frame.frameId.toString() === tabIndex) {
+									const frameId = frame.frameId.toString();
+									const frameSum = totalMap.get(frameId) || 0;
+									const isActive = frameId === tabIndex;
+
+									if (frameSum !== 0) {
+										if (isActive) {
 											return <div key={frame.frameId} className="framesTabStatusBar bg-[var(--swe-color-primary)]"></div>
 										} else {
 											return <div key={frame.frameId} className="framesTabStatusBar bg-[#e0e0e0] dark:bg-[#555]"></div>
@@ -96,7 +110,7 @@ export const FrameList = (props) => {
 					{
 						tabIndex !== '0' &&
 						<span className="bg-[#f4f4f4] dark:bg-[#282828] dark:text-[#b7b4b4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
-							{total.find(a => a.frameId.toString() === tabIndex) ? total.find(a => a.frameId.toString() === tabIndex).sum : 0}
+							{activeFrameSum}
 						</span>
 					}
 				</div>

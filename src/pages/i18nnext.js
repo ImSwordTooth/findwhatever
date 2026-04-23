@@ -1549,7 +1549,8 @@ i18n
 		resources,
 		interpolation: {
 			escapeValue: false
-		}
+		},
+		showSupportNotice: false
 	})
 
 export default i18n

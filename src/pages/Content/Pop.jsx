@@ -42,18 +42,24 @@ export const Pop = () => {
 	const [ colorMode, setColorMode ] = useState('light')
 	const [ sweSetting, setSweSetting ] = useState({})
 
-	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration)
+	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration, !isReady)
 	const { t } = useTranslation()
 
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
+	const isFirstRender = useRef(true);
+	const optionsRef = useRef({ isWord, isMatchCase, isReg, isLive });
+	useEffect(() => {
+		optionsRef.current = { isWord, isMatchCase, isReg, isLive };
+	}, [isWord, isMatchCase, isReg, isLive]);
 
 	useEffect(() => {
 
 		const init = async () => {
-			const [ sessionStorage, syncStorage ] = await Promise.all([
+			const [ sessionStorage, syncStorage, locStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
-				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'x', 'y', 'recent', 'fix', 'swe_setting'])
+				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'recent', 'fix', 'swe_setting']),
+				chrome.storage.local.get(['x', 'y'])
 			])
 			setFrames(sessionStorage.frames)
 			setSearchValue(syncStorage.searchValue)
@@ -61,8 +67,8 @@ export const Pop = () => {
 			setIsWord(syncStorage.isWord)
 			setIsReg(syncStorage.isReg)
 			setIsLive(syncStorage.isLive)
-			setX(syncStorage.x || parseInt(window.innerWidth * 0.9 - 400))
-			setY(syncStorage.y || parseInt(window.innerHeight * 0.1))
+			setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 400))
+			setY(locStorage.y || parseInt(window.innerHeight * 0.1))
 			setRecentList(syncStorage.recent || [])
 			setFixList(syncStorage.fix || [])
 			setDebounceDuration(syncStorage.swe_setting?.debounceDuration || 200)
@@ -112,20 +118,20 @@ export const Pop = () => {
 				dom.style.setProperty('--swe-color-primary', syncStorage.swe_setting?.primaryColor_dark || '#44d62c')
 			}
 
-			if (window.innerHeight < syncStorage.y + 94 || window.innerWidth < syncStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置(右下)
+			if (window.innerHeight < syncStorage.y + 94 || window.innerWidth < locStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置(右下)
 				setX(parseInt(window.innerWidth * 0.9 - 400))
 				setY(parseInt(window.innerHeight * 0.1))
 
-				if (window.screen.height < syncStorage.y + 94 || window.screen.width < syncStorage.x + 400) { // 继续判断，如果在当前设备都不能完全显示，重置位置
-					chrome.storage.sync.remove(['x', 'y'])
+				if (window.screen.height < syncStorage.y + 94 || window.screen.width < locStorage.x + 400) { // 继续判断，如果在当前设备都不能完全显示，重置位置
+					chrome.storage.local.remove(['x', 'y'])
 				}
-			} else if (syncStorage.y < 0 || syncStorage.x < 0) { // 如果在当前视口不能完全显示(左上)，重置位置并直接删除存储
+			} else if (syncStorage.y < 0 || locStorage.x < 0) { // 如果在当前视口不能完全显示(左上)，重置位置并直接删除存储
 				setX(parseInt(window.innerWidth * 0.9 - 400))
 				setY(parseInt(window.innerHeight * 0.1))
-				chrome.storage.sync.remove(['x', 'y'])
+				chrome.storage.local.remove(['x', 'y'])
 			} else { // 如果能完全显示，就使用用户上次保存的位置
-				setX(syncStorage.x || parseInt(window.innerWidth * 0.9 - 400))
-				setY(syncStorage.y || parseInt(window.innerHeight * 0.1))
+				setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 400))
+				setY(locStorage.y || parseInt(window.innerHeight * 0.1))
 			}
 
 			window.__swe_observer = new MutationObserver((mutationsList, observer) => {
@@ -155,8 +161,11 @@ export const Pop = () => {
 
 		init()
 
-
 		return () => {
+			if (window.__swe_observer) {
+				window.__swe_observer.disconnect();
+				window.__swe_observer = null;
+			}
 			window.removeEventListener('message', handleMessage)
 		}
 	}, []);
@@ -186,25 +195,25 @@ export const Pop = () => {
 						if (e.key === "c" || e.key === "C") {
 							e.preventDefault();
 							e.stopPropagation();
-							handleIsMatchCaseChange();
+							setIsMatchCase(prev => !prev)
 							return;
 						}
 						if (e.key === "w" || e.key === "W") {
 							e.preventDefault();
 							e.stopPropagation();
-							handleIsWordChange();
+							setIsWord(prev => !prev)
 							return;
 						}
 						if (e.key === "d" || e.key === "D") {
 							e.preventDefault();
 							e.stopPropagation();
-							handleIsLiveChange();
+							setIsLive(prev => !prev)
 							return;
 						}
 						if (e.key === "r" || e.key === "R") {
 							e.preventDefault();
 							e.stopPropagation();
-							handleIsRegChange();
+							setIsReg(prev => !prev)
 							return;
 						}
 					}
@@ -236,7 +245,7 @@ export const Pop = () => {
 			window.removeEventListener("keypress", handleKeyPress, true);
 			window.removeEventListener("keyup", handleKeyUp, true);
 		};
-	}, [isMatchCase, isWord, isReg, isLive]);
+	}, []);
 
 	// isLive 变更后，更新监听器
 	useEffect(() => {
@@ -251,6 +260,10 @@ export const Pop = () => {
 	}, [isLive]);
 
 	useEffect(() => {
+		if (isFirstRender.current) {
+			isFirstRender.current = false;
+			return;
+		}
 		chrome.storage.sync.set({ recent: recentList, fix: fixList })
 	}, [recentList, fixList]);
 
@@ -258,39 +271,21 @@ export const Pop = () => {
 		if (!isReady) {
 			return
 		}
-		chrome.storage.sync.set({ isWord, isMatchCase, isReg, isLive }, () => {
+		const searchParams = {
+			searchValue: debouncedValue,
+			isWord,
+			isMatchCase,
+			isReg,
+			isLive
+		};
+		chrome.storage.sync.set(searchParams, () => {
 			chrome?.runtime?.sendMessage({
 				action: 'search',
-				data: {
-					searchValue,
-					isWord,
-					isMatchCase,
-					isReg,
-					isLive
-				}
-			})
-		})
+				data: searchParams
+			});
+		});
 
-	}, [isWord, isMatchCase, isReg, isLive]);
-
-	useEffect(() => {
-		if (!isReady) {
-			return
-		}
-		chrome.storage.sync.set({ searchValue: debouncedValue }, () => {
-			chrome?.runtime?.sendMessage({
-				action: 'search',
-				data: {
-					searchValue: debouncedValue,
-					isWord,
-					isMatchCase,
-					isReg,
-					isLive
-				}
-			})
-		})
-
-	}, [debouncedValue]);
+	}, [debouncedValue, isWord, isMatchCase, isReg, isLive, isReady]);
 
 	// pop再次出现时，自动选中文本，方便直接下一轮直接输入关键字检索
 	useEffect(() => {
@@ -410,7 +405,7 @@ export const Pop = () => {
 	const handleDragStop = (e, d) => {
 		setX(d.x)
 		setY(d.y)
-		chrome.storage.sync.set({ x: d.x, y: d.y })
+		chrome.storage.local.set({ x: d.x, y: d.y })
 	}
 
 	const addToRecent = () => {
@@ -425,7 +420,9 @@ export const Pop = () => {
 			}
 		} else { // 有就提到最新
 			const index = newRecent.findIndex(r => r === searchValue);
-			if (index > 0) {
+			if (index === 0) {
+				return
+			} else if (index > 0) {
 				newRecent.unshift(newRecent.splice(index, 1)[0])
 			}
 		}

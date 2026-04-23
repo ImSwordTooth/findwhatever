@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<style>
+		.visually-hidden {
+			clip: unset!important;
+			height: auto;
+			margin: 0;
+			overflow: auto;
+		}
+		.copy {
+			display: block;
+		}
+	</style>
+</head>
+<body>
+<section class="css-editor-container">
+	<header class="output-header border-rounded-top">
+		<h4 class="output-heading">CSS Demo: filter</h4>
+		<button id="reset" class="reset" type="button">Reset</button>
+	</header>
+	<noscript>
+		<div id="warning-no-script" class="warning-container">
+			<div class="warning">
+				Interactive examples cannot be shown because JavaScript is disabled.
+			</div>
+		</div>
+	</noscript>
+	<div id="warning-no-support" class="warning-container hidden">
+		<div class="warning">
+			This feature is not supported by your current browser. Check Browser
+			compatibility for more details.
+		</div>
+	</div>
+	<div id="editor-wrapper" class="editor-wrapper border-rounded-bottom">
+		<section id="example-choice-list" class="example-choice-list large live" data-property="filter">
+			<div class="example-choice">
+				<pre><div class="cm-editor ͼ1 ͼ2 ͼ4"><div class="cm-announced" aria-live="polite"></div><div tabindex="-1" class="cm-scroller"><div spellcheck="false" autocorrect="off" autocapitalize="off" translate="no" contenteditable="true" style="tab-size: 4;" class="cm-content" role="textbox" aria-multiline="true" data-language="css"><div class="cm-line"><span class="cm-tag">filter</span>: <span class="cm-keyword">url</span><span class="ͼ9">(</span><span class="cm-string">"../../media/examples/shadow.svg#element-id"</span><span class="ͼ9">)</span><span class="ͼ8">;</span></div></div><div class="cm-layer cm-layer-above cm-cursorLayer" aria-hidden="true" style="z-index: 150; animation-duration: 1200ms;"><div class="cm-cursor cm-cursor-primary" style="left: 0px; top: 4px; height: 16px;"></div></div><div class="cm-layer cm-selectionLayer" aria-hidden="true" style="z-index: -2;"></div></div></div></pre>
+				<button type="button" class="copy hidden" aria-hidden="true" aria-label="Copy to clipboard">
+					<span class="visually-hidden">Copy to Clipboard</span>
+				</button>
+				<button type="button" class="example-choice-button"><span class="visually-hidden">Choose example 1</span></button></div>
+
+			<div class="example-choice">
+				<pre><div class="cm-editor ͼ1 ͼ2 ͼ4"><div class="cm-announced" aria-live="polite"></div><div tabindex="-1" class="cm-scroller"><div spellcheck="false" autocorrect="off" autocapitalize="off" translate="no" contenteditable="true" style="tab-size: 4;" class="cm-content" role="textbox" aria-multiline="true" data-language="css"><div class="cm-line"><span class="cm-tag">filter</span>: <span class="cm-pseudo-class">blur</span><span class="ͼ9">(</span>5<span class="cm-tag">px</span><span class="ͼ9">)</span><span class="ͼ8">;</span></div></div><div class="cm-layer cm-layer-above cm-cursorLayer" aria-hidden="true" style="z-index: 150; animation-duration: 1200ms;"><div class="cm-cursor cm-cursor-primary" style="left: 0px; top: 4px; height: 16px;"></div></div><div class="cm-layer cm-selectionLayer" aria-hidden="true" style="z-index: -2;"></div></div></div></pre>
+				<button type="button" class="copy hidden" aria-hidden="true" aria-label="Copy to clipboard">
+					<span class="visually-hidden">Copy to Clipboard</span>
+				</button>
+				<button type="button" class="example-choice-button"><span class="visually-hidden">Choose example 2</span></button></div>
+
+			<div class="example-choice">
+				<pre><div class="cm-editor ͼ1 ͼ2 ͼ4"><div class="cm-announced" aria-live="polite"></div><div tabindex="-1" class="cm-scroller"><div spellcheck="false" autocorrect="off" autocapitalize="off" translate="no" contenteditable="true" style="tab-size: 4;" class="cm-content" role="textbox" aria-multiline="true" data-language="css"><div class="cm-line"><span class="cm-tag">filter</span>: <span class="cm-pseudo-class">contrast</span><span class="ͼ9">(</span>200%<span class="ͼ9">)</span><span class="ͼ8">;</span></div></div><div class="cm-layer cm-layer-above cm-cursorLayer" aria-hidden="true" style="z-index: 150; animation-duration: 1200ms;"><div class="cm-cursor cm-cursor-primary" style="left: 0px; top: 4px; height: 16px;"></div></div><div class="cm-layer cm-selectionLayer" aria-hidden="true" style="z-index: -2;"></div></div></div></pre>
+				<button type="button" class="copy hidden" aria-hidden="true" aria-label="Copy to clipboard">
+					<span class="visually-hidden">Copy to Clipboard</span>
+				</button>
+				<button type="button" class="example-choice-button"><span class="visually-hidden">Choose example 3</span></button></div>
+
+			<div class="example-choice">
+				<pre><div class="cm-editor ͼ1 ͼ2 ͼ4"><div class="cm-announced" aria-live="polite"></div><div tabindex="-1" class="cm-scroller"><div spellcheck="false" autocorrect="off" autocapitalize="off" translate="no" contenteditable="true" style="tab-size: 4;" class="cm-content" role="textbox" aria-multiline="true" data-language="css"><div class="cm-line"><span class="cm-tag">filter</span>: <span class="cm-pseudo-class">grayscale</span><span class="ͼ9">(</span>80%<span class="ͼ9">)</span><span class="ͼ8">;</span></div></div><div class="cm-layer cm-layer-above cm-cursorLayer" aria-hidden="true" style="z-index: 150; animation-duration: 1200ms;"><div class="cm-cursor cm-cursor-primary" style="left: 0px; top: 4px; height: 16px;"></div></div><div class="cm-layer cm-selectionLayer" aria-hidden="true" style="z-index: -2;"></div></div></div></pre>
+				<button type="button" class="copy hidden" aria-hidden="true" aria-label="Copy to clipboard">
+					<span class="visually-hidden">Copy to Clipboard</span>
+				</button>
+				<button type="button" class="example-choice-button"><span class="visually-hidden">Choose example 4</span></button></div>
+
+			<div class="example-choice selected" initial-choice="true">
+				<pre><div class="cm-editor ͼ1 ͼ2 ͼ4"><div class="cm-announced" aria-live="polite"></div><div tabindex="-1" class="cm-scroller"><div spellcheck="false" autocorrect="off" autocapitalize="off" translate="no" contenteditable="true" style="tab-size: 4;" class="cm-content" role="textbox" aria-multiline="true" data-language="css"><div class="cm-line"><span class="cm-tag">filter</span>: <span class="cm-pseudo-class">hue-rotate</span><span class="ͼ9">(</span>90<span class="cm-tag">deg</span><span class="ͼ9">)</span><span class="ͼ8">;</span></div></div><div class="cm-layer cm-layer-above cm-cursorLayer" aria-hidden="true" style="z-index: 150; animation-duration: 1200ms;"><div class="cm-cursor cm-cursor-primary" style="left: 0px; top: 4px; height: 16px;"></div></div><div class="cm-layer cm-selectionLayer" aria-hidden="true" style="z-index: -2;"></div></div></div></pre>
+				<button type="button" class="copy" aria-hidden="true" aria-label="Copy to clipboard">
+					<span class="visually-hidden">Copy to Clipboard</span>
+				</button>
+				<button type="button" class="example-choice-button"><span class="visually-hidden">Choose example 5</span></button></div>
+
+			<div class="example-choice">
+				<pre><div class="cm-editor ͼ1 ͼ2 ͼ4"><div class="cm-announced" aria-live="polite"></div><div tabindex="-1" class="cm-scroller"><div spellcheck="false" autocorrect="off" autocapitalize="off" translate="no" contenteditable="true" style="tab-size: 4;" class="cm-content" role="textbox" aria-multiline="true" data-language="css"><div class="cm-line"><span class="cm-tag">filter</span>: <span class="cm-pseudo-class">drop-shadow</span><span class="ͼ9">(</span>16<span class="cm-tag">px</span> 16<span class="cm-tag">px</span> <span class="cm-number">20px</span> <span class="cm-tag">red</span><span class="ͼ9">)</span> invert<span class="ͼ9">(</span>75%<span class="ͼ9">)</span><span class="ͼ8">;</span></div></div><div class="cm-layer cm-layer-above cm-cursorLayer" aria-hidden="true" style="z-index: 150; animation-duration: 1200ms;"><div class="cm-cursor cm-cursor-primary" style="left: 0px; top: 4px; height: 16px;"></div></div><div class="cm-layer cm-selectionLayer" aria-hidden="true" style="z-index: -2;"></div></div></div></pre>
+				<button type="button" class="copy hidden" aria-hidden="true" aria-label="Copy to clipboard">
+					<span class="visually-hidden">Copy to Clipboard</span>
+				</button>
+				<button type="button" class="example-choice-button"><span class="visually-hidden">Choose example 6</span></button></div>
+		</section>
+
+		<div id="output" class="output large">
+			<section id="default-example">
+				<div class="example-container">
+					<img id="example-element" src="../../media/examples/firefox-logo.svg" width="200" style="filter: hue-rotate(90deg);">
+				</div>
+			</section>
+		</div>
+
+	</div>
+</section>
+<div id="user-message" class="user-message" aria-hidden="true">Copied!</div>
+<script src="../../js/codemirror.js?v=220ae8b"></script>
+<script src="../../js/editor-css.js?v=220ae8b"></script>
+
+
+
+</body>
+</html>

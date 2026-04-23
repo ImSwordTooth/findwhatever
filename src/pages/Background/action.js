@@ -9,23 +9,25 @@ window.handleCloseByEsc = (e) => {
 	}
 };
 
-window.filteredRangeList = new Proxy({ value: [] }, {
-	set (target, prop, value) {
-		target[prop] = value
-		// window.dispatchEvent(new CustomEvent('filteredRangeListChange', { detail: value }))
-		return true
-	}
-});
+if (!window.filteredRangeList) {
+	window.filteredRangeList = new Proxy({ value: [] }, {
+		set (target, prop, value) {
+			target[prop] = value
+			return true
+		}
+	});
+}
 
 (async function () {
+	console.log({ isFrame: window.isFrame })
     // 每次点击的时候才开始创建 dom 查找树，否则会 dom 节点过旧
     if (!window.isFrame) {
         if (document.getElementById('__swe_container')) {
             closePop()
+			document.removeEventListener('keydown', window.handleCloseByEsc);
         } else {
-			await reCheckTree()
-
-			const [{ lastSearchTime }, { swe_setting }] = await Promise.all([
+			const [, { lastSearchTime }, { swe_setting }] = await Promise.all([
+				reCheckTree(),
 				chrome.storage.session.get(['lastSearchTime']),
 				chrome.storage.sync.get(['swe_setting'])
 			])

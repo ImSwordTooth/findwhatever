@@ -1,15 +1,7 @@
-let resultSum = []
-let activeTabIdHistoryList = ['',''] // 当前活跃的标签页的id的历史记录，chrome api 不提供旧的标签页信息，只能获取新的，所以自己保存一下。[0] 是旧的， [1] 是新的
-let pageFrames = [] // 当前页面中的 frames
-// 手动实现弹出窗口，避免点击空白处自动关闭
-chrome.action.onClicked.addListener(async (tab) => {
-    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(a => !a.errorOccurred); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
-	activeTabIdHistoryList[1] = tab.id
-	let visibleFrames = [] // 有内容的 frames
-
-    for (let i of frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 )) {
-		const res = await chrome.scripting.executeScript({
-			target: { tabId: tab.id, frameIds: [i.frameId] },
+const getVisibleFrames = async (tabId, frames) => {
+	const promises = frames.map(f => {
+		return chrome.scripting.executeScript({
+			target: { tabId, frameIds: [f.frameId] },
 			func: () => {
 				function hasVisibleText() {
 					const treeWalker = document.createTreeWalker(
@@ -33,19 +25,30 @@ chrome.action.onClicked.addListener(async (tab) => {
 				return hasVisibleText()
 			}
 		})
+	})
 
-		if (res[0].result) {
-			visibleFrames.push(i)
+	const results = await Promise.all(promises);
+
+	let visibleFrames = [];
+	results.forEach((res, index) => {
+		if (res && res[0] && res[0].result) {
+			visibleFrames.push(frames[index]);
 		}
-    }
+	});
 
 	const index = visibleFrames.findIndex(r => r.frameId === 0);
 	if (index > 0) {
-		visibleFrames.unshift(visibleFrames.splice(index, 1)[0])
+		visibleFrames.unshift(visibleFrames.splice(index, 1)[0]);
 	}
+	return visibleFrames;
+}
 
-	pageFrames = visibleFrames
-	resultSum = visibleFrames.map((f) => ({  // 提前定义好结构，有助于后续操作
+// 手动实现弹出窗口，避免点击空白处自动关闭
+chrome.action.onClicked.addListener(async (tab) => {
+    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(a => !a.errorOccurred); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
+
+	const visibleFrames = await getVisibleFrames(tab.id, frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 ))
+	const resultSum = visibleFrames.map((f) => ({  // 提前定义好结构，有助于后续操作
 		frameId: f.frameId,
 		sum: 0,
 		matchText: []
@@ -53,18 +56,20 @@ chrome.action.onClicked.addListener(async (tab) => {
 
 	// 重置查找总数，并设置 frames
 	await chrome.storage.session.set({
-		frames: pageFrames,
-		resultSum
+		frames: visibleFrames,
+		resultSum,
+		activeTabId: tab.id
 	})
 
 	if (visibleFrames.length > 0) {
-		for (let i of visibleFrames) {
-			// 插入脚本
-			await chrome.scripting.executeScript({
+
+		const injectPromises = visibleFrames.map(i =>
+			chrome.scripting.executeScript({
 				target: { tabId: tab.id, frameIds: [i.frameId] },
 				files: ['./action.bundle.js']
 			})
-		}
+		);
+		await Promise.all(injectPromises);
 	} else {
 		await chrome.scripting.executeScript({
 			target: { tabId: tab.id, frameIds: [0] },
@@ -81,90 +86,87 @@ chrome.runtime.onInstalled.addListener(async (res) => {
 	}
 })
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender) => {
     const { action, data } = message
 
-	if (action === 'saveResult') {
-		const currentResultIndex = resultSum.findIndex(r => r.frameId === sender.frameId);
+	if (action === 'search') {
+		const { frames, activeTabId, resultSum, activeResult } = await chrome.storage.session.get(['frames', 'activeTabId', 'resultSum', 'activeResult'])
+		console.log(frames)
+		const currentTabId = activeTabId || sender.tab.id;
+
+		const searchPromises = frames.map(f =>
+			chrome.scripting.executeScript({
+				target: { tabId: currentTabId, frameIds: [f.frameId] },
+				args: [f.frameId],
+				func: async (frameId) => {
+					// 调用搜索并返回结果
+					const res = await window?.__swe_doSearchOutside(false);
+					return { ...res, frameId: frameId };
+				}
+			}) // 容错处理
+		);
+		const executionResults = await Promise.all(searchPromises);
+
+		const newResultSum = executionResults
+			.filter(r => r && r[0] && r[0].result)
+			.map(r => ({
+				frameId: r[0].result.frameId,
+				sum: r[0].result.resultNum,
+				matchText: r[0].result.matchText
+			}));
+
+		console.log(executionResults.map(e => e[0].result))
+		console.log({ resultSum, activeResult })
+		console.log(sender.frameId)
+
 		const isAuto = data.isAuto;
-		if (sender.tab.active) { // 只取当前 active 的标签页，保存查找总数
-			if (currentResultIndex > -1) {
-				resultSum[currentResultIndex].sum = data.resultNum
-				resultSum[currentResultIndex].matchText = data.matchText
-			} else {
-				resultSum.push({ sum: data.resultNum, frameId: sender.frameId, matchText: data.matchText })
-			}
-		} else { // 不在当前标签页的，删掉
-			resultSum.splice(currentResultIndex, 1)
-		}
 
 		// 记录下上次搜索的时间，打开面板后判断超过一定时间后清除查找条件
-		const finalSession = { resultSum, lastSearchTime: Date.now() }
+		const finalSession = { resultSum: newResultSum, lastSearchTime: Date.now() }
 
-		chrome.storage.session.get(['activeResult'], (res) => {
-			if (isAuto) {
-				finalSession.activeResult = res.activeResult
-				finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
-			} else {
-				finalSession.activeResult = 0;
-			}
-			chrome.storage.session.set(finalSession);
-			sendResponse({ current: finalSession.activeResult, total: resultSum, error: data.error, errorType: data.errorType })
-		})
-		return true;
-	}
-
-	if (action === 'search') {
-		for (let i in pageFrames) {
-			chrome.scripting.executeScript({
-				target: {tabId: activeTabIdHistoryList[1], frameIds: [pageFrames[i].frameId]},
-				func: async () => {
-					window.__swe_doSearchOutside(false, (response) => {
-						if (window.isFrame) {
-							window.parent.postMessage({ type: 'swe_updateSearchResult', data: response }, '*')
-						} else {
-							window.postMessage({ type: 'swe_updateSearchResult', data: response }, '*')
-						}
-					})
-				}
-			})
+		if (isAuto) {
+			finalSession.activeResult = activeResult
+			finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
+		} else {
+			finalSession.activeResult = 0;
 		}
+		await chrome.storage.session.set(finalSession);
+
+		console.log('发了吗')
+		await chrome.scripting.executeScript({
+			target: { tabId: currentTabId, frameIds: [0] },
+			args: [finalSession.activeResult, newResultSum],
+			func: async (a, r) => {
+				window.postMessage({ type: 'swe_updateSearchResult', data: {
+						current: a,
+						total: r,
+						// error: data.error,
+						// errorType: data.errorType
+					} }, '*')
+			}
+		}) // 容错处理
+
+		return true
 	}
 
-	if (action === 'closeAction') {
-		chrome.storage.sync.get('styleText', (res) => {
-			chrome.scripting.removeCSS({
-				target: { tabId: activeTabIdHistoryList[1], allFrames: true },
-				css: res?.styleText || `
-            ::highlight(search-results) {
-    			background-color: #ffff37;
-    			color: black;
-			}
-			::highlight(search-results-active) {
-    			background-color: #ff8b3a;
-    			color: black;
-			}
-		`
-			})
-		})
-	}
+	if (action === 'closeAction' || action === 'openAction') {
+		const currentTabId = sender?.tab?.id;
+		if (!currentTabId) return;
 
-	if (action === 'openAction') {
 		chrome.storage.sync.get('styleText', (res) => {
-			chrome.scripting.insertCSS({
-				target: { tabId: activeTabIdHistoryList[1], allFrames: true },
-				css: res?.styleText || `
-            ::highlight(search-results) {
-    			background-color: #ffff37;
-    			color: black;
+			const cssParam = {
+				target: { tabId: currentTabId, allFrames: true },
+				css: res?.styleText || `::highlight(search-results) { background-color: #ffff37; color: black; } ::highlight(search-results-active) { background-color: #ff8b3a; color: black; }`
+			};
+
+			if (action === 'closeAction') {
+				chrome.scripting.removeCSS(cssParam).catch(()=>null);
+			} else {
+				chrome.scripting.insertCSS(cssParam).catch(()=>null);
 			}
-			::highlight(search-results-active) {
-    			background-color: #ff8b3a;
-    			color: black;
-			}
-		`
-			})
 		})
+
+		return true
 	}
 
 	if (action === 'openOptionsPage') {
@@ -175,12 +177,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 const handleStorageChange = async (changes, areaName) => {
     if (areaName === 'session') {
         if (changes.activeResult || changes.force) {
-            const { resultSum, activeResult: activeResultFromStorage } = await chrome.storage.session.get(['resultSum', 'activeResult']);
+            const { resultSum, activeResult: activeResultFromStorage, frames, activeTabId } = await chrome.storage.session.get(['resultSum', 'activeResult', 'frames', 'activeTabId']);
             const activeResult = changes.activeResult ? changes.activeResult.newValue : activeResultFromStorage
 
-			for (let i in pageFrames) {
+			for (let i in frames) {
 				await chrome.scripting.executeScript({
-					target: {tabId: activeTabIdHistoryList[1], frameIds: [pageFrames[i].frameId]},
+					target: {tabId: activeTabId, frameIds: [frames[i].frameId]},
 					func: () => {
 						CSS.highlights.delete('search-results-active')
 					}
@@ -197,7 +199,7 @@ const handleStorageChange = async (changes, areaName) => {
 				temp += resultSum[i].sum;
 				if (activeResult <= temp) {
 					chrome.scripting.executeScript({
-						target: { tabId: activeTabIdHistoryList[1], frameIds: [Number(resultSum[i].frameId)] },
+						target: { tabId: activeTabId, frameIds: [Number(resultSum[i].frameId)] },
 						args: [activeResult - temp + resultSum[i].sum, !changes.force],
 						func: (realIndex, isAuto) => {
 							if (!window.rangesFlat) {
@@ -242,22 +244,24 @@ chrome.storage.onChanged.addListener(handleStorageChange)
 
 chrome.tabs.onActivated.addListener(async () => {
     const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-	if (activeTabIdHistoryList[1]) {
-		activeTabIdHistoryList[0] = activeTabIdHistoryList[1]
-	}
-	activeTabIdHistoryList[1] = currentTab.id
+
 	if (currentTab.url.indexOf('http') < 0) {
 		return;
 	}
 
+	const { activeTabId } = await chrome.storage.session.get('activeTabId');
+	const oldTabId = activeTabId;
+
+	await chrome.storage.session.set({ activeTabId: currentTab.id });
+
 	// 停用旧的标签页的isLive
-	if (activeTabIdHistoryList[0]) {
+	if (oldTabId && oldTabId !== currentTab.id) {
 		await chrome.scripting.executeScript({
-			target: { tabId: activeTabIdHistoryList[0], allFrames: true },
+			target: { tabId: oldTabId, allFrames: true },
 			func: async () => {
-				window.__swe_observer.disconnect()
+				window.__swe_observer?.disconnect()
 			}
-		})
+		}).catch(() => null)
 	}
 
     const res = await chrome.scripting.executeScript({
@@ -268,51 +272,10 @@ chrome.tabs.onActivated.addListener(async () => {
     })
 
     if (res[0].result) {
-		let frames = await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })
-		frames = frames.filter(a => !a.errorOccurred)
+		let frames = (await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })).filter(a => !a.errorOccurred)
 
-		let visibleFrames = [] // 有内容的 frames
-
-		for (let i of frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 )) {
-			const res = await chrome.scripting.executeScript({
-				target: { tabId: currentTab.id, frameIds: [i.frameId] },
-				func: () => {
-					function hasVisibleText() {
-						const treeWalker = document.createTreeWalker(
-							document.body,
-							NodeFilter.SHOW_TEXT
-						);
-
-						while (treeWalker.nextNode()) {
-							const text = treeWalker.currentNode.textContent.trim();
-							const parent = treeWalker.currentNode.parentElement; // 检查文本节点是否在可见元素内
-
-							if (text.length > 0 &&
-								parent.tagName !== 'SCRIPT' &&
-								parent.tagName !== 'STYLE' &&
-								parent.tagName !== 'NOSCRIPT') {
-								return true;
-							}
-						}
-						return false;
-					}
-					return hasVisibleText()
-				}
-			})
-
-			if (res[0].result) {
-				visibleFrames.push(i)
-			}
-		}
-
-		const index = visibleFrames.findIndex(r => r.frameId === 0);
-		if (index > 0) {
-			visibleFrames.unshift(visibleFrames.splice(index, 1)[0])
-		}
-
-		resultSum = []
-		pageFrames = visibleFrames
-		await chrome.storage.session.set({ resultSum: [], frames: visibleFrames })
+		const visibleFrames = await getVisibleFrames(currentTab.id, frames)
+		await chrome.storage.session.set({ resultSum: [], frames: visibleFrames });
 
 		if (visibleFrames.length > 0) {
 			for (let i in visibleFrames) {

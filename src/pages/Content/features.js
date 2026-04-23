@@ -22,6 +22,12 @@ export const reCheckTree = () => {
 				return
 			}
 
+			// 剪枝，元素不可见的就不查了
+			if (node.nodeType === Node.ELEMENT_NODE) {
+				if (!node.checkVisibility()) {
+					return
+				}
+			}
 			const treeWalker = createTreeWalkerWithShadowDOM(node)
 
 			if (node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
@@ -81,7 +87,10 @@ export const reCheckTree = () => {
 				}
 
 				for (const child of clonedContainer.childNodes) {
-					yield* walkTextNodes(child)
+					if (child?.style?.display !== 'none') {
+						yield* walkTextNodes(child)
+
+					}
 				}
 			} else {
 				while (treeWalker.nextNode()) {
@@ -114,7 +123,7 @@ export const reCheckTree = () => {
 }
 
 export const closePop = () => {
-	window.__swe_observer.disconnect()
+	window.__swe_observer?.disconnect()
 	document.removeEventListener('keydown', window.handleCloseByEsc)
 	CSS.highlights.clear()
 	destroyPopup()
@@ -306,7 +315,7 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 						}
 					}
 
-					if (el.parentNode.sourceNode) {
+					if (el.parentNode?.sourceNode) {
 						/**
 						 * 规范化后的元素只有一个文本节点，但是源节点可不是，里面有很多节点、标签，不能直接用 range 标识范围
 						 * 需要根据查找结果，确定起始点和结束点对应的 dom节点，再设置到 range
@@ -360,20 +369,29 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 	}
 
 	const searchResultsHighlight = new Highlight(...window.rangesFlat)
+	console.log(window.rangesFlat)
 	CSS.highlights.set('search-results', searchResultsHighlight)
 
-	// 向背景脚本发送消息以获取当前标签信息
-	chrome?.runtime?.sendMessage({
-		action: 'saveResult',
-		data: {
-			isFrame: window.isFrame,
-			resultNum: window.rangesFlat.length,
-			matchText,
-			isAuto,
-			error,
-			errorType
-		}
-	}, cb ? cb : () => {})
+	// chrome?.runtime?.sendMessage({
+	// 	action: 'saveResult',
+	// 	data: {
+	// 		isFrame: window.isFrame,
+	// 		resultNum: window.rangesFlat.length,
+	// 		matchText,
+	// 		isAuto,
+	// 		error,
+	// 		errorType
+	// 	}
+	// }, cb ? cb : () => {})
+
+	return {
+		resultNum: window.rangesFlat.length,
+		matchText,
+		isAuto,
+		error,
+		errorType,
+		isFrame: window.isFrame
+	}
 }
 
 export const isElementVisible = (el) => {
@@ -386,41 +404,67 @@ export const isElementVisible = (el) => {
 			return 'shadow dom'
 		}
 	}
+
+	const style = window.getComputedStyle(el);
+
+	if (style.display === 'none') return '隐藏中';
+	if (style.visibility === 'hidden') return '隐藏中';
+	if (parseFloat(style.opacity) < 0.01) return '全透明';
+
 	const rect = el.getBoundingClientRect();
 	if (rect.width === 0 && rect.height === 0) {
 		return '隐藏中'
-	} else {
-		const centerX = rect.left + rect.width / 2;
-		const centerY = rect.top + rect.height / 2;
-		const topElement = document.elementFromPoint(centerX, centerY);
-		if (topElement && el !== topElement && !el.contains(topElement) && !topElement.contains(el)) {
-			return '被遮盖'
+	}
+
+	const points = [
+		{ x: rect.left + rect.width * 0.5, y: rect.top + rect.height * 0.5 }, // 中心
+		{ x: rect.left + 1, y: rect.top + 1 }, // 左上
+		{ x: rect.right - 1, y: rect.bottom - 1 } // 右下
+	];
+	let isCovered = true;
+	for (const point of points) {
+		// 避开负坐标
+		if (point.x < 0 || point.y < 0) continue;
+
+		const topElement = document.elementFromPoint(point.x, point.y);
+		if (topElement && (el === topElement || el.contains(topElement) || topElement.contains(el))) {
+			isCovered = false; // 只要有一个点能露出来，就认为可见
+			break;
 		}
 	}
-	return '';
+
+	return isCovered ? '被遮盖' : '';
 }
 
 // 自定义防抖 Hook
-export const useDebounce = (value, delay) => {
-	const [debouncedValue, setDebouncedValue] = useState(value);
+export const useDebounce = (value, delay, immediate) => {
+	const [ debouncedValue, setDebouncedValue ] = useState(value);
 	const [ isDebounceOk, setIsDebounceOK ] = useState(false)
+
 	const timerRef = useRef(null);
 
+	if (immediate && debouncedValue !== value) {
+		setDebouncedValue(value)
+		setIsDebounceOK(true); // 初始化阶段，它应该是“OK”的
+	}
+
 	useEffect(() => {
-		if (timerRef.current) {
-			setIsDebounceOK(true)
-			clearTimeout(timerRef.current);
+		if (immediate) {
+			return;
 		}
 		setIsDebounceOK(false)
+		if (timerRef.current) {
+			clearTimeout(timerRef.current);
+		}
 		timerRef.current = setTimeout(() => {
-			setIsDebounceOK(true)
 			setDebouncedValue(value);
+			setIsDebounceOK(true)
 		}, delay);
 
 		return () => {
 			clearTimeout(timerRef.current);
 		};
-	}, [value, delay]);
+	}, [value, delay, immediate]);
 
 	return { debouncedValue, isDebounceOk };
 };

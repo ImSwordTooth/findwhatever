@@ -7,15 +7,26 @@ import styles from '../../output.css'
 import antdStyle from 'antd/dist/antd.less'
 import CoverAntdStyle from '../../coverAntd.css'
 
-const dom = document.createElement('div');
-dom.id = '__swe_container'
-dom.style.cssText = `
-	position: relative;
-	z-index: 999999999999999999;
-`
-const root = createRoot(dom)
+const CONTAINER_ID = '__swe_container';
+let containerDiv = null
+let root = null
 
 export const createOrUpdatePopup = (props) => {
+	if (!containerDiv) {
+		containerDiv = document.createElement('div');
+		containerDiv.id = CONTAINER_ID;
+		// 建议使用 fixed 覆盖全屏或局部，z-index 取 32 位整型最大值
+		containerDiv.style.cssText = `
+            position: fixed;
+            z-index: 2147483647;
+        `;
+		document.documentElement.appendChild(containerDiv);
+	}
+
+	if (!root) {
+		root = createRoot(containerDiv);
+	}
+
 	root.render(
 		<ShadowRoot.div mode="closed">
 			<Pop {...props} />
@@ -24,28 +35,20 @@ export const createOrUpdatePopup = (props) => {
 			<style type="text/css">{CoverAntdStyle[0][1].toString()}</style>
 		</ShadowRoot.div>
 	)
-	document.documentElement.appendChild(dom)
-	const style = document.createElement('style')
-	style.innerText = `
-	.fade-out {
-		animation: fadeout ease-out .2s forwards;
-		transform-origin: center;
-	}
-	@keyframes fadeout {
-		from { opacity: 1 }
-		to { opacity: 0 }
-	}
-	`
-	document.head.appendChild(style)
 }
 
 export const destroyPopup = () => {
-	const element = document.getElementById('__swe_container')
-	element.classList.add('fade-out')
-	element.addEventListener('animationend', () => {
-		element.remove()
-		root.unmount()
-	}, { once: true })
+	let containerDiv = document.getElementById(CONTAINER_ID);
+	if (!containerDiv) return
+	if (root) {
+		root.unmount();
+		root = null;
+	}
+	if (containerDiv) {
+		containerDiv.remove();
+		containerDiv = null;
+	}
+
 }
 
 window.updatePopup = createOrUpdatePopup

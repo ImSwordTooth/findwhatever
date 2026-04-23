@@ -1079,10 +1079,6 @@ button {
   height: 26px;
 }
 
-.h-\[28px\] {
-  height: 28px;
-}
-
 .h-\[30px\] {
   height: 30px;
 }
@@ -1180,10 +1176,6 @@ button {
   width: 280px;
 }
 
-.w-\[28px\] {
-  width: 28px;
-}
-
 .w-\[400px\] {
   width: 400px;
 }
@@ -1206,6 +1198,10 @@ button {
 
 .min-w-\[15px\] {
   min-width: 15px;
+}
+
+.min-w-\[18px\] {
+  min-width: 18px;
 }
 
 .flex-1 {
@@ -1659,6 +1655,10 @@ button {
   line-height: 16px;
 }
 
+.text-\[10px\] {
+  font-size: 10px;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -1677,6 +1677,10 @@ button {
 
 .leading-relaxed {
   line-height: 1.625;
+}
+
+.leading-none {
+  line-height: 1;
 }
 
 .text-\[\#000000\] {
