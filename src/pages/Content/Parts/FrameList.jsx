@@ -44,16 +44,16 @@ export const FrameList = (props) => {
 		const first = total.slice(1).find(f => f.sum !== 0)
 		if (tabIndex === '0') {
 			if (first) {
-				handleTabChange(first.frameId)
+				handleTabChange(first.frameId.toString())
 			}
 		} else {
 			const currentIndex = frames.findIndex(f => f.frameId.toString() === tabIndex)
 			const nextFrame = total.slice(currentIndex+1).find(f => f.sum !== 0)
 			if (nextFrame) {
-				handleTabChange(nextFrame.frameId)
+				handleTabChange(nextFrame.frameId.toString())
 			} else {
 				if (first) {
-					handleTabChange(first.frameId)
+					handleTabChange(first.frameId.toString())
 				}
 			}
 

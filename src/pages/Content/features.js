@@ -157,8 +157,9 @@ export const observerBodyAndOpenShadowRoot = () => {
 	window.__swe_observer.observe(document.body, {
 		subtree: true,
 		childList: true,
-		attributes: false,
-		characterData: true
+		attributes: true,
+		characterData: true,
+		attributeFilter: ['class', 'style', 'hidden', 'open', 'selected', 'aria-expanded', 'aria-hidden']
 	})
 
 	function observeAllShadowRoots(startNode) {
@@ -169,8 +170,9 @@ export const observerBodyAndOpenShadowRoot = () => {
 				window.__swe_observer.observe(shadowRoot, {
 					subtree: true,
 					childList: true,
-					attributes: false,
-					characterData: true
+					attributes: true,
+					characterData: true,
+					attributeFilter: ['class', 'style', 'hidden', 'open', 'selected', 'aria-expanded', 'aria-hidden']
 				});
 				observeAllShadowRoots(shadowRoot);
 			}
@@ -232,13 +234,48 @@ const isDangerousReg = (reg) => {
 	return !!(res && res.indices[0][1] - res.indices[0][0] === testStr.length);
 }
 
-export const doSearchOutside = async (isAuto = false, cb) => {
-	CSS.highlights.clear() // 清除所有高亮
-
+export const getSearchReg = async () => {
 	const { searchValue, isMatchCase, isWord, isReg, swe_setting } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting'])
-	const matchText = []
+	let reg = null
 	let error = false
 	let errorType = ''
+
+	let regContent = searchValue
+	if (!isReg) {
+		regContent = regContent.replace(/([.*+?^${}()|[\]\\])/g, '\\$1');
+	}
+	if (isWord) {
+		// regContent = `\\b${regContent}\\b`
+		regContent = `(?<![\\p{L}\\p{N}])${regContent}(?![\\p{L}\\p{N}])`
+	}
+	try {
+		reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`);
+		const isDanger = isDangerousReg(reg)
+
+		if (isDanger) {
+			error = true
+			errorType = 'danger reg'
+			if (!window.rangesFlat) {
+				window.rangesFlat = []
+			}
+		}
+	} catch (e) {
+		// 正则表达式不合法
+		error = true
+		errorType = 'invalid reg'
+		if (!window.rangesFlat) {
+			window.rangesFlat = []
+		}
+	}
+
+	return { regContent, error, errorType }
+}
+
+export const doSearchOutside = async (regContent, isAuto = false) => {
+	CSS.highlights.clear() // 清除所有高亮
+
+	const { searchValue, isMatchCase } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting'])
+	const matchText = []
 
 	if (searchValue && window.allNodes) { // 如果有搜索词
 
@@ -248,128 +285,98 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 
 		// 根据筛选项，设置正则表达式
 		let reg = null
-		let regContent = searchValue
-		if (!isReg) {
-			regContent = regContent.replace(/([.*+?^${}()|[\]\\])/g, '\\$1');
-		}
-		if (isWord) {
-			// regContent = `\\b${regContent}\\b`
-			regContent = `(?<![\\p{L}\\p{N}])${regContent}(?![\\p{L}\\p{N}])`
-		}
+		reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`);
 
-		try {
-			reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`);
-			const isDanger = isDangerousReg(reg)
+		window.rangesFlat = window.allNodes.map(({ el, text }) => {
+			const indices = [] // 对象数组，{ indicesStart: number, indicesLength: number }，分别是起点和长度
+			let startPosition = 0
 
-			if (isDanger) {
-				error = true
-				errorType = 'danger reg'
-				if (!window.rangesFlat) {
-					window.rangesFlat = []
-				}
-			}
-		} catch (e) {
-			// 正则表达式不合法
-			error = true
-			errorType = 'invalid reg'
-			if (!window.rangesFlat) {
-				window.rangesFlat = []
-			}
-		}
+			while (startPosition < text.length) {
+				let index
+				reg.lastIndex = 0
+				const res = reg.exec(text.substring(startPosition))
 
-		if (reg && !error) {
-			window.rangesFlat = window.allNodes.map(({ el, text }) => {
-				const indices = [] // 对象数组，{ indicesStart: number, indicesLength: number }，分别是起点和长度
-				let startPosition = 0
-
-				while (startPosition < text.length) {
-					let index
-					reg.lastIndex = 0
-					const res = reg.exec(text.substring(startPosition))
-
-					if (res) {
-						index = res.indices[0][0]
-						const execResLength = res.indices[0][1] - res.indices[0][0]
-						if (execResLength < 1) { // 即使 res 有值，也可能是没匹配到，所以要判断一下
-							break
-						}
-						indices.push({
-							indicesStart: startPosition + index,
-							indicesLength: execResLength
-						})
-						startPosition += index + execResLength
-						matchText.push(res[0])
-					} else {
+				if (res) {
+					index = res.indices[0][0]
+					const execResLength = res.indices[0][1] - res.indices[0][0]
+					if (execResLength < 1) { // 即使 res 有值，也可能是没匹配到，所以要判断一下
 						break
 					}
+					indices.push({
+						indicesStart: startPosition + index,
+						indicesLength: execResLength
+					})
+					startPosition += index + execResLength
+					matchText.push(res[0])
+				} else {
+					break
+				}
+			}
+
+			return indices.map(({ indicesStart, indicesLength }) => {
+				const range = new Range()
+				if (el.parentElement) {
+					// 如果有源节点的备份，说明是个规范化的元素，要高亮肯定得高亮源节点
+					window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.sourceNode || el.parentElement]
+				} else {
+					if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
+						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
+					}
 				}
 
-				return indices.map(({ indicesStart, indicesLength }) => {
-					const range = new Range()
-					if (el.parentElement) {
-						// 如果有源节点的备份，说明是个规范化的元素，要高亮肯定得高亮源节点
-						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.sourceNode || el.parentElement]
-					} else {
-						if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
-							window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
-						}
-					}
+				if (el.parentNode?.sourceNode) {
+					/**
+					 * 规范化后的元素只有一个文本节点，但是源节点可不是，里面有很多节点、标签，不能直接用 range 标识范围
+					 * 需要根据查找结果，确定起始点和结束点对应的 dom节点，再设置到 range
+					 * */
+					let startTextLength = 0
+					let endTextLength = 0
+					let startIndex = 0
+					const children = el.parentNode.sourceNode.childNodes
 
-					if (el.parentNode?.sourceNode) {
-						/**
-						 * 规范化后的元素只有一个文本节点，但是源节点可不是，里面有很多节点、标签，不能直接用 range 标识范围
-						 * 需要根据查找结果，确定起始点和结束点对应的 dom节点，再设置到 range
-						 * */
-						let startTextLength = 0
-						let endTextLength = 0
-						let startIndex = 0
-						const children = el.parentNode.sourceNode.childNodes
-
-						for (let i=0; i<children.length; i++) {
-							let currentNode = children[i]
-							if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
-								if (children[i].childNodes[0]) {
-									currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
-								} else {
-									continue
-								}
-							}
-							const currentLength = currentNode?.length || 0
-							startTextLength += currentLength
-							if (startTextLength >= indicesStart) {
-								range.setStart(currentNode, indicesStart - (startTextLength - currentLength))
-								startIndex = i
-								break
-							}
-						}
-
-						for (let i=0; i<children.length; i++) {
-							let currentNode = children[i]
-							if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
+					for (let i=0; i<children.length; i++) {
+						let currentNode = children[i]
+						if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
+							if (children[i].childNodes[0]) {
 								currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
-							}
-							const currentLength = currentNode?.length || 0
-							endTextLength += currentLength
-							if (endTextLength >= indicesStart + indicesLength) {
-								range.setEnd(currentNode, indicesStart + indicesLength - (endTextLength - currentLength))
-								break
+							} else {
+								continue
 							}
 						}
-					} else {
-						range.setStart(el, indicesStart)
-						range.setEnd(el, indicesStart + indicesLength)
+						const currentLength = currentNode?.length || 0
+						startTextLength += currentLength
+						if (startTextLength >= indicesStart) {
+							range.setStart(currentNode, indicesStart - (startTextLength - currentLength))
+							startIndex = i
+							break
+						}
 					}
 
-					return range
-				})
-			}).flat()
-		}
+					for (let i=0; i<children.length; i++) {
+						let currentNode = children[i]
+						if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
+							currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
+						}
+						const currentLength = currentNode?.length || 0
+						endTextLength += currentLength
+						if (endTextLength >= indicesStart + indicesLength) {
+							range.setEnd(currentNode, indicesStart + indicesLength - (endTextLength - currentLength))
+							break
+						}
+					}
+				} else {
+					range.setStart(el, indicesStart)
+					range.setEnd(el, indicesStart + indicesLength)
+				}
+
+				return range
+			})
+		}).flat()
 	} else {
 		window.rangesFlat = []
 	}
 
 	const searchResultsHighlight = new Highlight(...window.rangesFlat)
-	console.log(window.rangesFlat)
 	CSS.highlights.set('search-results', searchResultsHighlight)
 
 	// chrome?.runtime?.sendMessage({
@@ -388,8 +395,6 @@ export const doSearchOutside = async (isAuto = false, cb) => {
 		resultNum: window.rangesFlat.length,
 		matchText,
 		isAuto,
-		error,
-		errorType,
 		isFrame: window.isFrame
 	}
 }
@@ -470,8 +475,26 @@ export const useDebounce = (value, delay, immediate) => {
 };
 
 window.__swe_doSearchOutside = doSearchOutside
+window.__swe_getSearchReg = getSearchReg
 
 // 获取元素的隐藏状态，返回一个描述元素不可见的原因的字符串，如果不为空，说明元素不可见
 window.__swe_isElementVisible = isElementVisible
 
 window.observerBodyAndOpenShadowRoot = observerBodyAndOpenShadowRoot
+
+export const debounce = (fn, delay = 300) => {
+	let timer = null;
+
+	return function (...args) {
+		// 如果在 delay 时间内再次触发，则清空之前的计时器
+		if (timer) {
+			clearTimeout(timer);
+		}
+
+		// 重新开始计时
+		timer = setTimeout(() => {
+			fn.apply(this, args);
+			timer = null;
+		}, delay);
+	};
+};

@@ -90,62 +90,75 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
     const { action, data } = message
 
 	if (action === 'search') {
-		const { frames, activeTabId, resultSum, activeResult } = await chrome.storage.session.get(['frames', 'activeTabId', 'resultSum', 'activeResult'])
-		console.log(frames)
+		const { frames, activeTabId, activeResult } = await chrome.storage.session.get(['frames', 'activeTabId', 'activeResult'])
 		const currentTabId = activeTabId || sender.tab.id;
-
-		const searchPromises = frames.map(f =>
-			chrome.scripting.executeScript({
-				target: { tabId: currentTabId, frameIds: [f.frameId] },
-				args: [f.frameId],
-				func: async (frameId) => {
-					// 调用搜索并返回结果
-					const res = await window?.__swe_doSearchOutside(false);
-					return { ...res, frameId: frameId };
-				}
-			}) // 容错处理
-		);
-		const executionResults = await Promise.all(searchPromises);
-
-		const newResultSum = executionResults
-			.filter(r => r && r[0] && r[0].result)
-			.map(r => ({
-				frameId: r[0].result.frameId,
-				sum: r[0].result.resultNum,
-				matchText: r[0].result.matchText
-			}));
-
-		console.log(executionResults.map(e => e[0].result))
-		console.log({ resultSum, activeResult })
-		console.log(sender.frameId)
-
-		const isAuto = data.isAuto;
-
-		// 记录下上次搜索的时间，打开面板后判断超过一定时间后清除查找条件
-		const finalSession = { resultSum: newResultSum, lastSearchTime: Date.now() }
-
-		if (isAuto) {
-			finalSession.activeResult = activeResult
-			finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
-		} else {
-			finalSession.activeResult = 0;
-		}
-		await chrome.storage.session.set(finalSession);
-
-		console.log('发了吗')
-		await chrome.scripting.executeScript({
+		const regRes = await chrome.scripting.executeScript({
 			target: { tabId: currentTabId, frameIds: [0] },
-			args: [finalSession.activeResult, newResultSum],
-			func: async (a, r) => {
-				window.postMessage({ type: 'swe_updateSearchResult', data: {
-						current: a,
-						total: r,
-						// error: data.error,
-						// errorType: data.errorType
-					} }, '*')
+			func: async () => {
+				// 调用搜索并返回结果
+				return await window?.__swe_getSearchReg();
 			}
 		}) // 容错处理
 
+		const { error, errorType, regContent } = regRes[0].result
+
+		if (error) {
+			await chrome.scripting.executeScript({
+				target: { tabId: currentTabId, frameIds: [0] },
+				args: [error, errorType],
+				func: async (e, eT) => {
+					window.postMessage({ type: 'swe_updateSearchResult', data: {
+							error: e,
+							errorType: eT
+						} }, '*')
+				}
+			}) // 容错处理
+		} else {
+			const searchPromises = frames.map(f =>
+				chrome.scripting.executeScript({
+					target: { tabId: currentTabId, frameIds: [f.frameId] },
+					args: [f.frameId, regContent],
+					func: async (frameId, rC) => {
+						// 调用搜索并返回结果
+						const res = await window?.__swe_doSearchOutside(rC, false);
+						return { ...res, frameId: frameId };
+					}
+				}) // 容错处理
+			);
+			const executionResults = await Promise.all(searchPromises);
+
+			const newResultSum = executionResults
+				.filter(r => r && r[0] && r[0].result)
+				.map(r => ({
+					frameId: r[0].result.frameId,
+					sum: r[0].result.resultNum,
+					matchText: r[0].result.matchText
+				}));
+			//
+
+			const isAuto = data.isAuto;
+			// 记录下上次搜索的时间，打开面板后判断超过一定时间后清除查找条件
+			const finalSession = { resultSum: newResultSum, lastSearchTime: Date.now() }
+
+			if (isAuto) {
+				finalSession.activeResult = activeResult
+				finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
+			} else {
+				finalSession.activeResult = 0;
+			}
+			await chrome.storage.session.set(finalSession);
+
+			await chrome.scripting.executeScript({
+				target: { tabId: currentTabId, frameIds: [0] },
+				args: [finalSession.activeResult, newResultSum],
+				func: async (a, r) => {
+					window.postMessage({ type: 'swe_updateSearchResult', data: {
+							current: a,
+							total: r
+						} }, '*')
+				}
+			})
+		}
 		return true
 	}
 

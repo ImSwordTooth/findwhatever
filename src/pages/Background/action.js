@@ -19,7 +19,6 @@ if (!window.filteredRangeList) {
 }
 
 (async function () {
-	console.log({ isFrame: window.isFrame })
     // 每次点击的时候才开始创建 dom 查找树，否则会 dom 节点过旧
     if (!window.isFrame) {
         if (document.getElementById('__swe_container')) {

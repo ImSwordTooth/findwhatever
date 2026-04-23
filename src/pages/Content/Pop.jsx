@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Input } from '../../components/Input'
-import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, doSearchOutside, useDebounce } from './features'
+import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, doSearchOutside, useDebounce, getSearchReg, debounce } from './features'
 import { Tooltip, Button, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Rnd } from 'react-rnd'
@@ -52,6 +52,18 @@ export const Pop = () => {
 	useEffect(() => {
 		optionsRef.current = { isWord, isMatchCase, isReg, isLive };
 	}, [isWord, isMatchCase, isReg, isLive]);
+
+	const handleUpdate = () => {
+		reCheckTree().then(() => {
+			chrome?.runtime?.sendMessage({
+				action: 'search',
+				data: {
+					isAuto: true
+				}
+			});
+
+		})
+	}
 
 	useEffect(() => {
 
@@ -140,20 +152,7 @@ export const Pop = () => {
 				// 	console.log(mutation.type); // 输出变化类型
 				// 	console.log(mutation.target); // 输出发生变化的节点
 				// }
-
-				// 重新生成节点树
-				reCheckTree().then(() => {
-					doSearchOutside(true, (response) => {
-						if (response.error) {
-							setIsShowWarn(true)
-							setWarnReason(response.errorType)
-						} else {
-							setIsShowWarn(false)
-							setCurrent(response.current)
-							setTotal(response.total)
-						}
-					}) // 然后执行搜索
-				})
+				debounce(handleUpdate, 200)()
 			})
 		}
 
@@ -224,6 +223,8 @@ export const Pop = () => {
 			}
 		};
 
+
+
 		const handleKeyUp = (e) => {
 			const keyId = `${e.ctrlKey}-${e.shiftKey}-${e.key.toLowerCase()}`;
 			pressedKeys.delete(keyId);
@@ -281,7 +282,9 @@ export const Pop = () => {
 		chrome.storage.sync.set(searchParams, () => {
 			chrome?.runtime?.sendMessage({
 				action: 'search',
-				data: searchParams
+				data: {
+					isAuto: false
+				}
 			});
 		});
 
