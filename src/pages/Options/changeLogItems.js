@@ -1,12 +1,25 @@
 export const CHANGELOG_ITEMS = [
 	{
+		version: 'v4.1.0',
+		date: '2026-04-23',
+		contentList: [
+			'现在遍历节点时会跳过 display 为 none 的元素',
+			'自动检测新增对 dom 属性的检测',
+			'自动检测添加防抖',
+			'提取正则表达式的判断和生成，放到公共部分，不再在每个 iframe 中都运行一遍了',
+			'合并异步请求，优化查询速度',
+			'优化代码',
+			'去除 i18nnext 带来的广告信息'
+		]
+	},
+	{
 		version: 'v4.0.0',
-		date: '2025-03-02',
+		date: '2026-03-02',
 		content: '添加 8 国语言，重写 i18n'
 	},
 	{
 		version: 'v3.10.0',
-		date: '2025-02-26',
+		date: '2026-02-26',
 		contentList: [
 			'兼容阿拉伯语（和其他语言）的单词边界',
 			'正则表达式现在默认开启 Unicode 模式',
@@ -16,7 +29,7 @@ export const CHANGELOG_ITEMS = [
 	},
 	{
 		version: 'v3.9.0',
-		date: '2025-02-03',
+		date: '2026-02-03',
 		content: '添加正则表达式黑名单，检测不合法和过于宽泛的'
 	},
 	{
