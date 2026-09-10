@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Find Whatever 综合全场景测试靶场</title>
+  <title>Find Whatever 综合全场景能力展示与测试靶场</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       line-height: 1.6;
       color: #24292f;
-      max-width: 1000px;
+      max-width: 1060px;
       margin: 0 auto;
-      padding: 30px 20px 100px;
+      padding: 30px 20px 120px;
       background-color: #f6f8fa;
     }
     header {
       border-bottom: 2px solid #d0d7de;
       padding-bottom: 20px;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
     }
-    h1 { color: #0969da; margin-bottom: 10px; }
+    h1 { color: #0969da; margin-bottom: 8px; }
     .badge {
       display: inline-block;
       padding: 2px 8px;
@@ -28,7 +28,25 @@
       background: #ddf4ff;
       color: #0969da;
       margin-right: 6px;
+      margin-bottom: 4px;
     }
+    nav.quick-nav {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin: 16px 0;
+      font-size: 13px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    nav.quick-nav a {
+      color: #0969da;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav.quick-nav a:hover { text-decoration: underline; }
     section {
       background: #ffffff;
       border: 1px solid #d0d7de;
@@ -42,11 +60,14 @@
       color: #1f2328;
       border-bottom: 1px solid #eaeef2;
       padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .test-box {
       background: #f8fafc;
       border: 1px dashed #cbd5e1;
-      padding: 15px;
+      padding: 14px 16px;
       border-radius: 6px;
       margin: 12px 0;
     }
@@ -57,6 +78,29 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 0.9em;
     }
+    .copy-btn {
+      margin-left: 8px;
+      padding: 2px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #0969da;
+      background: #ffffff;
+      color: #0969da;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+    .copy-btn:hover {
+      background: #0969da;
+      color: #ffffff;
+    }
+    mark {
+      background-color: #ede9fe;
+      color: #6d28d9;
+      padding: 0 4px;
+      border-radius: 3px;
+      border-bottom: 2px solid #a78bfa;
+      font-weight: 500;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -64,12 +108,12 @@
     }
     th, td {
       border: 1px solid #d0d7de;
-      padding: 10px 12px;
+      padding: 8px 12px;
       text-align: left;
     }
     th { background: #f6f8fa; }
     .long-spacer {
-      height: 600px;
+      height: 650px;
       background: repeating-linear-gradient(
         45deg,
         #f6f8fa,
@@ -83,70 +127,182 @@
       justify-content: center;
       color: #64748b;
       font-style: italic;
-      margin: 20px 0;
+      margin: 30px 0;
     }
     .hidden-box { display: none; }
     .visibility-hidden-box { visibility: hidden; }
     .zero-opacity-box { opacity: 0; }
   </style>
+  <script>
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text);
+      const original = btn.innerText;
+      btn.innerText = '已复制！';
+      btn.style.background = '#2da44e';
+      btn.style.color = '#fff';
+      btn.style.borderColor = '#2da44e';
+      setTimeout(() => {
+        btn.innerText = original;
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 1500);
+    }
+  </script>
 </head>
 <body>
 
 <header>
-  <h1>🔍 Find Whatever 全面能力测试靶场</h1>
+  <h1>🔍 Find Whatever 全功能自测与展示靶场</h1>
   <div>
-    <span class="badge">跨标签测试</span>
-    <span class="badge">Shadow DOM</span>
-    <span class="badge">多 iframe</span>
-    <span class="badge">可见性 (checkVisibility)</span>
-    <span class="badge">深层滚动</span>
-    <span class="badge">复杂正则表达式</span>
+    <span class="badge">纯内存文本投影</span>
+    <span class="badge">跨标签连续匹配</span>
+    <span class="badge">原生 checkVisibility</span>
+    <span class="badge">Details 折叠唤醒</span>
+    <span class="badge">Shadow DOM 穿透</span>
+    <span class="badge">嵌套 iframe 检索</span>
+    <span class="badge">深层滚动视口定位</span>
   </div>
-  <p>测试关键词指引：<code>VISIBILITY_TARGET</code> (可见性全场景), <code>findwhatever</code> (跨标签), <code>DEEP_SCROLL_SUCCESS_TARGET_2026</code> (滚动), <code>SHADOW_DOM_INNER_SECRET</code> (Shadow DOM)</p>
+
+  <nav class="quick-nav">
+    <span>快速跳转：</span>
+    <a href="#sec-crosstag">1. 跨标签连续搜索</a>
+    <a href="#sec-visibility">2. 可见性与遮挡</a>
+    <a href="#sec-semantic">3. 复杂结构与排版</a>
+    <a href="#sec-symbols">4. 特殊符号与Emoji</a>
+    <a href="#sec-shadow">5. Shadow DOM 穿透</a>
+    <a href="#sec-iframes">6. 嵌套多 iframe</a>
+    <a href="#sec-deep-scroll">7. 视口外深层滚动</a>
+  </nav>
 </header>
 
-<!-- 测试场景 1: 复杂跨标签切分测试 (Cross-tag Splitting) -->
+<!-- 测试场景 1: 跨标签搜索 (Text Projection 架构) -->
 <section id="sec-crosstag">
-  <h2>1. 跨 HTML 标签搜索测试 (Cross-tag Matching)</h2>
-  <p>测试目标：即使文字被行内标签切碎，也能被完整检索并高亮。</p>
+  <h2>
+    <span>1. 跨 HTML 标签连续搜索测试 (Text Projection 架构)</span>
+    <span style="font-size: 13px; font-weight: normal; color: #16a34a;">✨ 纯内存文本投影支持</span>
+  </h2>
+  <p style="color: #475569; font-size: 14px;">
+    测试目标：市面上 95% 的搜索扩展面对行内标签切碎的文本均直接漏搜。本插件采用纯内存文本投影，可跨越任意层级标签无缝检索并精准高亮！
+  </p>
 
+  <!-- 1.1 经典切分 -->
   <div class="test-box">
-    <p><strong>测试用例 1.1（经典切分）：</strong></p>
+    <p><strong>1.1 【经典英文字词切分】：</strong></p>
     <div>
-      请搜索关键词 <code>findwhatever</code>：<br>
-      <span>find</span><strong>what</strong><em>ev</em><u>er</u> 扩展已就绪！
+      测试词：<code>findwhatever</code>
+      <button class="copy-btn" onclick="copyText('findwhatever', this)">复制</button><br>
+      文本内容：<span>find</span><strong>what</strong><em>ev</em><u>er</u> 扩展已就绪！
     </div>
   </div>
 
+  <!-- 1.2 中文字词切分 -->
   <div class="test-box">
-    <p><strong>测试用例 1.2（中文水果多标签切分）：</strong></p>
+    <p><strong>1.2 【中文多标签切分】：</strong></p>
     <div>
-      请搜索关键词 <code>苹果香蕉橙子</code>：<br>
-      <span>苹果</span><mark>香蕉</mark><small>橙子</small> 大丰收
+      测试词：<code>苹果香蕉橙子</code>
+      <button class="copy-btn" onclick="copyText('苹果香蕉橙子', this)">复制</button><br>
+      文本内容：<span>苹果</span><mark>香蕉</mark><small>橙子</small> 大丰收
     </div>
   </div>
 
+  <!-- 1.3 键盘与公式混排 -->
   <div class="test-box">
-    <p><strong>测试用例 1.3（多类型混排：代码、键盘、删除线、上标）：</strong></p>
+    <p><strong>1.3 【键盘与物理公式混排（代码、按键、上标、下标、删除线）：】</strong></p>
     <div>
-      请搜索关键词 <code>Ctrl+Alt+Del</code>：<br>
-      按下 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Del</kbd> 重启计算机。
+      测试词 A：<code>Ctrl+Alt+Del</code>
+      <button class="copy-btn" onclick="copyText('Ctrl+Alt+Del', this)">复制</button><br>
+      文本内容：按下 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Del</kbd> 重启计算机。
     </div>
     <div style="margin-top: 10px;">
-      请搜索关键词 <code>E=mc2公式</code>：<br>
-      相对论方程：<i>E</i>=<code>mc</code><sup>2</sup><del>公式</del><ins>公式</ins> 解析。
+      测试词 B：<code>E=mc2公式</code>
+      <button class="copy-btn" onclick="copyText('E=mc2公式', this)">复制</button><br>
+      文本内容：相对论方程：<i>E</i>=<code>mc</code><sup>2</sup><del>公式</del><ins>公式</ins> 解析。
+    </div>
+    <div style="margin-top: 10px;">
+      测试词 C：<code>H2O与CO2</code>
+      <button class="copy-btn" onclick="copyText('H2O与CO2', this)">复制</button><br>
+      文本内容：化学方程式：<b>H</b><sub>2</sub><b>O</b>与<b>C</b><b>O</b><sub>2</sub>气体。
+    </div>
+  </div>
+
+  <!-- 1.4 深层多级嵌套 -->
+  <div class="test-box" style="background: #f0fdf4; border-color: #86efac;">
+    <p><strong>1.4 【🌟 多层深层嵌套标签（旧版 cloneNode 架构必失败场景）】：</strong></p>
+    <div>
+      测试词：<code>跨标签深层嵌套极限测试</code>
+      <button class="copy-btn" onclick="copyText('跨标签深层嵌套极限测试', this)">复制</button><br>
+      文本内容：<span>跨标签<strong>深层<em>嵌套<u>极限测试</u></em></strong></span> 完美呈现！
+    </div>
+    <p style="color: #15803d; font-size: 12px; margin-top: 4px;">
+      💡 原理解析：旧版要求 <code>child.children.length === 0</code>，一旦标签内部再包子标签就会彻底失效；文本投影架构对任意深度嵌套天然支持。
+    </p>
+  </div>
+
+  <!-- 1.5 格式化换行排版 -->
+  <div class="test-box" style="background: #f0fdf4; border-color: #86efac;">
+    <p><strong>1.5 【🌟 HTML 源码换行排版（旧版强制要求无换行，否则直接弃检）】：</strong></p>
+    <div>
+      测试词（开启正则 <code>.*</code>）：<code>纯内存\s*文本投影\s*无惧换行</code>
+      <button class="copy-btn" onclick="copyText('纯内存\\s*文本投影\\s*无惧换行', this)">复制</button><br>
+      文本内容：
+      <div style="margin-top: 6px; padding: 8px 12px; background: #fff; border-radius: 4px; border: 1px solid #bbf7d0; white-space: pre-line; line-height: 1.8;">
+        <span>纯内存</span>
+        <b>文本投影</b>
+        <i>无惧换行</i>
+      </div>
+    </div>
+    <p style="color: #15803d; font-size: 12px; margin-top: 4px;">
+      💡 原理解析：旧版强制限制 <code>!textContent.includes('\n')</code>，面对格式化换行的网页全部失效；新架构由轻量流驱动，正则自由跨越换行。
+    </p>
+  </div>
+
+  <!-- 1.6 穿插注释节点 -->
+  <div class="test-box">
+    <p><strong>1.6 【穿插 HTML 注释节点（注释不应破坏文本流）：】</strong></p>
+    <div>
+      测试词：<code>亡羊补牢未为晚也</code>
+      <button class="copy-btn" onclick="copyText('亡羊补牢未为晚也', this)">复制</button><br>
+      文本内容：<span>亡羊</span><!-- 这里是开发者的 HTML 注释 --><b>补牢</b><i>未为晚也</i>
+    </div>
+  </div>
+
+  <!-- 1.7 十连多标签超长串 -->
+  <div class="test-box">
+    <p><strong>1.7 【10 个不同标签连缀长串】：</strong></p>
+    <div>
+      测试词：<code>零一二三四五六七八九</code>
+      <button class="copy-btn" onclick="copyText('零一二三四五六七八九', this)">复制</button><br>
+      文本内容：<span>零</span><b>一</b><i>二</i><u>三</u><s>四</s><mark>五</mark><small>六</small><del>七</del><ins>八</ins><strong>九</strong>
+    </div>
+  </div>
+
+  <!-- 1.8 块级元素天然边界隔离 -->
+  <div class="test-box">
+    <p><strong>1.8 【行内连通 vs 块级隔离对照（防止把不同段落错误粘连为一个词）：】</strong></p>
+    <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+      <div style="margin-bottom: 8px;">
+        ✅ 同一容器行内连通：<span>行内前缀</span><b>行内后缀</b>
+        （测试词：<code>行内前缀行内后缀</code> <button class="copy-btn" onclick="copyText('行内前缀行内后缀', this)">复制</button>，应正常匹配）
+      </div>
+      <div>
+        🛑 跨独立段落块级隔离：
+        <p style="display:inline-block; margin:0; padding:2px 6px; background:#f1f5f9;">段落A尾部文字</p>
+        <p style="display:inline-block; margin:0; padding:2px 6px; background:#f1f5f9;">段落B头部文字</p>
+        <br><span style="color:#64748b; font-size:12px;">（测试词：<code>文字段落B</code>，绝不应跨段错误拼合）</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 测试场景 2: 元素可见性与遮挡测试 (checkVisibility 与 视口外) -->
+<!-- 测试场景 2: 可见性与遮挡测试 (checkVisibility 与 视口外) -->
 <section id="sec-visibility">
   <h2>2. 可见性与遮挡测试 (Visibility & Hidden)</h2>
   <div style="background: #e6f4ff; border: 1px solid #91caff; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
-    <strong>🎯 统一测试关键词：</strong><code style="font-size: 15px; color: #0969da; font-weight: bold;">VISIBILITY_TARGET</code>
-    <button type="button" onclick="navigator.clipboard.writeText('VISIBILITY_TARGET'); this.innerText='已复制！'; setTimeout(()=>this.innerText='点击复制', 1500)" style="margin-left: 10px; padding: 2px 8px; font-size: 12px; cursor: pointer; border: 1px solid #0969da; background: #fff; color: #0969da; border-radius: 4px;">点击复制</button>
+    <strong>🎯 统一自测关键词：</strong><code style="font-size: 15px; color: #0969da; font-weight: bold;">VISIBILITY_TARGET</code>
+    <button class="copy-btn" onclick="copyText('VISIBILITY_TARGET', this)">点击复制测试词</button>
     <p style="margin: 6px 0 0; font-size: 13px; color: #475569;">
-      👉 <strong>测试原理</strong>：本区域共有 <strong>7 处</strong>包含此关键词，分别处于不同的可见/隐藏/遮挡状态。只需检索这<strong>同一个词</strong>，即可一屏自测所有可见性判定！
+      👉 <strong>测试原理</strong>：本区域共有 <strong>8 处</strong>包含此关键词，分别处于不同的可见、隐藏、遮挡和模板状态。只需检索这<strong>同一个词</strong>，即可一屏自测所有可见性判定！
     </p>
   </div>
 
@@ -160,7 +316,7 @@
 
   <!-- 2.2 物理遮挡测试 -->
   <div class="test-box">
-    <p><strong>2.2 【真实物理遮盖（验证 elementFromPoint）】：</strong></p>
+    <p><strong>2.2 【真实物理遮盖（验证 elementFromPoint）：】</strong></p>
     <div style="position: relative; height: 60px; background: #fef08a; border: 1px solid #facc15; border-radius: 6px; padding: 12px; overflow: hidden;">
       <span id="covered-text-target">我是被悬浮层完全盖住的目标：<code>VISIBILITY_TARGET</code></span>
       <div id="cover-overlay" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.9); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 10;">
@@ -175,38 +331,42 @@
 
   <!-- 2.3 折叠组件 -->
   <div class="test-box">
-    <p><strong>2.3 【Details 折叠容器】：</strong></p>
+    <p><strong>2.3 【Details 折叠容器（测试闭合状态下激活自动展开）：】</strong></p>
     <details id="test-details">
       <summary style="cursor: pointer; color: #0969da; font-weight: bold;">点击展开/折叠查看容器内容</summary>
       <div style="padding: 10px; background: #fff; border-radius: 4px; margin-top: 8px; border: 1px solid #e2e8f0;">
-        折叠在内部的内容：<code>VISIBILITY_TARGET</code>（测试在折叠闭合状态下激活时，是否能自动展开并定位）
+        折叠在内部的内容：<code>VISIBILITY_TARGET</code>（即使在闭合状态下被搜索激活，也会<strong>自动弹开并居中高亮</strong>！）
       </div>
     </details>
   </div>
 
   <!-- 2.4 原生隐藏状态集合 -->
   <div class="test-box">
-    <p><strong>2.4 【各类 CSS/HTML 原生隐藏状态（checkVisibility 应将其快速剪枝过滤）】：</strong></p>
+    <p><strong>2.4 【各类 CSS/HTML 原生隐藏状态（checkVisibility 应将其快速剪枝过滤）：】</strong></p>
     <div style="display: grid; gap: 8px; font-size: 13px;">
       <div>① <code>display: none</code> 容器：<span class="hidden-box" id="display-none-item">[已隐藏] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(已隐藏，不应被计为有效可见项)</span></div>
       <div>② <code>visibility: hidden</code> 容器：<span class="visibility-hidden-box" id="visibility-hidden-item">[已隐藏] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(已隐藏，不应被计为有效可见项)</span></div>
       <div>③ <code>opacity: 0</code> 容器：<span class="zero-opacity-box" id="opacity-zero-item">[全透明] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(全透明项，应识别为全透明)</span></div>
       <div>④ HTML5 <code>hidden</code> 属性：<span hidden id="attr-hidden-item">[HTML hidden] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(原生隐藏，不应被计为有效可见项)</span></div>
       <div>⑤ 现代 <code>content-visibility: hidden</code>：<span style="content-visibility: hidden;" id="content-visibility-hidden-item">[未渲染] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(原生跳过渲染，不应被计为有效可见项)</span></div>
+      <div>⑥ HTML5 <code>&lt;template&gt;</code> 容器：<template><code>VISIBILITY_TARGET</code></template> <span style="color:#94a3b8;">(模板元素不进入渲染树，绝对不应被命中)</span></div>
     </div>
   </div>
 </section>
 
-<!-- 测试场景 3: 表格、列表、引用等丰富语义标签 -->
+<!-- 测试场景 3: 复杂结构语义排版 -->
 <section id="sec-semantic">
-  <h2>3. 丰富结构化语义标签测试</h2>
+  <h2>3. 丰富结构化语义排版测试 (表格、代码、列表、引用)</h2>
+
+  <!-- 3.1 数据表格 -->
+  <p><strong>3.1 【复杂数据表格（跨 td 不串连，同一 td 内支持跨标签）：】</strong></p>
   <table>
     <thead>
       <tr>
         <th>序号</th>
         <th>模块名</th>
         <th>技术栈</th>
-        <th>测试代号</th>
+        <th>跨标签测试代号</th>
       </tr>
     </thead>
     <tbody>
@@ -214,48 +374,108 @@
         <td>1</td>
         <td><b>核心查找引擎</b></td>
         <td><code>CSS.highlights</code></td>
-        <td>ALPHA_ENGINE_01</td>
+        <td><span>ALPHA</span>_<strong>ENGINE</strong>_<em>01</em> (搜索：<code>ALPHA_ENGINE_01</code> <button class="copy-btn" onclick="copyText('ALPHA_ENGINE_01', this)">复制</button>)</td>
       </tr>
       <tr>
         <td>2</td>
         <td><b>轻量运行时</b></td>
         <td><code>Preact 10</code></td>
-        <td>BETA_RUNTIME_02</td>
+        <td><span>BETA</span>_<strong>RUNTIME</strong>_<em>02</em> (搜索：<code>BETA_RUNTIME_02</code> <button class="copy-btn" onclick="copyText('BETA_RUNTIME_02', this)">复制</button>)</td>
       </tr>
       <tr>
         <td>3</td>
         <td><b>超音速构建</b></td>
         <td><code>Rspack Rust</code></td>
-        <td>GAMMA_BUILDER_03</td>
+        <td><span>GAMMA</span>_<strong>BUILDER</strong>_<em>03</em> (搜索：<code>GAMMA_BUILDER_03</code> <button class="copy-btn" onclick="copyText('GAMMA_BUILDER_03', this)">复制</button>)</td>
       </tr>
     </tbody>
   </table>
 
-  <blockquote>
-    <p>“代码是写出来给人看的，附带能在机器上运行。” —— 搜索测试句：<code>QUOTATION_BLOCK_TEXT</code></p>
-  </blockquote>
+  <!-- 3.2 预格式化代码块 -->
+  <p><strong>3.2 【代码块与连续空格保留（&lt;pre&gt;&lt;code&gt;）：】</strong></p>
+  <div class="test-box">
+    测试词：<code>createRangeFromSegments</code>
+    <button class="copy-btn" onclick="copyText('createRangeFromSegments', this)">复制</button>
+    <pre style="background: #1e293b; color: #f8fafc; padding: 12px; border-radius: 6px; font-size: 13px; overflow-x: auto;"><code>// 核心文本投影映射函数
+const createRangeFromSegments = (segments, start, end) => {
+    // 高性能二分/区间回查原生 DOM Range
+    return new Range();
+};</code></pre>
+  </div>
 
-  <dl>
-    <dt><b>专有名词定义</b></dt>
-    <dd>定义项 A：这是一个嵌套在 <code>&lt;dd&gt;</code> 里的测试文本 <code>DEFINITION_TARGET_A</code>。</dd>
-    <dd>定义项 B：这是一个嵌套在 <code>&lt;dd&gt;</code> 里的测试文本 <code>DEFINITION_TARGET_B</code>。</dd>
-  </dl>
-</section>
+  <!-- 3.3 引用与定义列表 -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+    <div>
+      <p><strong>3.3 【引用块 (Blockquote)：】</strong></p>
+      <blockquote style="margin: 0; padding: 10px 15px; border-left: 4px solid #0969da; background: #f8fafc;">
+        <p style="margin: 0;">“<span>简单的事情</span><strong>做到了极致</strong>，<em>就是绝招</em>。”</p>
+        <p style="margin: 6px 0 0; font-size: 12px; color: #64748b;">
+          搜索测试：<code>简单的事情做到了极致就是绝招</code>
+          <button class="copy-btn" onclick="copyText('简单的事情做到了极致就是绝招', this)">复制</button>
+        </p>
+      </blockquote>
+    </div>
 
-<!-- 测试场景 4: Shadow DOM 穿透测试 -->
-<section id="sec-shadow">
-  <h2>4. Shadow DOM 穿透检索测试</h2>
-  <p>测试目标：验证是否能穿透开放的 <code>ShadowRoot</code> 检索内部文本并高亮。</p>
-
-  <div id="shadow-container" class="test-box">
-    <!-- 将通过 JS 挂载 ShadowRoot -->
+    <div>
+      <p><strong>3.4 【定义列表 (DL/DT/DD)：】</strong></p>
+      <dl style="margin: 0; padding: 10px 15px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
+        <dt><b>Text Projection</b></dt>
+        <dd style="margin-left: 0; font-size: 13px;">
+          定义说明：<span>纯内存</span><strong>文本投影</strong>技术。<br>
+          搜索测试：<code>纯内存文本投影</code>
+          <button class="copy-btn" onclick="copyText('纯内存文本投影', this)">复制</button>
+        </dd>
+      </dl>
+    </div>
   </div>
 </section>
 
-<!-- 测试场景 5: iframe 穿透检索测试 -->
+<!-- 测试场景 4: 特殊符号、Emoji 与 Unicode -->
+<section id="sec-symbols">
+  <h2>4. 特殊标点符号、Emoji 与多语言字符测试</h2>
+
+  <div class="test-box">
+    <p><strong>4.1 【Emoji 表情连续检索】：</strong></p>
+    <div>
+      测试词：<code>🎉恭喜🚀发射🔥成功✨</code>
+      <button class="copy-btn" onclick="copyText('🎉恭喜🚀发射🔥成功✨', this)">复制</button><br>
+      文本内容：<span>🎉恭喜</span><strong>🚀发射</strong><em>🔥成功</em><u>✨</u>
+    </div>
+  </div>
+
+  <div class="test-box">
+    <p><strong>4.2 【全半角混合与特殊标点括号】：</strong></p>
+    <div>
+      测试词：<code>【FindWhatever】v4.1(Beta) 正式发布！</code>
+      <button class="copy-btn" onclick="copyText('【FindWhatever】v4.1(Beta) 正式发布！', this)">复制</button><br>
+      文本内容：<span>【FindWhatever】</span><b>v4.1</b><i>(Beta)</i> <u>正式发布！</u>
+    </div>
+  </div>
+
+  <div class="test-box">
+    <p><strong>4.3 【多语言混排（中英日韩德语）：】</strong></p>
+    <div>
+      测试词：<code>Hello世界こんにちは안녕하세요Hallo</code>
+      <button class="copy-btn" onclick="copyText('Hello世界こんにちは안녕하세요Hallo', this)">复制</button><br>
+      文本内容：<span>Hello</span><b>世界</b><i>こんにちは</i><u>안녕하세요</u><em>Hallo</em>
+    </div>
+  </div>
+</section>
+
+<!-- 测试场景 5: Shadow DOM 穿透测试 -->
+<section id="sec-shadow">
+  <h2>5. Shadow DOM 深度穿透检索测试 (单层 + 双层嵌套)</h2>
+  <p>测试目标：验证是否能穿透开放的 <code>ShadowRoot</code> 检索深层封装的内部文本并跨标签高亮。</p>
+
+  <div id="shadow-container" class="test-box">
+    <!-- JS 动态注入一级与二级 Shadow DOM -->
+  </div>
+</section>
+
+<!-- 测试场景 6: 多 iframe 穿透检索 -->
 <section id="sec-iframes">
-  <h2>5. 嵌套多 iframe 检索与底栏状态色块测试</h2>
-  <p>测试目标：验证是否能识别 iframe，并在插件底栏看到 iframe 的数量与跳转色块。</p>
+  <h2>6. 嵌套多 iframe 检索与底栏状态色块测试</h2>
+  <p>测试目标：验证是否能穿透 iframe，并在插件底栏看到对应的 iframe 数量与跳转色块指示。</p>
 
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
     <div>
@@ -264,12 +484,12 @@
         <!DOCTYPE html>
         <html>
         <body style='font-family: sans-serif; padding: 15px; background: #fffbe6; color: #795548;'>
-          <h4>这是 iframe A</h4>
-          <p>请搜索关键词：<code>IFRAME_TARGET_ALPHA</code></p>
+          <h4>这是 iframe A 内部</h4>
+          <p>测试词：<code>IFRAME_TARGET_ALPHA</code></p>
           <p>跨标签测试：<span>嵌入</span><b>框架</b><i>内部</i></p>
         </body>
         </html>
-      " style="width: 100%; height: 160px; border: 1px solid #ffe58f; border-radius: 6px;"></iframe>
+      " style="width: 100%; height: 150px; border: 1px solid #ffe58f; border-radius: 6px;"></iframe>
     </div>
 
     <div>
@@ -278,56 +498,71 @@
         <!DOCTYPE html>
         <html>
         <body style='font-family: sans-serif; padding: 15px; background: #e6f7ff; color: #0050b3;'>
-          <h4>这是 iframe B</h4>
-          <p>请搜索关键词：<code>IFRAME_TARGET_BETA</code></p>
-          <p>数字统计：<mark>9999</mark> 个结果</p>
+          <h4>这是 iframe B 内部</h4>
+          <p>测试词：<code>IFRAME_TARGET_BETA</code></p>
+          <p>跨标签测试：<span>独立</span><b>沙箱</b><i>文档</i></p>
         </body>
         </html>
-      " style="width: 100%; height: 160px; border: 1px solid #91d5ff; border-radius: 6px;"></iframe>
+      " style="width: 100%; height: 150px; border: 1px solid #91d5ff; border-radius: 6px;"></iframe>
     </div>
   </div>
 </section>
 
-<!-- 测试场景 6: 长距离深层滚动与视口外测试 (验证 elementFromPoint 缺陷是否已解决) -->
+<!-- 测试场景 7: 长距离深层滚动与视口外测试 -->
 <div class="long-spacer">
-  ⬇️ 页面超长空白占位区（高度 600px，用于把后续内容推到第 2 屏，测试深层视口外匹配与滚动定位）⬇️
+  ⬇️ 页面超长空白占位区（高度 650px，用于把后续内容推到深层视口下方，测试视口外匹配与平滑居中滚动）⬇️
 </div>
 
 <section id="sec-deep-scroll">
-  <h2>6. 深层视口外目标 (测试滚动定位与遮盖误判修复)</h2>
-  <p>如果旧代码里的 <code>elementFromPoint</code> 在视口外返回 null，本区域的内容会被误报为“被遮盖”。新代码应该能准确定位且不报错！</p>
+  <h2>7. 深层视口外目标 (测试滚动定位与遮盖误判修复)</h2>
+  <p>旧代码中 <code>elementFromPoint</code> 在视口外返回 null，会导致此区域被误报为“被遮盖”。新代码已彻底修复！</p>
 
   <div class="test-box" style="background: #e6ffed; border-color: #52c41a;">
     <h3>🎯 第 2 屏深层目标：</h3>
-    <p>恭喜你滚动到了底部！请在首屏直接搜索关键词：</p>
+    <p>请在首屏直接检索关键词：</p>
     <p style="font-size: 20px; font-weight: bold; color: #389e0d;">
       <code>DEEP_SCROLL_SUCCESS_TARGET_2026</code>
+      <button class="copy-btn" onclick="copyText('DEEP_SCROLL_SUCCESS_TARGET_2026', this)">复制</button>
     </p>
-    <p>当你在顶部输入此词并按 Enter 时，页面应该<strong>瞬间平滑居中滚动至此</strong>，并且<strong>状态栏不应错误提示“被遮盖”</strong>！</p>
+    <p>当你在顶部回车激活此词时，页面应该<strong>平滑居中滚动至此</strong>，且底栏<strong>绝不应误报“被遮盖”</strong>！</p>
   </div>
 </section>
 
-<footer style="text-align: center; margin-top: 50px; color: #8c8c8c; font-size: 13px;">
-  Find Whatever Test Suite &bull; 本地综合测试页面
+<footer style="text-align: center; margin-top: 60px; color: #8c8c8c; font-size: 13px;">
+  Find Whatever Test & Showcase Suite &bull; 本地综合能力展示与测试页面
 </footer>
 
 <script>
-  // 动态构建 Shadow DOM 演示节点
-  (function initShadowRoot() {
+  // 动态构建一层与二层嵌套 Shadow DOM
+  (function initShadowDOMs() {
     const container = document.getElementById('shadow-container');
     if (!container) return;
 
-    const shadowRoot = container.attachShadow({ mode: 'open' });
-
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'padding: 12px; background: #f0f5ff; border: 1px solid #adc6ff; border-radius: 6px; color: #1d39c4;';
-    wrapper.innerHTML = `
-      <strong>[这是位于开放式 Shadow DOM 内的文本]</strong>
-      <p>搜索 Shadow 测试词：<code>SHADOW_DOM_INNER_SECRET</code></p>
-      <div>跨 Shadow 标签：<span>影子</span><em>容器</em><b>内部</b>文本</div>
+    // 一级 Shadow DOM
+    const shadowRoot1 = container.attachShadow({ mode: 'open' });
+    const wrapper1 = document.createElement('div');
+    wrapper1.style.cssText = 'padding: 12px; background: #f0f5ff; border: 1px solid #adc6ff; border-radius: 6px; color: #1d39c4; margin-bottom: 10px;';
+    wrapper1.innerHTML = `
+      <strong>[一级 ShadowRoot 开放容器]</strong>
+      <p>一级测试词：<code>SHADOW_DOM_INNER_SECRET</code> <button class="copy-btn" onclick="navigator.clipboard.writeText('SHADOW_DOM_INNER_SECRET')">复制</button></p>
+      <div>跨标签：<span>影子</span><em>容器</em><b>内部</b>文本</div>
+      <div id="nested-shadow-host" style="margin-top: 10px;"></div>
     `;
+    shadowRoot1.appendChild(wrapper1);
 
-    shadowRoot.appendChild(wrapper);
+    // 二级嵌套 Shadow DOM
+    const host2 = shadowRoot1.getElementById('nested-shadow-host');
+    if (host2) {
+      const shadowRoot2 = host2.attachShadow({ mode: 'open' });
+      const wrapper2 = document.createElement('div');
+      wrapper2.style.cssText = 'padding: 10px; background: #fff0f6; border: 1px solid #ffadd2; border-radius: 6px; color: #c41d7f;';
+      wrapper2.innerHTML = `
+        <strong>[二级嵌套 ShadowRoot 容器]</strong>
+        <p>二级测试词：<code>NESTED_SHADOW_DEEP_TARGET</code> <button class="copy-btn" onclick="navigator.clipboard.writeText('NESTED_SHADOW_DEEP_TARGET')">复制</button></p>
+        <div>二级跨标签：<span>深层</span><b>嵌套</b><i>影子</i>文本</div>
+      `;
+      shadowRoot2.appendChild(wrapper2);
+    }
   })();
 </script>
 

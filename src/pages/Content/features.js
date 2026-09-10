@@ -1,141 +1,141 @@
 import { destroyPopup } from "./index";
 import { useState, useRef, useEffect } from 'preact/compat'
 
-// 生成匹配节点树
-export const reCheckTree = () => {
-	const createTreeWalkerWithShadowDOM = (root) => {
-		return document.createTreeWalker(root, NodeFilter.SHOW_TEXT, (node) => {
-			// 父元素是 script、script 的时候，不置入范围
-			if (['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.parentNode.nodeName)) {
-				return NodeFilter.FILTER_REJECT
-			} else {
-				return NodeFilter.FILTER_ACCEPT
-			}
-		})
+// 块级元素和分隔标签：遇到这些元素时，行内文本流在此自然断开
+const BLOCK_TAGS = new Set([
+	'ADDRESS', 'ARTICLE', 'ASIDE', 'BLOCKQUOTE', 'CANVAS', 'DD', 'DIV',
+	'DL', 'DT', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM',
+	'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HR', 'LI', 'MAIN',
+	'NAV', 'NOSCRIPT', 'OL', 'P', 'PRE', 'SECTION', 'TABLE', 'TBODY',
+	'TD', 'TFOOT', 'TH', 'THEAD', 'TR', 'UL', 'DETAILS', 'SUMMARY',
+	'DIALOG'
+])
+
+// 绝对忽略的不可搜索标签
+const IGNORE_TAGS = new Set(['STYLE', 'SCRIPT', 'NOSCRIPT', 'SVG'])
+
+// 纯内存文本投影：根据匹配字符的起止偏移量，在 segments 映射表中高精度还原原生 DOM Range
+const createRangeFromSegments = (segments, startIndex, endIndex) => {
+	if (!segments || segments.length === 0) return null
+
+	let startNode = null
+	let startOffset = 0
+	let endNode = null
+	let endOffset = 0
+
+	for (let i = 0; i < segments.length; i++) {
+		const seg = segments[i]
+		// 寻找起始文本节点与内部 offset
+		if (!startNode && (startIndex < seg.end || (startIndex === seg.end && i === segments.length - 1))) {
+			startNode = seg.node
+			startOffset = Math.max(0, startIndex - seg.start)
+		}
+		// 寻找结束文本节点与内部 offset
+		if (endIndex <= seg.end || i === segments.length - 1) {
+			endNode = seg.node
+			endOffset = Math.min(seg.node.length || 0, Math.max(0, endIndex - seg.start))
+			break
+		}
 	}
 
-	function* walkTextNodes(node) {
-		if (node.nodeName === '#text') {
-			yield node
-		} else {
-			if (['STYLE', 'SCRIPT', 'NOSCRIPT'].includes(node.nodeName)) { // 跳过 style、script 等元素，加速
+	if (startNode && endNode) {
+		try {
+			const range = new Range()
+			range.setStart(startNode, startOffset)
+			range.setEnd(endNode, endOffset)
+			return range
+		} catch (e) {
+			console.error('createRangeFromSegments error:', e)
+			return null
+		}
+	}
+	return null
+}
+
+// 生成匹配节点树（纯内存文本投影 Text Projection 模型，彻底替代 cloneNode）
+export const reCheckTree = () => {
+	window.allNodes = []
+	return new Promise(resolve => {
+		let currentSegments = []
+		let currentText = ''
+
+		const flushStream = () => {
+			if (currentSegments.length > 0) {
+				if (!/^\s+$/.test(currentText)) {
+					window.allNodes.push({
+						text: currentText,
+						segments: currentSegments
+					})
+				}
+				currentSegments = []
+				currentText = ''
+			}
+		}
+
+		const traverse = (node) => {
+			if (!node) return
+
+			if (node.nodeType === Node.TEXT_NODE) {
+				const text = node.textContent
+				if (text && text.length > 0) {
+					const start = currentText.length
+					const end = start + text.length
+					currentSegments.push({ node, start, end })
+					currentText += text
+				}
 				return
 			}
 
-			// 剪枝，元素不可见的就不查了（优先使用原生 checkVisibility 避免强制样式重排）
-			// 特殊豁免：若本身是 DETAILS 或在 DETAILS 内部，豁免剪枝，确保折叠内容能被检索并支持自动展开
 			if (node.nodeType === Node.ELEMENT_NODE) {
-				const isDetails = node.tagName === 'DETAILS' || (typeof node.closest === 'function' && node.closest('details'));
+				const tagName = node.tagName
+				if (IGNORE_TAGS.has(tagName)) return
+
+				// 可见性检查（DETAILS 内部豁免，确保折叠内容可被检索并在激活时自动展开）
+				const isDetails = tagName === 'DETAILS' || (typeof node.closest === 'function' && node.closest('details'))
 				if (!isDetails) {
 					if (typeof node.checkVisibility === 'function') {
 						if (!node.checkVisibility({ checkVisibilityCSS: true })) {
-							return;
+							return
 						}
 					} else {
-						const style = window.getComputedStyle(node);
+						const style = window.getComputedStyle(node)
 						if (style.display === 'none') {
-							return;
+							return
 						}
 					}
 				}
-			}
-			const treeWalker = createTreeWalkerWithShadowDOM(node)
 
-			if (node instanceof HTMLElement && node.shadowRoot) { // 需要把 shadow-root 里的单独拿出来
-				yield* walkTextNodes(node.shadowRoot)
-			}
-
-			if (node.childNodes?.length > 0) {
-				// 需要规范化的标签，都是行内的小标签
-				const normalizedTagArr = ['STRONG','WBR','EM', 'ABBR', 'A', 'SPAN', 'ADDRESS', 'B', 'BDI', 'BDO', 'CITE', 'I', 'KBD', 'MARK', 'Q', 'S', 'DEL', 'INS', 'SAMP', 'SMALL', 'SUB', 'SUP', 'TIME', 'U', 'VAR']
-
-				let clonedContainer = node
-				const childNodesArr = Array.from(node.childNodes)
-
-				// check: 是否是 ShadowRoot (ShadowRoot 的 nodeType 是 11)
-				// 最后一层，并且有可以 normalize 的部分，并且没有换行
-				/**
-				 * 规范化的条件：
-				 *
-				 * 1. 没有嵌套结构
-				 * 2. 子节点中包含 normalizedTagArr 中的标签
-				 * 3. 没有换行
-				 * 4. 子节点长度大于 1，防止 <div><a>1111</a></div> 这种结构，没必要规范化
-				 *
-				 * */
-				if (
-					childNodesArr.every(child => !child.children || child.children.length === 0)
-					&& childNodesArr.some(child => normalizedTagArr.includes(child.nodeName))
-					&& !node.textContent.includes('\n')
-					&& childNodesArr.filter(c => c.nodeName !== '#comment').length > 1
-				) {
-
-					const isShadowRoot = node instanceof ShadowRoot || node.nodeType === Node.DOCUMENT_FRAGMENT_NODE;
-					if (isShadowRoot) { // shadowRoot 不能克隆，因此需要特殊对待，把 shadowRoot 里的内容放到一个临时的 div 里
-						const newd = document.createElement('div')
-						newd.innerHTML = node.innerHTML
-						clonedContainer = newd
-					} else {
-						clonedContainer = node.cloneNode(true); // 克隆源节点，因为要执行一些 dom 的操作，不能改页面中的
-					}
-					clonedContainer.sourceNode = node // 把源节点备份一下，后面要用
-					clonedContainer.dataset.__swe__normalized = '777' // 标记一下，这个 dom 是规范化过的，名和值都是防重复
-
-					// 开始规范化，先把所有的标签换成文本节点
-					for (let i=0; i<clonedContainer.childNodes.length; i++) {
-						const child = clonedContainer.childNodes[i]
-						if (child.nodeName === '#comment') { // 注释也算一个节点哦，直接干掉
-							child.remove()
-							i-- // 因为删除了一个节点，所以索引要减一
-						} else {
-							if (child.nodeName !== '#text') {
-								clonedContainer.replaceChild(document.createTextNode(child.textContent), child)
-							}
-						}
-					}
-
-					clonedContainer.normalize(); // 调用 normalize() 合并文本节点
+				// 遇到 BR 换行，截断行内流
+				if (tagName === 'BR') {
+					flushStream()
+					return
 				}
 
-				for (const child of clonedContainer.childNodes) {
-					if (child?.style?.display !== 'none') {
-						yield* walkTextNodes(child)
-
-					}
+				const isBlock = BLOCK_TAGS.has(tagName)
+				if (isBlock) {
+					flushStream()
 				}
-			} else {
-				while (treeWalker.nextNode()) {
-					yield treeWalker.currentNode
+
+				if (node.shadowRoot) {
+					traverse(node.shadowRoot)
+				}
+
+				for (let child = node.firstChild; child; child = child.nextSibling) {
+					traverse(child)
+				}
+
+				if (isBlock) {
+					flushStream()
+				}
+			} else if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+				for (let child = node.firstChild; child; child = child.nextSibling) {
+					traverse(child)
 				}
 			}
 		}
-	}
 
-    window.allNodes = [];
-	return new Promise(resolve => {
-
-		const genReturn = walkTextNodes(document.body)
-		let genReturnNext = genReturn.next()
-		while (!genReturnNext.done) {
-			if (genReturnNext.value && genReturnNext.value.textContent && !/^\s+$/g.test(genReturnNext.value.textContent)) { // 如果一个元素的有内容，并且内容全都是空白，跳过之
-				if (genReturnNext.value.parentElement?.dataset.__swe__normalized === '777') { // 规范化的元素是克隆的，所以在页面中必然是隐藏的，所以需要特殊处理
-					window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
-				} else {
-					const parent = genReturnNext.value.parentElement;
-					const isInsideDetails = parent && (parent.tagName === 'DETAILS' || (typeof parent.closest === 'function' && parent.closest('details')));
-					const isHidden = !isInsideDetails && parent && (
-						typeof parent.checkVisibility === 'function'
-							? !parent.checkVisibility({ checkVisibilityCSS: true })
-							: (window.getComputedStyle(parent).display === 'none' || window.getComputedStyle(parent).visibility === 'hidden')
-					);
-					if (!isHidden) {
-						window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
-					}
-				}
-			}
-			genReturnNext = genReturn.next()
-		}
-
+		traverse(document.body)
+		flushStream()
 		resolve()
 	})
 }
@@ -305,7 +305,7 @@ export const doSearchOutside = async (regContent, isAuto = false) => {
 		let reg = null
 		reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`);
 
-		window.rangesFlat = window.allNodes.map(({ el, text }) => {
+		window.rangesFlat = window.allNodes.map(({ text, segments }) => {
 			const indices = [] // 对象数组，{ indicesStart: number, indicesLength: number }，分别是起点和长度
 			let startPosition = 0
 
@@ -332,63 +332,21 @@ export const doSearchOutside = async (regContent, isAuto = false) => {
 			}
 
 			return indices.map(({ indicesStart, indicesLength }) => {
-				const range = new Range()
-				if (el.parentElement) {
-					// 如果有源节点的备份，说明是个规范化的元素，要高亮肯定得高亮源节点
-					window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.sourceNode || el.parentElement]
-				} else {
-					if (el.parentNode?.nodeName === '#document-fragment' && el.parentNode?.host) { // 如果是 shadow-root 的直接文本节点，就把 shadow-root 的宿主元素加上去
-						window.filteredRangeList.value = [...window.filteredRangeList.value, el.parentNode.host]
+				const indicesEnd = indicesStart + indicesLength
+				const range = createRangeFromSegments(segments, indicesStart, indicesEnd)
+				if (range) {
+					let targetDOM = range.commonAncestorContainer
+					if (targetDOM.nodeType !== Node.ELEMENT_NODE) {
+						targetDOM = targetDOM.parentElement
 					}
+					if (targetDOM instanceof ShadowRoot || targetDOM.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+						targetDOM = targetDOM.host
+					}
+					window.filteredRangeList.value = [...window.filteredRangeList.value, targetDOM]
+					return range
 				}
-
-				if (el.parentNode?.sourceNode) {
-					/**
-					 * 规范化后的元素只有一个文本节点，但是源节点可不是，里面有很多节点、标签，不能直接用 range 标识范围
-					 * 需要根据查找结果，确定起始点和结束点对应的 dom节点，再设置到 range
-					 * */
-					let startTextLength = 0
-					let endTextLength = 0
-					let startIndex = 0
-					const children = el.parentNode.sourceNode.childNodes
-
-					for (let i=0; i<children.length; i++) {
-						let currentNode = children[i]
-						if (children[i].nodeName !== '#text') {  // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
-							if (children[i].childNodes[0]) {
-								currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
-							} else {
-								continue
-							}
-						}
-						const currentLength = currentNode?.length || 0
-						startTextLength += currentLength
-						if (startTextLength >= indicesStart) {
-							range.setStart(currentNode, indicesStart - (startTextLength - currentLength))
-							startIndex = i
-							break
-						}
-					}
-
-					for (let i=0; i<children.length; i++) {
-						let currentNode = children[i]
-						if (children[i].nodeName !== '#text') { // 规范化的第一点要求保证了这里的 [0] 一点就是全部文本了，但是要去除注释节点
-							currentNode = Array.from(children[i].childNodes).filter(c => c.nodeName !== '#comment')[0]
-						}
-						const currentLength = currentNode?.length || 0
-						endTextLength += currentLength
-						if (endTextLength >= indicesStart + indicesLength) {
-							range.setEnd(currentNode, indicesStart + indicesLength - (endTextLength - currentLength))
-							break
-						}
-					}
-				} else {
-					range.setStart(el, indicesStart)
-					range.setEnd(el, indicesStart + indicesLength)
-				}
-
-				return range
-			})
+				return null
+			}).filter(Boolean)
 		}).flat()
 	} else {
 		window.rangesFlat = []
