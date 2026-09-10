@@ -22,11 +22,21 @@ export const reCheckTree = () => {
 				return
 			}
 
-			// 剪枝，元素不可见的就不查了
+			// 剪枝，元素不可见的就不查了（优先使用原生 checkVisibility 避免强制样式重排）
+			// 特殊豁免：若本身是 DETAILS 或在 DETAILS 内部，豁免剪枝，确保折叠内容能被检索并支持自动展开
 			if (node.nodeType === Node.ELEMENT_NODE) {
-				const style = window.getComputedStyle(node);
-				if (style.display === 'none') {
-					return;
+				const isDetails = node.tagName === 'DETAILS' || (typeof node.closest === 'function' && node.closest('details'));
+				if (!isDetails) {
+					if (typeof node.checkVisibility === 'function') {
+						if (!node.checkVisibility({ checkVisibilityCSS: true })) {
+							return;
+						}
+					} else {
+						const style = window.getComputedStyle(node);
+						if (style.display === 'none') {
+							return;
+						}
+					}
 				}
 			}
 			const treeWalker = createTreeWalkerWithShadowDOM(node)
@@ -111,7 +121,14 @@ export const reCheckTree = () => {
 				if (genReturnNext.value.parentElement?.dataset.__swe__normalized === '777') { // 规范化的元素是克隆的，所以在页面中必然是隐藏的，所以需要特殊处理
 					window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
 				} else {
-					if (isElementVisible(genReturnNext.value.parentElement) !== '隐藏中') {
+					const parent = genReturnNext.value.parentElement;
+					const isInsideDetails = parent && (parent.tagName === 'DETAILS' || (typeof parent.closest === 'function' && parent.closest('details')));
+					const isHidden = !isInsideDetails && parent && (
+						typeof parent.checkVisibility === 'function'
+							? !parent.checkVisibility({ checkVisibilityCSS: true })
+							: (window.getComputedStyle(parent).display === 'none' || window.getComputedStyle(parent).visibility === 'hidden')
+					);
+					if (!isHidden) {
 						window.allNodes.push({ el: genReturnNext.value, text: genReturnNext.value.textContent })
 					}
 				}
@@ -399,35 +416,66 @@ export const isElementVisible = (el) => {
 		}
 	}
 
-	const style = window.getComputedStyle(el);
+	// 1. 优先使用现代原生 checkVisibility API 检查可见性与透明度（C++ 原生层执行，0 样式重排）
+	if (typeof el.checkVisibility === 'function') {
+		// 检查纯 CSS 可见性（display: none / visibility: hidden / content-visibility）
+		const isCssVisible = el.checkVisibility({
+			checkOpacity: false,
+			checkVisibilityCSS: true,
+			contentVisibilityAuto: true
+		})
+		if (!isCssVisible) return '隐藏中'
 
-	if (style.display === 'none') return '隐藏中';
-	if (style.visibility === 'hidden') return '隐藏中';
-	if (parseFloat(style.opacity) < 0.01) return '全透明';
+		// 检查透明度（opacity: 0）
+		const isOpacityVisible = el.checkVisibility({
+			checkOpacity: true,
+			checkVisibilityCSS: true
+		})
+		if (!isOpacityVisible) return '全透明'
+	} else {
+		// 兜底降级处理
+		const style = window.getComputedStyle(el)
+		if (style.display === 'none' || style.visibility === 'hidden') return '隐藏中'
+		if (parseFloat(style.opacity) < 0.01) return '全透明'
+	}
 
-	const rect = el.getBoundingClientRect();
+	// 2. 检查元素几何尺寸
+	const rect = el.getBoundingClientRect()
 	if (rect.width === 0 && rect.height === 0) {
 		return '隐藏中'
 	}
 
+	// 3. 检查是否在当前视口内（关键修复：若元素在视口下方深处尚未滚动到位，绝不误判为“被遮盖”）
+	const isInViewport = (
+		rect.bottom > 0 &&
+		rect.right > 0 &&
+		rect.top < window.innerHeight &&
+		rect.left < window.innerWidth
+	)
+	if (!isInViewport) {
+		return ''
+	}
+
+	// 4. 仅针对处于当前视口内的点进行遮挡检测
 	const points = [
 		{ x: rect.left + rect.width * 0.5, y: rect.top + rect.height * 0.5 }, // 中心
 		{ x: rect.left + 1, y: rect.top + 1 }, // 左上
 		{ x: rect.right - 1, y: rect.bottom - 1 } // 右下
-	];
-	let isCovered = true;
-	for (const point of points) {
-		// 避开负坐标
-		if (point.x < 0 || point.y < 0) continue;
+	]
 
-		const topElement = document.elementFromPoint(point.x, point.y);
+	let isCovered = true
+	for (const point of points) {
+		// 避开视口外坐标
+		if (point.x < 0 || point.y < 0 || point.x > window.innerWidth || point.y > window.innerHeight) continue
+
+		const topElement = document.elementFromPoint(point.x, point.y)
 		if (topElement && (el === topElement || el.contains(topElement) || topElement.contains(el))) {
-			isCovered = false; // 只要有一个点能露出来，就认为可见
-			break;
+			isCovered = false // 只要有一个测试点能露出来，就认为未被遮盖
+			break
 		}
 	}
 
-	return isCovered ? '被遮盖' : '';
+	return isCovered ? '被遮盖' : ''
 }
 
 // 自定义防抖 Hook

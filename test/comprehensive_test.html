@@ -102,7 +102,7 @@
     <span class="badge">深层滚动</span>
     <span class="badge">复杂正则表达式</span>
   </div>
-  <p>测试关键词指引：<code>findwhatever</code>, <code>苹果香蕉橙子</code>, <code>API_KEY_2026</code>, <code>shadow-target</code>, <code>iframe-inner</code></p>
+  <p>测试关键词指引：<code>VISIBILITY_TARGET</code> (可见性全场景), <code>findwhatever</code> (跨标签), <code>DEEP_SCROLL_SUCCESS_TARGET_2026</code> (滚动), <code>SHADOW_DOM_INNER_SECRET</code> (Shadow DOM)</p>
 </header>
 
 <!-- 测试场景 1: 复杂跨标签切分测试 (Cross-tag Splitting) -->
@@ -142,38 +142,58 @@
 <!-- 测试场景 2: 元素可见性与遮挡测试 (checkVisibility 与 视口外) -->
 <section id="sec-visibility">
   <h2>2. 可见性与遮挡测试 (Visibility & Hidden)</h2>
-  <p>测试目标：验证 <code>checkVisibility()</code> 是否能正确识别隐藏状态，且不卡死主线程。</p>
-
-  <div class="test-box">
-    <p><strong>测试用例 2.1（正常可见）：</strong></p>
-    <div id="visible-item">这是正常的可见元素：目标代码 <code>VISIBLE_SUCCESS_999</code></div>
+  <div style="background: #e6f4ff; border: 1px solid #91caff; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
+    <strong>🎯 统一测试关键词：</strong><code style="font-size: 15px; color: #0969da; font-weight: bold;">VISIBILITY_TARGET</code>
+    <button type="button" onclick="navigator.clipboard.writeText('VISIBILITY_TARGET'); this.innerText='已复制！'; setTimeout(()=>this.innerText='点击复制', 1500)" style="margin-left: 10px; padding: 2px 8px; font-size: 12px; cursor: pointer; border: 1px solid #0969da; background: #fff; color: #0969da; border-radius: 4px;">点击复制</button>
+    <p style="margin: 6px 0 0; font-size: 13px; color: #475569;">
+      👉 <strong>测试原理</strong>：本区域共有 <strong>7 处</strong>包含此关键词，分别处于不同的可见/隐藏/遮挡状态。只需检索这<strong>同一个词</strong>，即可一屏自测所有可见性判定！
+    </p>
   </div>
 
+  <!-- 2.1 正常可见 -->
   <div class="test-box">
-    <p><strong>测试用例 2.2（各种 CSS 隐藏状态，不应算作有效激活命中）：</strong></p>
-    <div class="hidden-box" id="display-none-item">
-      [隐藏项1 - display:none] 不应可见的密钥：<code>HIDDEN_KEY_DISPLAY_NONE</code>
+    <p><strong>2.1 【正常可见】：</strong></p>
+    <div id="visible-item">
+      ✅ 正常渲染文本：目标命中项 <code>VISIBILITY_TARGET</code>（插件应正常高亮并精准定位）
     </div>
-    <div class="visibility-hidden-box" id="visibility-hidden-item">
-      [隐藏项2 - visibility:hidden] 不应可见的密钥：<code>HIDDEN_KEY_VISIBILITY_HIDDEN</code>
-    </div>
-    <div class="zero-opacity-box" id="opacity-zero-item">
-      [隐藏项3 - opacity:0] 不应可见的密钥：<code>HIDDEN_KEY_OPACITY_ZERO</code>
-    </div>
-    <div hidden id="attr-hidden-item">
-      [隐藏项4 - HTML5 hidden 属性] 不应可见的密钥：<code>HIDDEN_KEY_HTML_ATTR</code>
-    </div>
-    <p style="color: #666; font-size: 13px;">（注：上述4个隐藏项在页面中均不可见）</p>
   </div>
 
+  <!-- 2.2 物理遮挡测试 -->
   <div class="test-box">
-    <p><strong>测试用例 2.3（Details / Summary 折叠组件）：</strong></p>
+    <p><strong>2.2 【真实物理遮盖（验证 elementFromPoint）】：</strong></p>
+    <div style="position: relative; height: 60px; background: #fef08a; border: 1px solid #facc15; border-radius: 6px; padding: 12px; overflow: hidden;">
+      <span id="covered-text-target">我是被悬浮层完全盖住的目标：<code>VISIBILITY_TARGET</code></span>
+      <div id="cover-overlay" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.9); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 10;">
+        <span>🛑 [遮挡浮层] 下方文字已被完全遮盖</span>
+        <button type="button" onclick="document.getElementById('cover-overlay').style.display='none'" style="cursor: pointer; padding: 4px 10px; background: #ef4444; color: #fff; border: none; border-radius: 4px; font-size: 12px;">点击移开遮罩</button>
+      </div>
+    </div>
+    <p style="color: #64748b; font-size: 12px; margin-top: 6px;">
+      💡 预期表现：激活此项时，插件底栏状态应准确标识为 <strong>“被遮盖”</strong>；点击“移开遮罩”后再按回车激活，状态应变回正常。
+    </p>
+  </div>
+
+  <!-- 2.3 折叠组件 -->
+  <div class="test-box">
+    <p><strong>2.3 【Details 折叠容器】：</strong></p>
     <details id="test-details">
-      <summary style="cursor: pointer; color: #0969da; font-weight: bold;">点击折叠/展开（测试插件能否在搜索定位时自动打开 details）</summary>
-      <div style="padding: 10px; background: #fff; border-radius: 4px; margin-top: 8px;">
-        这里是默认折叠的内容：请搜索 <code>DETAILS_SECRET_INSIDE</code>，测试是否能自动展开并高亮此行！
+      <summary style="cursor: pointer; color: #0969da; font-weight: bold;">点击展开/折叠查看容器内容</summary>
+      <div style="padding: 10px; background: #fff; border-radius: 4px; margin-top: 8px; border: 1px solid #e2e8f0;">
+        折叠在内部的内容：<code>VISIBILITY_TARGET</code>（测试在折叠闭合状态下激活时，是否能自动展开并定位）
       </div>
     </details>
+  </div>
+
+  <!-- 2.4 原生隐藏状态集合 -->
+  <div class="test-box">
+    <p><strong>2.4 【各类 CSS/HTML 原生隐藏状态（checkVisibility 应将其快速剪枝过滤）】：</strong></p>
+    <div style="display: grid; gap: 8px; font-size: 13px;">
+      <div>① <code>display: none</code> 容器：<span class="hidden-box" id="display-none-item">[已隐藏] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(已隐藏，不应被计为有效可见项)</span></div>
+      <div>② <code>visibility: hidden</code> 容器：<span class="visibility-hidden-box" id="visibility-hidden-item">[已隐藏] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(已隐藏，不应被计为有效可见项)</span></div>
+      <div>③ <code>opacity: 0</code> 容器：<span class="zero-opacity-box" id="opacity-zero-item">[全透明] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(全透明项，应识别为全透明)</span></div>
+      <div>④ HTML5 <code>hidden</code> 属性：<span hidden id="attr-hidden-item">[HTML hidden] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(原生隐藏，不应被计为有效可见项)</span></div>
+      <div>⑤ 现代 <code>content-visibility: hidden</code>：<span style="content-visibility: hidden;" id="content-visibility-hidden-item">[未渲染] <code>VISIBILITY_TARGET</code></span> <span style="color:#94a3b8;">(原生跳过渲染，不应被计为有效可见项)</span></div>
+    </div>
   </div>
 </section>
 

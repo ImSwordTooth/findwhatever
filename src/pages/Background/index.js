@@ -238,10 +238,10 @@ const handleStorageChange = async (changes, areaName) => {
 								}
 								for (let dom of parents) {
 									if (dom.tagName === 'DETAILS') {
-										dom.setAttribute('open', true)
+										dom.open = true;
 									}
-									dom.scrollIntoView({ behavior: 'instant', block: 'center' })
 								}
+								currentActiveRangeDOM.scrollIntoView({ behavior: 'instant', block: 'center' });
 							}
 							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(currentActiveRangeDOM) })
 						}
