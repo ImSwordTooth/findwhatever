@@ -145,20 +145,25 @@ export const closePop = () => {
 	document.removeEventListener('keydown', window.handleCloseByEsc)
 	CSS.highlights.clear()
 	destroyPopup()
+	window.rangesFlat = []
+	window.allNodes = []
+	if (window.filteredRangeList) {
+		window.filteredRangeList.value = []
+	}
 	chrome.storage.session.set({ resultSum: [], frames: [] })
 	chrome?.runtime?.sendMessage({
 		action: 'closeAction'
 	})
 	chrome.storage.sync.get(['recent', 'searchValue']).then(({ recent, searchValue }) => {
 		if (searchValue) {
-			const newRecent = recent.slice()
-			if (!newRecent.includes(searchValue)) { // 没有就直接新增
+			const newRecent = Array.isArray(recent) ? recent.slice() : []
+			if (!newRecent.includes(searchValue)) { // 没有就直接新增到头部
 				newRecent.unshift(searchValue)
-				if (newRecent.length > 50) { // 不超过50条
-					newRecent.shift()
+				if (newRecent.length > 50) { // 超出50条时剔除尾部最旧项
+					newRecent.pop()
 				}
-			} else { // 有就提到最新
-				const index = newRecent.findIndex(r => r === searchValue);
+			} else { // 已存在则置顶到最新
+				const index = newRecent.findIndex(r => r === searchValue)
 				if (index > 0) {
 					newRecent.unshift(newRecent.splice(index, 1)[0])
 				}
@@ -168,8 +173,10 @@ export const closePop = () => {
 	})
 }
 
+const observedShadowRoots = new WeakSet()
+
 export const observerBodyAndOpenShadowRoot = () => {
-	if (!document) {
+	if (!document?.body || !window.__swe_observer) {
 		return
 	}
 	window.__swe_observer.observe(document.body, {
@@ -185,13 +192,16 @@ export const observerBodyAndOpenShadowRoot = () => {
 		elements.forEach(element => {
 			const shadowRoot = element.shadowRoot;
 			if (shadowRoot && shadowRoot.mode === 'open') {
-				window.__swe_observer.observe(shadowRoot, {
-					subtree: true,
-					childList: true,
-					attributes: true,
-					characterData: true,
-					attributeFilter: ['class', 'style', 'hidden', 'open', 'selected', 'aria-expanded', 'aria-hidden']
-				});
+				if (!observedShadowRoots.has(shadowRoot)) {
+					observedShadowRoots.add(shadowRoot)
+					window.__swe_observer.observe(shadowRoot, {
+						subtree: true,
+						childList: true,
+						attributes: true,
+						characterData: true,
+						attributeFilter: ['class', 'style', 'hidden', 'open', 'selected', 'aria-expanded', 'aria-hidden']
+					});
+				}
 				observeAllShadowRoots(shadowRoot);
 			}
 		});
@@ -199,75 +209,78 @@ export const observerBodyAndOpenShadowRoot = () => {
 	observeAllShadowRoots(document)
 }
 
+// 动态探针字符串（包含 Emoji、多语言、标点、控制字符、零宽字符等各类极端样本，单例常驻内存）
+const PROBE_TEST_STRING = [
+	// 普通文本
+	'Hello World', '123456', 'test@example.com',
+	// 特殊字符
+	'!@#$%^&*()', '[]{}|\\', '`~-_=+',
+	// Unicode 字符
+	'中文', '日本語', '한국어', 'Русский', 'العربية', 'עברית', '🌍🌎🌏', '🚀💻🎉',
+	// 空白字符
+	'   ', '\t\t',
+	// 边界情况
+	'', 'a', 'A', '0', '.', '*', '+', '?',
+	// 混合内容
+	'a1B2c3', 'test123!@#', 'tab\tseparated\tvalues',
+	// 长文本
+	'a'.repeat(100), 'test '.repeat(50),
+	// 各种引号
+	`'single'`, `"double"`, '`backtick`', '«guillemets»', '„quotes"',
+	// 数学符号
+	'∑∏∫√∞', 'αβγδε', '≤≥≠≈',
+	// 控制字符（部分）
+	String.fromCharCode(0), String.fromCharCode(1), String.fromCharCode(7), String.fromCharCode(27),
+	// 零宽字符
+	'\u200B', '\u200C', '\u200D', '\uFEFF'
+].join('')
+
 const isDangerousReg = (reg) => {
-	if (reg.source === '.') {
+	if (!reg || reg.source === '.') {
 		return true
 	}
 
 	// 任意字符类
-	const anyCharClassPatterns = ['.', '[\\S\\s]', '[\\s\\S]', '[\\d\\D]', '[\\D\\d]', '[\\w\\W]', '[\\W\\w]', '[^]',]
+	const anyCharClassPatterns = ['.', '[\\S\\s]', '[\\s\\S]', '[\\d\\D]', '[\\D\\d]', '[\\w\\W]', '[\\W\\w]', '[^]']
 	// 所有量词模式
-	const quantifierPatterns = ['*', '+', '?', '*?', '+?', '??', '{0,}', '{1,}', '{0,1}', '{0,}?', '{1,}?', '{0,1}?', '{2,}', '{3,}', '{4,}', '{5,}', '{0,d+}', '{1,d+}', '{2,d+}',];
+	const quantifierPatterns = ['*', '+', '?', '*?', '+?', '??', '{0,}', '{1,}', '{0,1}', '{0,}?', '{1,}?', '{0,1}?']
 	// 检查完全匹配：任意字符类 + 量词
 	for (const charClass of anyCharClassPatterns) {
 		for (const quantifier of quantifierPatterns) {
-			const testStr = `${charClass}${quantifier}`
-			if (reg.source === testStr) {
+			if (reg.source === `${charClass}${quantifier}`) {
 				return true
 			}
 		}
 	}
 
 	/**
-	 * 如果侥幸过了黑名单，再维护一个基本上普通的正则表达式不会全部覆盖的文本。然后用当前正则判断，如果全都匹配覆盖到了，就说明太宽泛了，拒绝实际匹配
-	 * 🤖检测文本由 ai 生成
-	 * 去除了换行符，因为 .* 不匹配换行
-	 * */
-	const testStr = [
-		// 普通文本
-		'Hello World', '123456', 'test@example.com',
-		// 特殊字符
-		'!@#$%^&*()', '[]{}|\\', '`~-_=+',
-		// Unicode 字符
-		'中文', '日本語', '한국어', 'Русский', 'العربية', 'עברית', '🌍🌎🌏', '🚀💻🎉',
-		// 空白字符
-		'   ','\t\t',
-		// 边界情况
-		'', 'a', 'A', '0', '.', '*', '+', '?',
-		// 混合内容
-		'a1B2c3', 'test123!@#', 'tab\tseparated\tvalues',
-		// 长文本
-		'a'.repeat(100), 'test '.repeat(50),
-		// 各种引号
-		`'single'`, `"double"`, '`backtick`', '«guillemets»', '„quotes"',
-		// 数学符号
-		'∑∏∫√∞', 'αβγδε', '≤≥≠≈',
-		// 控制字符（部分）
-		String.fromCharCode(0), String.fromCharCode(1), String.fromCharCode(7), String.fromCharCode(27),
-		// 零宽字符
-		'\u200B', '\u200C', '\u200D', '\uFEFF',
-	].join(''); // 用分隔符连接，避免全部连在一起
-
-	const res = reg.exec(testStr)
-	return !!(res && res.indices[0][1] - res.indices[0][0] === testStr.length);
+	 * 如果侥幸过了黑名单，用高度多元的探针文本进行动态启发式匹配：
+	 * 如果当前正则能够把长达数百字符的多元极端文本全部一口吞掉覆盖，说明太宽泛了，判定为危险正则
+	 */
+	reg.lastIndex = 0
+	const res = reg.exec(PROBE_TEST_STRING)
+	return !!(res && res.indices?.[0] && (res.indices[0][1] - res.indices[0][0] === PROBE_TEST_STRING.length))
 }
 
 export const getSearchReg = async () => {
-	const { searchValue, isMatchCase, isWord, isReg, swe_setting } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting'])
+	const { searchValue, isMatchCase, isWord, isReg } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting'])
+	if (!searchValue) {
+		return { regContent: '', error: false, errorType: '' }
+	}
+
 	let reg = null
 	let error = false
 	let errorType = ''
 
 	let regContent = searchValue
 	if (!isReg) {
-		regContent = regContent.replace(/([.*+?^${}()|[\]\\])/g, '\\$1');
+		regContent = regContent.replace(/([.*+?^${}()|[\]\\])/g, '\\$1')
 	}
 	if (isWord) {
-		// regContent = `\\b${regContent}\\b`
 		regContent = `(?<![\\p{L}\\p{N}])${regContent}(?![\\p{L}\\p{N}])`
 	}
 	try {
-		reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`);
+		reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`)
 		const isDanger = isDangerousReg(reg)
 
 		if (isDanger) {
@@ -439,30 +452,23 @@ export const isElementVisible = (el) => {
 // 自定义防抖 Hook
 export const useDebounce = (value, delay, immediate) => {
 	const [ debouncedValue, setDebouncedValue ] = useState(value);
-	const [ isDebounceOk, setIsDebounceOK ] = useState(false)
-
-	const timerRef = useRef(null);
-
-	if (immediate && debouncedValue !== value) {
-		setDebouncedValue(value)
-		setIsDebounceOK(true); // 初始化阶段，它应该是“OK”的
-	}
+	const [ isDebounceOk, setIsDebounceOK ] = useState(Boolean(immediate));
 
 	useEffect(() => {
 		if (immediate) {
+			setDebouncedValue(value);
+			setIsDebounceOK(true);
 			return;
 		}
-		setIsDebounceOK(false)
-		if (timerRef.current) {
-			clearTimeout(timerRef.current);
-		}
-		timerRef.current = setTimeout(() => {
+
+		setIsDebounceOK(false);
+		const timer = setTimeout(() => {
 			setDebouncedValue(value);
-			setIsDebounceOK(true)
+			setIsDebounceOK(true);
 		}, delay);
 
 		return () => {
-			clearTimeout(timerRef.current);
+			clearTimeout(timer);
 		};
 	}, [value, delay, immediate]);
 
