@@ -1,8 +1,8 @@
 import { reCheckTree, closePop } from '../Content/features'
 import { createOrUpdatePopup } from '../Content/index';
-window.isFrame = window !== window.top;
+window.__swe_isFrame = window.isFrame = window !== window.top;
 
-window.handleCloseByEsc = (e) => {
+window.__swe_handleCloseByEsc = window.handleCloseByEsc = (e) => {
 	if (!window.isFrame && e.key === 'Escape') {
 		closePop()
 		document.removeEventListener('keydown', window.handleCloseByEsc)
@@ -10,12 +10,7 @@ window.handleCloseByEsc = (e) => {
 };
 
 if (!window.filteredRangeList) {
-	window.filteredRangeList = new Proxy({ value: [] }, {
-		set (target, prop, value) {
-			target[prop] = value
-			return true
-		}
-	});
+	window.filteredRangeList = { value: [] };
 }
 
 (async function () {
@@ -31,7 +26,9 @@ if (!window.filteredRangeList) {
 				chrome.storage.sync.get(['swe_setting'])
 			])
 
-			const selection = window.getSelection().toString()
+			const rawSelection = window.getSelection()?.toString() || '';
+			// 限制划词长度上限，防止误全选超大网页内容导致存储与输入卡死
+			const selection = rawSelection.length > 1000 ? rawSelection.slice(0, 1000) : rawSelection;
 			const now = Date.now()
 			const retentionTime = swe_setting?.retentionTime ?? -1
 
@@ -46,10 +43,12 @@ if (!window.filteredRangeList) {
 			createOrUpdatePopup();
 			await chrome?.runtime?.sendMessage({ // chrome.scripting 只能在 background.js 里使用，所以不直接在这写了
 				action: 'openAction'
-			});
-			document.addEventListener('keydown', window.handleCloseByEsc)
+			}).catch(() => null);
+			document.removeEventListener('keydown', window.handleCloseByEsc);
+			document.addEventListener('keydown', window.handleCloseByEsc);
         }
     } else {
 		reCheckTree()
     }
 })()
+
