@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'preact/compat'
 import {Button, Divider, Dropdown, Menu, Tooltip} from "antd";
 import { useTranslation } from 'react-i18next'
 import PropTypes from "prop-types";

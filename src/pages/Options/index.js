@@ -1,8 +1,8 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
+import React from 'preact/compat';
+import { createRoot } from 'preact/compat/client';
 import '../i18nnext'
 import { Options } from './Options';
-import styles from '../../output.css'
+import styles from '../../global.css'
 import antdStyle from 'antd/dist/antd.less'
 import CoverAntdStyle from '../../coverAntd.css'
 

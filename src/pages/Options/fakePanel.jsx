@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'preact/compat'
 import { Button, Divider, Dropdown, Menu, Alert, Tooltip } from "antd";
 import { Input } from "../../components/Input";
 import { FrameList } from '../Content/Parts/FrameList';

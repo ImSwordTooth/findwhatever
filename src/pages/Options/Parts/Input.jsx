@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'preact/compat'
 import { InputNumber, Button, Spin, message, Select, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { LoadingOutlined } from '@ant-design/icons';

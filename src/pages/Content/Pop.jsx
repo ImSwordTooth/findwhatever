@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'preact/compat'
 import { Input } from '../../components/Input'
 import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, doSearchOutside, useDebounce, getSearchReg, debounce } from './features'
 import { Tooltip, Button, Spin } from 'antd'
@@ -6,7 +6,7 @@ import { LoadingOutlined } from '@ant-design/icons'
 import { Rnd } from 'react-rnd'
 import { changeLanguage } from 'i18next'
 import { useTranslation } from 'react-i18next'
-import '../../output.css'
+import '../../global.css'
 import { FrameList } from "./Parts/FrameList";
 import { FindResult } from "./Parts/FindResult";
 import { RecentList } from "./Parts/RecentList";

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Whatever 综合全场景测试靶场</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      color: #24292f;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px 100px;
+      background-color: #f6f8fa;
+    }
+    header {
+      border-bottom: 2px solid #d0d7de;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    h1 { color: #0969da; margin-bottom: 10px; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      background: #ddf4ff;
+      color: #0969da;
+      margin-right: 6px;
+    }
+    section {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(31,35,40,0.04);
+    }
+    section h2 {
+      margin-top: 0;
+      color: #1f2328;
+      border-bottom: 1px solid #eaeef2;
+      padding-bottom: 8px;
+    }
+    .test-box {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 12px 0;
+    }
+    code, kbd {
+      background: #eff1f3;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      border: 1px solid #d0d7de;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th { background: #f6f8fa; }
+    .long-spacer {
+      height: 600px;
+      background: repeating-linear-gradient(
+        45deg,
+        #f6f8fa,
+        #f6f8fa 10px,
+        #ffffff 10px,
+        #ffffff 20px
+      );
+      border: 1px dashed #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-style: italic;
+      margin: 20px 0;
+    }
+    .hidden-box { display: none; }
+    .visibility-hidden-box { visibility: hidden; }
+    .zero-opacity-box { opacity: 0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🔍 Find Whatever 全面能力测试靶场</h1>
+  <div>
+    <span class="badge">跨标签测试</span>
+    <span class="badge">Shadow DOM</span>
+    <span class="badge">多 iframe</span>
+    <span class="badge">可见性 (checkVisibility)</span>
+    <span class="badge">深层滚动</span>
+    <span class="badge">复杂正则表达式</span>
+  </div>
+  <p>测试关键词指引：<code>findwhatever</code>, <code>苹果香蕉橙子</code>, <code>API_KEY_2026</code>, <code>shadow-target</code>, <code>iframe-inner</code></p>
+</header>
+
+<!-- 测试场景 1: 复杂跨标签切分测试 (Cross-tag Splitting) -->
+<section id="sec-crosstag">
+  <h2>1. 跨 HTML 标签搜索测试 (Cross-tag Matching)</h2>
+  <p>测试目标：即使文字被行内标签切碎，也能被完整检索并高亮。</p>
+
+  <div class="test-box">
+    <p><strong>测试用例 1.1（经典切分）：</strong></p>
+    <div>
+      请搜索关键词 <code>findwhatever</code>：<br>
+      <span>find</span><strong>what</strong><em>ev</em><u>er</u> 扩展已就绪！
+    </div>
+  </div>
+
+  <div class="test-box">
+    <p><strong>测试用例 1.2（中文水果多标签切分）：</strong></p>
+    <div>
+      请搜索关键词 <code>苹果香蕉橙子</code>：<br>
+      <span>苹果</span><mark>香蕉</mark><small>橙子</small> 大丰收
+    </div>
+  </div>
+
+  <div class="test-box">
+    <p><strong>测试用例 1.3（多类型混排：代码、键盘、删除线、上标）：</strong></p>
+    <div>
+      请搜索关键词 <code>Ctrl+Alt+Del</code>：<br>
+      按下 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Del</kbd> 重启计算机。
+    </div>
+    <div style="margin-top: 10px;">
+      请搜索关键词 <code>E=mc2公式</code>：<br>
+      相对论方程：<i>E</i>=<code>mc</code><sup>2</sup><del>公式</del><ins>公式</ins> 解析。
+    </div>
+  </div>
+</section>
+
+<!-- 测试场景 2: 元素可见性与遮挡测试 (checkVisibility 与 视口外) -->
+<section id="sec-visibility">
+  <h2>2. 可见性与遮挡测试 (Visibility & Hidden)</h2>
+  <p>测试目标：验证 <code>checkVisibility()</code> 是否能正确识别隐藏状态，且不卡死主线程。</p>
+
+  <div class="test-box">
+    <p><strong>测试用例 2.1（正常可见）：</strong></p>
+    <div id="visible-item">这是正常的可见元素：目标代码 <code>VISIBLE_SUCCESS_999</code></div>
+  </div>
+
+  <div class="test-box">
+    <p><strong>测试用例 2.2（各种 CSS 隐藏状态，不应算作有效激活命中）：</strong></p>
+    <div class="hidden-box" id="display-none-item">
+      [隐藏项1 - display:none] 不应可见的密钥：<code>HIDDEN_KEY_DISPLAY_NONE</code>
+    </div>
+    <div class="visibility-hidden-box" id="visibility-hidden-item">
+      [隐藏项2 - visibility:hidden] 不应可见的密钥：<code>HIDDEN_KEY_VISIBILITY_HIDDEN</code>
+    </div>
+    <div class="zero-opacity-box" id="opacity-zero-item">
+      [隐藏项3 - opacity:0] 不应可见的密钥：<code>HIDDEN_KEY_OPACITY_ZERO</code>
+    </div>
+    <div hidden id="attr-hidden-item">
+      [隐藏项4 - HTML5 hidden 属性] 不应可见的密钥：<code>HIDDEN_KEY_HTML_ATTR</code>
+    </div>
+    <p style="color: #666; font-size: 13px;">（注：上述4个隐藏项在页面中均不可见）</p>
+  </div>
+
+  <div class="test-box">
+    <p><strong>测试用例 2.3（Details / Summary 折叠组件）：</strong></p>
+    <details id="test-details">
+      <summary style="cursor: pointer; color: #0969da; font-weight: bold;">点击折叠/展开（测试插件能否在搜索定位时自动打开 details）</summary>
+      <div style="padding: 10px; background: #fff; border-radius: 4px; margin-top: 8px;">
+        这里是默认折叠的内容：请搜索 <code>DETAILS_SECRET_INSIDE</code>，测试是否能自动展开并高亮此行！
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- 测试场景 3: 表格、列表、引用等丰富语义标签 -->
+<section id="sec-semantic">
+  <h2>3. 丰富结构化语义标签测试</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>序号</th>
+        <th>模块名</th>
+        <th>技术栈</th>
+        <th>测试代号</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><b>核心查找引擎</b></td>
+        <td><code>CSS.highlights</code></td>
+        <td>ALPHA_ENGINE_01</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><b>轻量运行时</b></td>
+        <td><code>Preact 10</code></td>
+        <td>BETA_RUNTIME_02</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><b>超音速构建</b></td>
+        <td><code>Rspack Rust</code></td>
+        <td>GAMMA_BUILDER_03</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <blockquote>
+    <p>“代码是写出来给人看的，附带能在机器上运行。” —— 搜索测试句：<code>QUOTATION_BLOCK_TEXT</code></p>
+  </blockquote>
+
+  <dl>
+    <dt><b>专有名词定义</b></dt>
+    <dd>定义项 A：这是一个嵌套在 <code>&lt;dd&gt;</code> 里的测试文本 <code>DEFINITION_TARGET_A</code>。</dd>
+    <dd>定义项 B：这是一个嵌套在 <code>&lt;dd&gt;</code> 里的测试文本 <code>DEFINITION_TARGET_B</code>。</dd>
+  </dl>
+</section>
+
+<!-- 测试场景 4: Shadow DOM 穿透测试 -->
+<section id="sec-shadow">
+  <h2>4. Shadow DOM 穿透检索测试</h2>
+  <p>测试目标：验证是否能穿透开放的 <code>ShadowRoot</code> 检索内部文本并高亮。</p>
+
+  <div id="shadow-container" class="test-box">
+    <!-- 将通过 JS 挂载 ShadowRoot -->
+  </div>
+</section>
+
+<!-- 测试场景 5: iframe 穿透检索测试 -->
+<section id="sec-iframes">
+  <h2>5. 嵌套多 iframe 检索与底栏状态色块测试</h2>
+  <p>测试目标：验证是否能识别 iframe，并在插件底栏看到 iframe 的数量与跳转色块。</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+    <div>
+      <p><strong>iframe A (独立文档)：</strong></p>
+      <iframe id="iframe-a" srcdoc="
+        <!DOCTYPE html>
+        <html>
+        <body style='font-family: sans-serif; padding: 15px; background: #fffbe6; color: #795548;'>
+          <h4>这是 iframe A</h4>
+          <p>请搜索关键词：<code>IFRAME_TARGET_ALPHA</code></p>
+          <p>跨标签测试：<span>嵌入</span><b>框架</b><i>内部</i></p>
+        </body>
+        </html>
+      " style="width: 100%; height: 160px; border: 1px solid #ffe58f; border-radius: 6px;"></iframe>
+    </div>
+
+    <div>
+      <p><strong>iframe B (独立文档)：</strong></p>
+      <iframe id="iframe-b" srcdoc="
+        <!DOCTYPE html>
+        <html>
+        <body style='font-family: sans-serif; padding: 15px; background: #e6f7ff; color: #0050b3;'>
+          <h4>这是 iframe B</h4>
+          <p>请搜索关键词：<code>IFRAME_TARGET_BETA</code></p>
+          <p>数字统计：<mark>9999</mark> 个结果</p>
+        </body>
+        </html>
+      " style="width: 100%; height: 160px; border: 1px solid #91d5ff; border-radius: 6px;"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- 测试场景 6: 长距离深层滚动与视口外测试 (验证 elementFromPoint 缺陷是否已解决) -->
+<div class="long-spacer">
+  ⬇️ 页面超长空白占位区（高度 600px，用于把后续内容推到第 2 屏，测试深层视口外匹配与滚动定位）⬇️
+</div>
+
+<section id="sec-deep-scroll">
+  <h2>6. 深层视口外目标 (测试滚动定位与遮盖误判修复)</h2>
+  <p>如果旧代码里的 <code>elementFromPoint</code> 在视口外返回 null，本区域的内容会被误报为“被遮盖”。新代码应该能准确定位且不报错！</p>
+
+  <div class="test-box" style="background: #e6ffed; border-color: #52c41a;">
+    <h3>🎯 第 2 屏深层目标：</h3>
+    <p>恭喜你滚动到了底部！请在首屏直接搜索关键词：</p>
+    <p style="font-size: 20px; font-weight: bold; color: #389e0d;">
+      <code>DEEP_SCROLL_SUCCESS_TARGET_2026</code>
+    </p>
+    <p>当你在顶部输入此词并按 Enter 时，页面应该<strong>瞬间平滑居中滚动至此</strong>，并且<strong>状态栏不应错误提示“被遮盖”</strong>！</p>
+  </div>
+</section>
+
+<footer style="text-align: center; margin-top: 50px; color: #8c8c8c; font-size: 13px;">
+  Find Whatever Test Suite &bull; 本地综合测试页面
+</footer>
+
+<script>
+  // 动态构建 Shadow DOM 演示节点
+  (function initShadowRoot() {
+    const container = document.getElementById('shadow-container');
+    if (!container) return;
+
+    const shadowRoot = container.attachShadow({ mode: 'open' });
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'padding: 12px; background: #f0f5ff; border: 1px solid #adc6ff; border-radius: 6px; color: #1d39c4;';
+    wrapper.innerHTML = `
+      <strong>[这是位于开放式 Shadow DOM 内的文本]</strong>
+      <p>搜索 Shadow 测试词：<code>SHADOW_DOM_INNER_SECRET</code></p>
+      <div>跨 Shadow 标签：<span>影子</span><em>容器</em><b>内部</b>文本</div>
+    `;
+
+    shadowRoot.appendChild(wrapper);
+  })();
+</script>
+
+</body>
+</html>

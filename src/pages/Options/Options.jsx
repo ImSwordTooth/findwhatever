@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext, useRef } from 'react'
+import React, { useEffect, useState, createContext, useRef } from 'preact/compat'
 import { changeLanguage } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { message, Popover } from 'antd'

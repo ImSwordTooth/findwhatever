@@ -1,9 +1,9 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client'
+import React from 'preact/compat';
+import { createRoot } from 'preact/compat/client';
 import { Pop } from './Pop'
 import ShadowRoot from 'react-shadow'
 import '../i18nnext'
-import styles from '../../output.css'
+import styles from '../../global.css'
 import antdStyle from 'antd/dist/antd.less'
 import CoverAntdStyle from '../../coverAntd.css'
 

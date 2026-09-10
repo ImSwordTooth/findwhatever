@@ -76,9 +76,8 @@ If you find this project helpful, feel free to give me a star 🌟 or leave me a
 
 ## 🛠 For developer
 1. Run `npm install`
-2. Run `npm run start`
-3. Run `npx tailwindcss -i ./src/global.css -o ./src/output.css --watch`
-4. Open your browser's extensions page in developer mode, press "load unpacked" and select the `build` directory
+2. Run `npm run start` to start fast watch build
+3. Open your browser's extensions page in developer mode, press "load unpacked" and select the `build` directory
 
 ## License
 [GPL-3.0-only](LICENSE)

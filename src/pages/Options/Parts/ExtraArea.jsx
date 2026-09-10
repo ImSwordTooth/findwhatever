@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'preact/compat'
 import { Slider, Switch } from 'antd';
 import { SettingContext } from '../Options'
 import { useTranslation } from 'react-i18next'

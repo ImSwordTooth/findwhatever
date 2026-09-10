@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import * as React from "preact/compat";
 import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { clsx } from "clsx";

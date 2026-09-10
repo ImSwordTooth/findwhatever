@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
 import TimeSvg from '../../../assets/svg/time.svg'
 import { CHANGELOG_ITEMS } from '../changeLogItems'

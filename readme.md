@@ -84,9 +84,8 @@
 ## 🛠 开发
 
 1. 执行 `npm install`
-2. 执行 `npm run start`
-3. 执行 `npx tailwindcss -i ./src/global.css -o ./src/output.css --watch`
-4. 打开扩展程序的开发者模式，加载已解压的扩展程序，把 `build` 目录放进去
+2. 执行 `npm run start` 即可开启极速热监听
+3. 打开扩展程序的开发者模式，加载已解压的扩展程序，把 `build` 目录放进去
 
 ## License
 [GPL-3.0-only](LICENSE)

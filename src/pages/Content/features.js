@@ -1,5 +1,5 @@
 import { destroyPopup } from "./index";
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'preact/compat'
 
 // 生成匹配节点树
 export const reCheckTree = () => {
