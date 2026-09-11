@@ -155,13 +155,9 @@ export const Pop = () => {
 				setY(locStorage.y || parseInt(window.innerHeight * 0.1))
 			}
 
+			const debouncedUpdate = debounce(handleUpdate, 200)
 			window.__swe_observer = new MutationObserver((mutationsList, observer) => {
-				// 遍历 mutationsList 数组，处理每个变化
-				// for (const mutation of mutationsList) {
-				// 	console.log(mutation.type); // 输出变化类型
-				// 	console.log(mutation.target); // 输出发生变化的节点
-				// }
-				debounce(handleUpdate, 200)()
+				debouncedUpdate()
 			})
 		}
 
@@ -178,84 +174,49 @@ export const Pop = () => {
 		}
 	}, []);
 
-	useEffect(() => {
-		// 防止输入时触发页面的全局快捷键
-		const pressedKeys = new Set();
-
+	const handleKeyDown = (e) => {
 		// 检测操作系统
 		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 ||
 					 navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
 
-		const handleKeyDown = (e) => {
-			if (e.target.parentElement?.id === "__swe_container") {
+		// 根据操作系统判断快捷键组合
+		const isValidModifier = isMac ?
+			(e.ctrlKey && !e.shiftKey) : // macOS: Ctrl (不包含Shift)
+			(e.ctrlKey && e.shiftKey);   // 其他系统: Ctrl + Shift
 
-				// 根据操作系统判断快捷键组合
-				const isValidModifier = isMac ?
-					(e.ctrlKey && !e.shiftKey) : // macOS: Ctrl (不包含Shift)
-					(e.ctrlKey && e.shiftKey);   // 其他系统: Ctrl + Shift
-
-				if (isValidModifier && !e.repeat) {
-					const keyId = `${e.ctrlKey}-${e.shiftKey}-${e.key.toLowerCase()}`;
-
-					if (!pressedKeys.has(keyId)) {
-						pressedKeys.add(keyId);
-
-						if (e.key === "c" || e.key === "C") {
-							e.preventDefault();
-							e.stopPropagation();
-							toggleOption('isMatchCase');
-							return;
-						}
-						if (e.key === "w" || e.key === "W") {
-							e.preventDefault();
-							e.stopPropagation();
-							toggleOption('isWord');
-							return;
-						}
-						if (e.key === "d" || e.key === "D") {
-							e.preventDefault();
-							e.stopPropagation();
-							toggleOption('isLive');
-							return;
-						}
-						if (e.key === "r" || e.key === "R") {
-							e.preventDefault();
-							e.stopPropagation();
-							toggleOption('isReg');
-							return;
-						}
-					}
-				}
-				if (!["Escape", "Shift", "Enter"].includes(e.key)) {
-					e.stopPropagation();
-				}
+		if (isValidModifier && !e.repeat) {
+			const lowerKey = e.key.toLowerCase();
+			if (lowerKey === "c") {
+				e.preventDefault();
+				e.stopPropagation();
+				toggleOption('isMatchCase');
+				return;
 			}
-		};
-
-
-
-		const handleKeyUp = (e) => {
-			const keyId = `${e.ctrlKey}-${e.shiftKey}-${e.key.toLowerCase()}`;
-			pressedKeys.delete(keyId);
-		};
-
-		const handleKeyPress = (e) => {
-			if (e.target.parentElement?.id === "__swe_container") {
-				if (!["Escape", "Shift", "Enter"].includes(e.key)) {
-					e.stopPropagation();
-				}
+			if (lowerKey === "w") {
+				e.preventDefault();
+				e.stopPropagation();
+				toggleOption('isWord');
+				return;
 			}
-		};
+			if (lowerKey === "d") {
+				e.preventDefault();
+				e.stopPropagation();
+				toggleOption('isLive');
+				return;
+			}
+			if (lowerKey === "r") {
+				e.preventDefault();
+				e.stopPropagation();
+				toggleOption('isReg');
+				return;
+			}
+		}
 
-		window.addEventListener("keydown", handleKeyDown, true);
-		window.addEventListener("keypress", handleKeyPress, true);
-		window.addEventListener("keyup", handleKeyUp, true);
-		return () => {
-			window.removeEventListener("keydown", handleKeyDown, true);
-			window.removeEventListener("keypress", handleKeyPress, true);
-			window.removeEventListener("keyup", handleKeyUp, true);
-		};
-	}, []);
+		// 除 Escape 允许冒泡到顶层触发关闭外，面板内部所有常规击键全部就地阻断，彻底杜绝穿透到宿主网页
+		if (e.key !== "Escape") {
+			e.stopPropagation();
+		}
+	};
 
 	// isLive 变更后，更新监听器
 	useEffect(() => {
@@ -304,6 +265,7 @@ export const Pop = () => {
 	}, [isReady]);
 
 	const handleMessage = async (e) => {
+		if (e.source !== window || typeof e.data !== 'object' || !e.data?.type?.startsWith('swe_')) return;
 		if (e.data.type === 'swe_updateSearchResult') {
 			if (e.data.data.error) {
 				setIsShowWarn(true)
@@ -337,11 +299,14 @@ export const Pop = () => {
 	}
 
 	const handleEnter = e => {
+		if (e.nativeEvent?.isComposing || e.keyCode === 229) {
+			return
+		}
 		if (e.key === 'Enter') {
 			if (e.shiftKey) {
-				goPrev()
+				stepTo(-1)
 			} else {
-				goNext()
+				stepTo(1)
 			}
 		}
 		if (e.key === 'Escape') {
@@ -349,53 +314,28 @@ export const Pop = () => {
 		}
 	}
 
-	const goPrev = async () => {
-		let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
-		const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
-		activeResult = activeResult || 0;
-		activeResult--;
-		if (activeResult <= 0) {
-			activeResult = sum
-		}
-		await chrome.storage.session.set({ activeResult: activeResult}, () => {
-			let temp = 0
-			for (let i in resultSum) {
-				temp += resultSum[i].sum
-				if (activeResult <= temp) {
-					setTabIndex(resultSum[i].frameId.toString())
-					break;
-				}
+	const stepTo = async (step) => {
+		const { activeResult = 0, resultSum = [] } = await chrome.storage.session.get(['activeResult', 'resultSum']);
+		const sum = resultSum.reduce((acc, cur) => acc + (cur.sum || 0), 0);
+		if (sum === 0) return;
+
+		let nextIndex = activeResult + step;
+		if (nextIndex > sum) nextIndex = 1;
+		if (nextIndex <= 0) nextIndex = sum;
+
+		await chrome.storage.session.set({ activeResult: nextIndex });
+
+		let accSum = 0;
+		for (const item of resultSum) {
+			accSum += item.sum;
+			if (nextIndex <= accSum) {
+				setTabIndex(item.frameId.toString());
+				break;
 			}
-
-			addToRecent()
-			setCurrent(activeResult)
-		})
-	}
-
-	const goNext = async () => {
-		let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
-		const sum = resultSum.map(r => r.sum).reduce((a,b) => a + b, 0);
-		if (sum === 0) {
-			return;
 		}
-		activeResult = activeResult || 0;
-		activeResult++;
-		if (activeResult > sum) {
-			activeResult = 1
-		}
-		chrome.storage.session.set({ activeResult: activeResult}, () => {
-			let temp = 0
-			for (let i in resultSum) {
-				temp += resultSum[i].sum
-				if (activeResult <= temp) {
-					setTabIndex(resultSum[i].frameId.toString())
-					break;
-				}
-			}
 
-			addToRecent()
-			setCurrent(activeResult)
-		})
+		addToRecent();
+		setCurrent(nextIndex);
 	}
 
 	const clearInput = () => {
@@ -418,7 +358,7 @@ export const Pop = () => {
 		if (!newRecent.includes(searchValue)) { // 没有就直接新增
 			newRecent.unshift(searchValue)
 			if (newRecent.length > 50) { // 不超过50条
-				newRecent.shift()
+				newRecent.pop()
 			}
 		} else { // 有就提到最新
 			const index = newRecent.findIndex(r => r === searchValue);
@@ -486,7 +426,13 @@ export const Pop = () => {
 								}}
 								className={`mainPanel ${colorMode} ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
 					>
-						<div id="searchWhateverPopup" ref={popContainerRef}>
+						<div
+							id="searchWhateverPopup"
+							ref={popContainerRef}
+							onKeyDown={handleKeyDown}
+							onKeyUp={e => { if (e.key !== 'Escape') e.stopPropagation(); }}
+							onKeyPress={e => { if (e.key !== 'Escape') e.stopPropagation(); }}
+						>
 							{
 								sweSetting.dragArea !== 'total' &&
 								<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
@@ -544,10 +490,10 @@ export const Pop = () => {
 													</Tooltip>
 												}
 											</div>
-											<Button type="text" className="w-5 !h-5 min-w-5 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={goPrev}>
+											<Button type="text" className="w-5 !h-5 min-w-5 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={() => stepTo(-1)}>
 												<UpArrowSvg className="w-3.5 h-3.5 dark:*:fill-[#fff]" />
 											</Button>
-											<Button type="text" className="w-5 !h-5 min-w-5 ml-1 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={goNext}>
+											<Button type="text" className="w-5 !h-5 min-w-5 ml-1 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={() => stepTo(1)}>
 												<DownArrowSvg className="w-3.5 h-3.5 dark:*:fill-[#fff]" />
 											</Button>
 											<div className="w-[1px] h-3.5 bg-[#dfdfdf] mx-1.5"></div>
