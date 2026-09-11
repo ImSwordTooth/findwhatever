@@ -384,7 +384,7 @@
 
 @layer base {
 	button {
-		@apply border-none;
+		@apply border-none bg-transparent p-0;
 	}
 	* {
 		box-sizing: border-box;

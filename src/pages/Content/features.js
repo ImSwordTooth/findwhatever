@@ -141,6 +141,11 @@ export const reCheckTree = () => {
 }
 
 export const closePop = () => {
+	if (!window.__swe_isDirectClosing && typeof window.__swe_requestClose === 'function') {
+		window.__swe_requestClose();
+		return;
+	}
+	window.__swe_isDirectClosing = false;
 	window.__swe_observer?.disconnect()
 	document.removeEventListener('keydown', window.handleCloseByEsc)
 	CSS.highlights.clear()

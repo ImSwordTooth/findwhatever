@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'preact/compat'
 import { Input } from '../../components/Input'
-import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, doSearchOutside, useDebounce, getSearchReg, debounce } from './features'
-import { Tooltip, Button, Spin } from 'antd'
+import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, useDebounce, debounce } from './features'
+import { Tooltip } from '../../components/Tooltip'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Rnd } from 'react-rnd'
 import { changeLanguage } from 'i18next'
@@ -33,6 +33,7 @@ export const Pop = () => {
 	const [ tabIndex, setTabIndex ] = useState('0') // tab 的key，值为 frame 的 id，默认为 0
 	const [ isHidePanel, setIsHidePanel ] = useState(false) // 是否把面板半透明
 	const [ isHidePanelTemporarily, setIsHidePanelTemporarily ] = useState(false) // 是否临时把面板半透明
+	const [ isExiting, setIsExiting ] = useState(false) // 退出动画进行中
 	const [ isReady, setIsReady ] = useState(false)
 	const [ recentList, setRecentList ] = useState([])
 	const [ fixList, setFixList ] = useState([])
@@ -44,6 +45,16 @@ export const Pop = () => {
 	const [ regexDebounceDuration, setRegexDebounceDuration ] = useState(1000)
 	const [ colorMode, setColorMode ] = useState('light')
 	const [ sweSetting, setSweSetting ] = useState({})
+
+	const handleCloseWithAnimation = () => {
+		if (isExiting) return
+		setIsExiting(true)
+	}
+
+	const executeDirectClose = () => {
+		window.__swe_isDirectClosing = true;
+		closePop();
+	};
 
 	const toggleOption = (key) => {
 		setOptions(prev => {
@@ -212,8 +223,12 @@ export const Pop = () => {
 			}
 		}
 
-		// 除 Escape 允许冒泡到顶层触发关闭外，面板内部所有常规击键全部就地阻断，彻底杜绝穿透到宿主网页
-		if (e.key !== "Escape") {
+		if (e.key === "Escape") {
+			e.preventDefault();
+			e.stopPropagation();
+			handleCloseWithAnimation();
+			return;
+		} else {
 			e.stopPropagation();
 		}
 	};
@@ -264,6 +279,24 @@ export const Pop = () => {
 		}
 	}, [isReady]);
 
+	useEffect(() => {
+		window.__swe_requestClose = handleCloseWithAnimation;
+		return () => {
+			if (window.__swe_requestClose === handleCloseWithAnimation) {
+				delete window.__swe_requestClose;
+			}
+		};
+	}, [isExiting]);
+
+	useEffect(() => {
+		if (isExiting) {
+			const timer = setTimeout(() => {
+				executeDirectClose();
+			}, 250);
+			return () => clearTimeout(timer);
+		}
+	}, [isExiting]);
+
 	const handleMessage = async (e) => {
 		if (e.source !== window || typeof e.data !== 'object' || !e.data?.type?.startsWith('swe_')) return;
 		if (e.data.type === 'swe_updateSearchResult') {
@@ -310,7 +343,10 @@ export const Pop = () => {
 			}
 		}
 		if (e.key === 'Escape') {
-			closePop()
+			e.preventDefault();
+			e.stopPropagation();
+			handleCloseWithAnimation();
+			return;
 		}
 	}
 
@@ -418,13 +454,24 @@ export const Pop = () => {
 						opacity: isHidePanel ? sweSetting.tempOpacity : (isHidePanelTemporarily ? sweSetting.tempOpacity : 1)
 					}}
 				>
-					<motion.div initial={{ opacity: 0, scale: 0.7,  }}
-								animate={{ opacity: 1, scale: 1, }}
-								transition={{
-									type: "spring",
-									duration: 0.3
-								}}
-								className={`mainPanel ${colorMode} ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
+					<motion.div
+						initial={{ opacity: 0, scale: 0.92, y: -6 }}
+						animate={isExiting ? { opacity: 0, scale: 0.94, y: -6 } : { opacity: 1, scale: 1, y: 0 }}
+						transition={isExiting ? {
+							duration: 0.16,
+							ease: [0.4, 0, 1, 1]
+						} : {
+							type: "spring",
+							damping: 24,
+							stiffness: 320,
+							mass: 0.8
+						}}
+						onAnimationComplete={() => {
+							if (isExiting) {
+								executeDirectClose();
+							}
+						}}
+						className={`mainPanel ${colorMode} ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
 					>
 						<div
 							id="searchWhateverPopup"
@@ -464,11 +511,11 @@ export const Pop = () => {
 										isShowRing={sweSetting.isShowRing ?? true}
 										textWidth={sweSetting.textWidth}
 									>
-										<div className="flex items-center bg-[rgba(255,255,255,0.9)] dark:bg-[rgba(58,58,58,0.9)] rounded-lg p-0.5 absolute right-[6px] top-[6px]">
+										<div className="flex items-center bg-[rgba(255,255,255,0.9)] dark:bg-[rgba(58,58,58,0.9)] rounded-lg p-0.5 absolute right-[6px] top-[6px] z-20">
 											<div className="absolute right-[calc(100%_+_4px)] top-0 bottom-0 flex items-center gap-[6px]">
 												{
 													isReg && !isDebounceOk &&
-													<div className="h-full flex items-center"><Spin size="small" indicator={<LoadingOutlined className="dark:text-[#fff]" style={{ fontSize: 12 }} spin />} /></div>
+													<div className="h-full flex items-center"><LoadingOutlined className="animate-spin text-[12px] text-[var(--swe-color-primary)] dark:text-[#fff]" /></div>
 												}
 												{
 													searchValue &&
@@ -477,9 +524,7 @@ export const Pop = () => {
 												{
 													isShowWarn &&
 													<Tooltip
-														arrowPointAtCenter={true}
 														placement="bottom"
-														getPopupContainer={(e) => e.parentElement}
 														title={
 															<div className="scale-90" style={{ padding: '4px 0' }}>
 																<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t(getErrorText())}</div>
@@ -490,17 +535,15 @@ export const Pop = () => {
 													</Tooltip>
 												}
 											</div>
-											<Button type="text" className="w-5 !h-5 min-w-5 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={() => stepTo(-1)}>
-												<UpArrowSvg className="w-3.5 h-3.5 dark:*:fill-[#fff]" />
-											</Button>
-											<Button type="text" className="w-5 !h-5 min-w-5 ml-1 cursor-pointer rounded-[6px] !inline-flex items-center justify-center" onClick={() => stepTo(1)}>
-												<DownArrowSvg className="w-3.5 h-3.5 dark:*:fill-[#fff]" />
-											</Button>
+											<button type="button" className="w-5 h-5 min-w-5 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all" onClick={() => stepTo(-1)}>
+												<UpArrowSvg className="w-3.5 h-3.5 shrink-0 dark:*:fill-[#fff]" />
+											</button>
+											<button type="button" className="w-5 h-5 min-w-5 ml-1 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all" onClick={() => stepTo(1)}>
+												<DownArrowSvg className="w-3.5 h-3.5 shrink-0 dark:*:fill-[#fff]" />
+											</button>
 											<div className="w-[1px] h-3.5 bg-[#dfdfdf] mx-1.5"></div>
 											<Tooltip
-												arrowPointAtCenter={true}
 												placement="bottom"
-												getPopupContainer={(e) => e.parentElement}
 												title={<div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div>}
 											>
 												<button
@@ -511,9 +554,7 @@ export const Pop = () => {
 												</button>
 											</Tooltip>
 											<Tooltip
-												arrowPointAtCenter={true}
 												placement="bottom"
-												getPopupContainer={(e) => e.parentElement}
 												title={<div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div>}
 											>
 												<button
@@ -524,9 +565,7 @@ export const Pop = () => {
 												</button>
 											</Tooltip>
 											<Tooltip
-												arrowPointAtCenter={true}
 												placement="bottom"
-												getPopupContainer={(e) => e.parentElement}
 												title={
 													<div className="scale-90" style={{ padding: '4px 0' }}>
 														<div>{t('正则表达式')} {getShortcutText('r')}</div>
@@ -542,9 +581,7 @@ export const Pop = () => {
 												</button>
 											</Tooltip>
 											<Tooltip
-												arrowPointAtCenter={true}
 												placement="bottomRight"
-												getPopupContainer={(e) => e.parentElement}
 												title={(
 													<div className="scale-90" style={{ padding: '4px 0' }}>
 														<div>{t('实时监测 DOM 变化')} {getShortcutText('d')}</div>
@@ -579,9 +616,9 @@ export const Pop = () => {
 								{
 									sweSetting.isShowClose &&
 									<div className="flex items-center">
-										<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer" onClick={closePop}>
-											<CloseSvg className="icon w-2.5 h-2.5" />
-										</Button>
+										<button type="button" className="w-6 h-6 min-w-0 ml-2 p-0 bg-transparent cursor-pointer inline-flex items-center justify-center rounded-full hover:bg-[rgba(255,0,0,0.12)] transition-colors text-[#ff4d4f]" onClick={handleCloseWithAnimation}>
+											<CloseSvg className="icon w-2.5 h-2.5 shrink-0" />
+										</button>
 									</div>
 								}
 							</div>
