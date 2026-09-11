@@ -33,10 +33,13 @@ if (!window.filteredRangeList) {
 			const retentionTime = swe_setting?.retentionTime ?? -1
 
 			if (retentionTime !== -1 && (!lastSearchTime || (now - lastSearchTime)/1000/60 >= retentionTime)) { // 应该重置
-				await chrome.storage.sync.set({ searchValue: selection || '', isMatchCase: false, isWord: false, isReg: false, isLive: true });
+				await Promise.all([
+					chrome.storage.local.set({ searchValue: selection || '' }),
+					chrome.storage.sync.set({ isMatchCase: false, isWord: false, isReg: false, isLive: true })
+				]);
 			} else {
 				if (selection) {
-					await chrome.storage.sync.set({ searchValue: selection });
+					await chrome.storage.local.set({ searchValue: selection });
 				}
 			}
 			// 创建新的弹出窗口

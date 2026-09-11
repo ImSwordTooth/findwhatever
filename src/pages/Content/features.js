@@ -154,7 +154,10 @@ export const closePop = () => {
 	chrome?.runtime?.sendMessage({
 		action: 'closeAction'
 	})
-	chrome.storage.sync.get(['recent', 'searchValue']).then(({ recent, searchValue }) => {
+	Promise.all([
+		chrome.storage.sync.get(['recent']),
+		chrome.storage.local.get(['searchValue'])
+	]).then(([{ recent }, { searchValue }]) => {
 		if (searchValue) {
 			const newRecent = Array.isArray(recent) ? recent.slice() : []
 			if (!newRecent.includes(searchValue)) { // 没有就直接新增到头部
@@ -263,7 +266,10 @@ const isDangerousReg = (reg) => {
 }
 
 export const getSearchReg = async () => {
-	const { searchValue, isMatchCase, isWord, isReg } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting'])
+	const [{ isMatchCase, isWord, isReg }, { searchValue }] = await Promise.all([
+		chrome.storage.sync.get(['isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting']),
+		chrome.storage.local.get(['searchValue'])
+	])
 	if (!searchValue) {
 		return { regContent: '', error: false, errorType: '' }
 	}
@@ -305,14 +311,15 @@ export const getSearchReg = async () => {
 export const doSearchOutside = async (regContent, isAuto = false) => {
 	CSS.highlights.clear() // 清除所有高亮
 
-	const { searchValue, isMatchCase } = await chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting'])
+	const [{ isMatchCase }, { searchValue }] = await Promise.all([
+		chrome.storage.sync.get(['isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting']),
+		chrome.storage.local.get(['searchValue'])
+	])
 	const matchText = []
 
 	if (searchValue && window.allNodes) { // 如果有搜索词
 
-		if (window.filteredRangeList) {
-			window.filteredRangeList.value = [] // 清除之前搜索到的匹配结果的 DOM 集合
-		}
+		const matchedDoms = []
 
 		// 根据筛选项，设置正则表达式
 		let reg = null
@@ -355,14 +362,21 @@ export const doSearchOutside = async (regContent, isAuto = false) => {
 					if (targetDOM instanceof ShadowRoot || targetDOM.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
 						targetDOM = targetDOM.host
 					}
-					window.filteredRangeList.value = [...window.filteredRangeList.value, targetDOM]
+					matchedDoms.push(targetDOM)
 					return range
 				}
 				return null
 			}).filter(Boolean)
 		}).flat()
+
+		if (window.filteredRangeList) {
+			window.filteredRangeList.value = matchedDoms
+		}
 	} else {
 		window.rangesFlat = []
+		if (window.filteredRangeList) {
+			window.filteredRangeList.value = []
+		}
 	}
 
 	const searchResultsHighlight = new Highlight(...window.rangesFlat)

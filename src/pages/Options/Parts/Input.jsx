@@ -11,13 +11,13 @@ export const Input = () => {
 	const { t } = useTranslation()
 
 	useEffect(() => {
-		chrome.storage.sync.get(['searchValue']).then(res => {
+		chrome.storage.local.get(['searchValue']).then(res => {
 			setLastValue(res.searchValue)
 		})
 	}, []);
 
 	const clearLast = () => {
-		chrome.storage.sync.set({ searchValue: '' }).then(() => {
+		chrome.storage.local.set({ searchValue: '' }).then(() => {
 			setLastValue('')
 			message.success('清除成功')
 		})

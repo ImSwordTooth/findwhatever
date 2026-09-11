@@ -21,10 +21,13 @@ import WarnSvg from '../../assets/svg/warn.svg'
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
 	const [ searchValue, setSearchValue ] = useState('') // 搜索词
-	const [ isMatchCase, setIsMatchCase ] = useState(false) // 是否大小写敏感
-	const [ isWord, setIsWord ] = useState(false) // 是否为整个单词
-	const [ isReg, setIsReg ] = useState(false) // 是否为正则模式
-	const [ isLive, setIsLive ] = useState(false) // 是否实时监听DOM
+	const [ options, setOptions ] = useState({
+		isMatchCase: false, // 是否大小写敏感
+		isWord: false,      // 是否为整个单词
+		isReg: false,       // 是否为正则模式
+		isLive: false       // 是否实时监听DOM
+	})
+	const { isMatchCase, isWord, isReg, isLive } = options
 	const [ current, setCurrent ] = useState(0) // 当前结果的下标
 	const [ total, setTotal ] = useState([]) // 当前结果，格式为 { sum, frameId }
 	const [ tabIndex, setTabIndex ] = useState('0') // tab 的key，值为 frame 的 id，默认为 0
@@ -42,16 +45,20 @@ export const Pop = () => {
 	const [ colorMode, setColorMode ] = useState('light')
 	const [ sweSetting, setSweSetting ] = useState({})
 
+	const toggleOption = (key) => {
+		setOptions(prev => {
+			const nextVal = !prev[key]
+			chrome.storage.sync.set({ [key]: nextVal }).catch(() => null)
+			return { ...prev, [key]: nextVal }
+		})
+	}
+
 	const {debouncedValue, isDebounceOk} = useDebounce(searchValue, isReg ? regexDebounceDuration : debounceDuration, !isReady)
 	const { t } = useTranslation()
 
 	const popContainerRef = useRef(null)
 	const searchInputRef = useRef(null)
 	const isFirstRender = useRef(true);
-	const optionsRef = useRef({ isWord, isMatchCase, isReg, isLive });
-	useEffect(() => {
-		optionsRef.current = { isWord, isMatchCase, isReg, isLive };
-	}, [isWord, isMatchCase, isReg, isLive]);
 
 	const handleUpdate = () => {
 		reCheckTree().then(() => {
@@ -70,15 +77,17 @@ export const Pop = () => {
 		const init = async () => {
 			const [ sessionStorage, syncStorage, locStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
-				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive', 'recent', 'fix', 'swe_setting']),
-				chrome.storage.local.get(['x', 'y'])
+				chrome.storage.sync.get(['isMatchCase', 'isWord', 'isReg', 'isLive', 'recent', 'fix', 'swe_setting']),
+				chrome.storage.local.get(['x', 'y', 'searchValue'])
 			])
 			setFrames(sessionStorage.frames)
-			setSearchValue(syncStorage.searchValue)
-			setIsMatchCase(syncStorage.isMatchCase)
-			setIsWord(syncStorage.isWord)
-			setIsReg(syncStorage.isReg)
-			setIsLive(syncStorage.isLive)
+			setSearchValue(locStorage.searchValue || '')
+			setOptions({
+				isMatchCase: Boolean(syncStorage.isMatchCase),
+				isWord: Boolean(syncStorage.isWord),
+				isReg: Boolean(syncStorage.isReg),
+				isLive: Boolean(syncStorage.isLive)
+			})
 			setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 400))
 			setY(locStorage.y || parseInt(window.innerHeight * 0.1))
 			setRecentList(syncStorage.recent || [])
@@ -130,14 +139,14 @@ export const Pop = () => {
 				dom.style.setProperty('--swe-color-primary', syncStorage.swe_setting?.primaryColor_dark || '#44d62c')
 			}
 
-			if (window.innerHeight < syncStorage.y + 94 || window.innerWidth < locStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置(右下)
+			if (window.innerHeight < locStorage.y + 94 || window.innerWidth < locStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置(右下)
 				setX(parseInt(window.innerWidth * 0.9 - 400))
 				setY(parseInt(window.innerHeight * 0.1))
 
-				if (window.screen.height < syncStorage.y + 94 || window.screen.width < locStorage.x + 400) { // 继续判断，如果在当前设备都不能完全显示，重置位置
+				if (window.screen.height < locStorage.y + 94 || window.screen.width < locStorage.x + 400) { // 继续判断，如果在当前设备都不能完全显示，重置位置
 					chrome.storage.local.remove(['x', 'y'])
 				}
-			} else if (syncStorage.y < 0 || locStorage.x < 0) { // 如果在当前视口不能完全显示(左上)，重置位置并直接删除存储
+			} else if (locStorage.y < 0 || locStorage.x < 0) { // 如果在当前视口不能完全显示(左上)，重置位置并直接删除存储
 				setX(parseInt(window.innerWidth * 0.9 - 400))
 				setY(parseInt(window.innerHeight * 0.1))
 				chrome.storage.local.remove(['x', 'y'])
@@ -194,25 +203,25 @@ export const Pop = () => {
 						if (e.key === "c" || e.key === "C") {
 							e.preventDefault();
 							e.stopPropagation();
-							setIsMatchCase(prev => !prev)
+							toggleOption('isMatchCase');
 							return;
 						}
 						if (e.key === "w" || e.key === "W") {
 							e.preventDefault();
 							e.stopPropagation();
-							setIsWord(prev => !prev)
+							toggleOption('isWord');
 							return;
 						}
 						if (e.key === "d" || e.key === "D") {
 							e.preventDefault();
 							e.stopPropagation();
-							setIsLive(prev => !prev)
+							toggleOption('isLive');
 							return;
 						}
 						if (e.key === "r" || e.key === "R") {
 							e.preventDefault();
 							e.stopPropagation();
-							setIsReg(prev => !prev)
+							toggleOption('isReg');
 							return;
 						}
 					}
@@ -272,14 +281,7 @@ export const Pop = () => {
 		if (!isReady) {
 			return
 		}
-		const searchParams = {
-			searchValue: debouncedValue,
-			isWord,
-			isMatchCase,
-			isReg,
-			isLive
-		};
-		chrome.storage.sync.set(searchParams, () => {
+		chrome.storage.local.set({ searchValue: debouncedValue }, () => {
 			chrome?.runtime?.sendMessage({
 				action: 'search',
 				data: {
@@ -313,16 +315,19 @@ export const Pop = () => {
 			}
 		}
 		if (e.data.type === 'swe_updateSettings') {
-			const [ sessionStorage, syncStorage ] = await Promise.all([
+			const [ sessionStorage, syncStorage, locStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
-				chrome.storage.sync.get(['searchValue', 'isMatchCase', 'isWord', 'isReg', 'isLive'])
+				chrome.storage.sync.get(['isMatchCase', 'isWord', 'isReg', 'isLive']),
+				chrome.storage.local.get(['searchValue'])
 			])
 			setFrames(sessionStorage.frames)
-			setSearchValue(syncStorage.searchValue)
-			setIsMatchCase(syncStorage.isMatchCase)
-			setIsWord(syncStorage.isWord)
-			setIsReg(syncStorage.isReg)
-			setIsLive(syncStorage.isLive)
+			setSearchValue(locStorage.searchValue || '')
+			setOptions({
+				isMatchCase: Boolean(syncStorage.isMatchCase),
+				isWord: Boolean(syncStorage.isWord),
+				isReg: Boolean(syncStorage.isReg),
+				isLive: Boolean(syncStorage.isLive)
+			})
 		}
 	}
 
@@ -343,11 +348,6 @@ export const Pop = () => {
 			closePop()
 		}
 	}
-
-	const handleIsMatchCaseChange = () => setIsMatchCase(!isMatchCase)
-	const handleIsWordChange = () => setIsWord(!isWord)
-	const handleIsRegChange = () => setIsReg(!isReg)
-	const handleIsLiveChange = () => setIsLive(!isLive)
 
 	const goPrev = async () => {
 		let { activeResult, resultSum } = await chrome.storage.session.get(['activeResult', 'resultSum']);
@@ -399,10 +399,9 @@ export const Pop = () => {
 	}
 
 	const clearInput = () => {
-		chrome.storage.sync.set({ searchValue: '' }).then(() => {
-			setSearchValue('')
-			searchInputRef.current.focus()
-		})
+		setSearchValue('')
+		searchInputRef.current?.focus()
+		chrome.storage.local.set({ searchValue: '' }).catch(() => null)
 	}
 
 	const handleDragStop = (e, d) => {
@@ -436,7 +435,13 @@ export const Pop = () => {
 		e.stopPropagation()
 		setSearchValue(text)
 		if (isReg) {
-			setIsReg(true)
+			setOptions(prev => {
+				if (!prev.isReg) {
+					chrome.storage.sync.set({ isReg: true }).catch(() => null)
+					return { ...prev, isReg: true }
+				}
+				return prev
+			})
 		}
 	}
 
@@ -554,7 +559,7 @@ export const Pop = () => {
 											>
 												<button
 													className={`normalButton ${isMatchCase ? 'activeButton' : ''}`}
-													onClick={handleIsMatchCaseChange}
+													onClick={() => toggleOption('isMatchCase')}
 												>
 													<span className="text-[11px] select-none">Cc</span>
 												</button>
@@ -567,7 +572,7 @@ export const Pop = () => {
 											>
 												<button
 													className={`normalButton ${isWord ? 'activeButton' : ''}`}
-													onClick={handleIsWordChange}
+													onClick={() => toggleOption('isWord')}
 												>
 													<span className="text-[11px] select-none">W</span>
 												</button>
@@ -585,7 +590,7 @@ export const Pop = () => {
 											>
 												<button
 													className={`normalButton ${isReg ? 'activeButton' : ''}`}
-													onClick={handleIsRegChange}
+													onClick={() => toggleOption('isReg')}
 												>
 													<span className="text-[11px] select-none">.*</span>
 												</button>
@@ -603,7 +608,7 @@ export const Pop = () => {
 											>
 												<div
 													className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center ml-1 dark:[path]:fill-[#fff] ${isLive ? 'activeLive' : ''}`}
-													onClick={handleIsLiveChange}
+													onClick={() => toggleOption('isLive')}
 												>
 													<svg className="w-4 h-4 will-change-transform" viewBox="0 0 1024 1024" version="1.1"
 														 xmlns="http://www.w3.org/2000/svg" width="32" height="32">
