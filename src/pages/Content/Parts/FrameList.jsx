@@ -1,64 +1,67 @@
-import React, {useMemo} from 'preact/compat'
+import React, { useMemo } from 'preact/compat'
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 
 export const FrameList = (props) => {
-	const { frames, total, tabIndex, updateCurrent, updateTabIndex } = props
+	const { frames = [], total = [], tabIndex = '0', updateCurrent, updateTabIndex } = props
 
 	const { t } = useTranslation()
 	const totalMap = useMemo(() => {
-		return new Map(total.map(item => [item.frameId.toString(), item.sum]))
+		if (!Array.isArray(total)) return new Map()
+		return new Map(total.map(item => [item?.frameId?.toString(), item?.sum || 0]))
 	}, [total])
+
 	const totalSum = useMemo(() => {
-		return total.reduce((acc, b) => acc + b.sum, 0);
-	}, [total]);
+		if (!Array.isArray(total)) return 0
+		return total.reduce((acc, b) => acc + (b?.sum || 0), 0)
+	}, [total])
 
-	const mainFrameSum = totalMap.get('0') || 0;
-	const activeFrameSum = totalMap.get(tabIndex.toString()) || 0;
-
+	const mainFrameSum = totalMap.get('0') || 0
+	const activeFrameSum = totalMap.get(tabIndex.toString()) || 0
 
 	const handleTabChange = async (frameid) => {
-		if (!updateCurrent) {
+		if (!updateCurrent || !updateTabIndex) {
 			return
 		}
 
 		if (totalSum > 0) {
-			const { resultSum } = await chrome.storage.session.get(['resultSum'])
+			const { resultSum = [] } = await chrome.storage.session.get(['resultSum'])
 			updateTabIndex(frameid)
 
-			let currentNum = 0;
+			let currentNum = 0
 			for (let item of resultSum) {
-				if (item.frameId.toString() !== frameid.toString()) {
-					currentNum += item.sum;
+				if (item?.frameId?.toString() !== frameid.toString()) {
+					currentNum += (item?.sum || 0)
 				} else {
-					break;
+					break
 				}
 			}
-			const targetIndex = currentNum + 1;
+			const targetIndex = currentNum + 1
 			await chrome.storage.session.set({ activeResult: targetIndex })
 			updateCurrent(targetIndex)
 		}
 	}
 
 	const nextFrame = () => {
-		const first = total.slice(1).find(f => f.sum !== 0)
-		if (tabIndex === '0') {
-			if (first) {
-				handleTabChange(first.frameId.toString())
-			}
-		} else {
-			const currentIndex = frames.findIndex(f => f.frameId.toString() === tabIndex)
-			const nextFrame = total.slice(currentIndex+1).find(f => f.sum !== 0)
-			if (nextFrame) {
-				handleTabChange(nextFrame.frameId.toString())
-			} else {
-				if (first) {
-					handleTabChange(first.frameId.toString())
-				}
-			}
+		// 提取除主页面外所有存在有效命中结果的子 iframe
+		const validChildFrames = (frames || []).slice(1).filter(f => {
+			const sum = totalMap.get(f?.frameId?.toString()) || 0
+			return sum > 0
+		})
 
+		if (validChildFrames.length === 0) return
+
+		const currentIndex = validChildFrames.findIndex(f => f?.frameId?.toString() === tabIndex.toString())
+		if (currentIndex === -1 || currentIndex === validChildFrames.length - 1) {
+			// 当前在主页面或在最后一个有结果的子 iframe 时，循环切换至第一个有效子 iframe
+			handleTabChange(validChildFrames[0].frameId.toString())
+		} else {
+			// 顺位切换到下一个有结果的子 iframe
+			handleTabChange(validChildFrames[currentIndex + 1].frameId.toString())
 		}
 	}
+
+	const activeFrameIndex = Math.max(0, frames.findIndex(f => f?.frameId?.toString() === tabIndex.toString()))
 
 	return (
 		<div className="flex items-center border-solid border-0 border-b border-[rgba(232,232,232,0.8)] dark:border-[rgba(93,93,93,0.8)] h-full flex-1 mr-1">
@@ -68,31 +71,31 @@ export const FrameList = (props) => {
 					{mainFrameSum}
 				</span>
 				{
-					total.find(a => a.frameId === 0)?.sum !== 0
-					?
-					(
-						tabIndex === '0'
-							? <div className="pageTabStatusBar bg-[var(--swe-color-primary)]" />
-							: <div className="pageTabStatusBar bg-[#e0e0e0] dark:bg-[#555]" />
-					)
+					mainFrameSum !== 0
+						? (
+							tabIndex.toString() === '0'
+								? <div className="pageTabStatusBar bg-[var(--swe-color-primary)]" />
+								: <div className="pageTabStatusBar bg-[#e0e0e0] dark:bg-[#555]" />
+						)
 						: <div className="pageTabStatusBar" style={{ height: '1px' }} />
-
 				}
 			</div>
 
 			{
 				frames?.length > 1 &&
 				<div className="flex items-center text-xs select-none cursor-pointer" onClick={nextFrame}>
-					<div className=" relative">
+					<div className="relative">
 						<span className="scale-90 inline-block mr-1 text-[#808080]">iframe</span>
-						<span className="font-mono text-[#808080] text-[12px] inline-block scale-90 origin-left">{frames.findIndex(f => f.frameId == tabIndex)}/{frames.length - 1}</span>
+						<span className="font-mono text-[#808080] text-[12px] inline-block scale-90 origin-left">
+							{activeFrameIndex}/{frames.length - 1}
+						</span>
 
 						<div className="flex items-center text-xs absolute w-full -bottom-[4px]">
 							{
 								frames.slice(1).map((frame) => {
-									const frameId = frame.frameId.toString();
-									const frameSum = totalMap.get(frameId) || 0;
-									const isActive = frameId === tabIndex;
+									const frameId = frame?.frameId?.toString()
+									const frameSum = totalMap.get(frameId) || 0
+									const isActive = frameId === tabIndex.toString()
 
 									if (frameSum !== 0) {
 										if (isActive) {
@@ -108,7 +111,7 @@ export const FrameList = (props) => {
 						</div>
 					</div>
 					{
-						tabIndex !== '0' &&
+						tabIndex.toString() !== '0' &&
 						<span className="bg-[#f4f4f4] dark:bg-[#282828] dark:text-[#b7b4b4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
 							{activeFrameSum}
 						</span>
@@ -116,7 +119,6 @@ export const FrameList = (props) => {
 				</div>
 			}
 		</div>
-
 	)
 }
 

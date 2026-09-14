@@ -486,12 +486,20 @@ export const Pop = () => {
 									<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100 relative before:content-[''] before:px-5 before:py-1 before:w-full before:absolute before:-top-1 before:h-[3px] before:box-content before:-left-5 before:-left-[20px]"/>
 								</div>
 							}
+							<ExtraArea
+								isHidePanel={isHidePanel}
+								isHidePanelTemporarily={isHidePanelTemporarily}
+								isShowSetting={sweSetting.isShowSetting ?? true}
+								isShowOpacity={sweSetting.isShowOpacity ?? true}
+								isShowStatus={sweSetting.isShowStatus ?? true}
+								updateIsHidePanel={setIsHidePanel}
+								updateIsHidePanelTemporarily={setIsHidePanelTemporarily}
+							/>
 							<div className="flex items-center justify-between h-[24px] border-b-1 border-[#f5f5f5] mb-1">
 								<FrameList tabIndex={tabIndex} frames={frames} total={total} updateCurrent={setCurrent} updateTabIndex={setTabIndex} />
 								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
 									<FindResult total={total} current={current} isShowResultText={sweSetting.isShowResultText} />
 								</div>
-								<ExtraArea isHidePanel={isHidePanel} isHidePanelTemporarily={isHidePanelTemporarily} isShowSetting={sweSetting.isShowSetting ?? true} isShowOpacity={sweSetting.isShowOpacity ?? true} isShowStatus={sweSetting.isShowStatus ?? true} updateIsHidePanel={setIsHidePanel} updateIsHidePanelTemporarily={setIsHidePanelTemporarily} />
 							</div>
 							<div className="flex items-center w-full">
 								<div className="swe_search relative">

@@ -12,6 +12,12 @@ export const ExtraArea = (props) => {
 	const { t } = useTranslation()
 
 	useEffect(() => {
+		chrome.storage.session.get(['visibleStatus']).then((res) => {
+			if (!window.isFrame && res?.visibleStatus !== undefined) {
+				setVisibleStatus(res.visibleStatus)
+			}
+		}).catch(() => null)
+
 		chrome.storage.onChanged.addListener(handleSessionChange)
 
 		return () => {
@@ -47,7 +53,7 @@ export const ExtraArea = (props) => {
 	}
 
 	return (
-		<div className="inline-flex items-center absolute right-[12px] top-[6px] gap-[6px]">
+		<div className="inline-flex items-center absolute right-3 top-1.5 gap-[6px]">
 			{
 				isShowStatus && visibleStatus &&
 				<div className="flex items-center text-xs text-[#a0a0a0] cursor-grabbing opacity-60 h-[12px]">

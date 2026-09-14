@@ -472,39 +472,116 @@ const createRangeFromSegments = (segments, start, end) => {
   </div>
 </section>
 
-<!-- 测试场景 6: 多 iframe 穿透检索 -->
+<!-- 测试场景 6: 多 iframe 穿透检索与顶栏轮换测试 -->
 <section id="sec-iframes">
-  <h2>6. 嵌套多 iframe 检索与底栏状态色块测试</h2>
-  <p>测试目标：验证是否能穿透 iframe，并在插件底栏看到对应的 iframe 数量与跳转色块指示。</p>
+  <h2>6. 嵌套多 iframe 检索与 FrameList 顶栏状态指示条测试</h2>
+  <p>测试目标：验证是否能穿透单层与多层嵌套 iframe，并在插件顶栏实时看到对应的 iframe 数量（如 <code>iframe 1/6</code>）、微型多段状态色块，以及点击时的顺位平滑轮换跳转。</p>
 
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+  <!-- 全 Frame 联动一键测试区域 -->
+  <div class="test-box" style="background: #f0fdf4; border-color: #86efac; margin-bottom: 20px;">
+    <h4 style="margin: 0 0 8px; color: #166534;">🎯 全 Frame 联动与 FrameList 轮换测试入口：</h4>
+    <p style="margin: 0 0 8px; font-size: 14px; color: #374151;">
+      主页面与下方的 A、B、D、嵌套 F 均埋设了相同关键词：<code>SWE_FRAME_GLOBAL_TEST</code>
+      <button class="copy-btn" onclick="copyText('SWE_FRAME_GLOBAL_TEST', this)">复制关键词</button>
+    </p>
+    <p style="margin: 0; font-size: 12px; color: #4b5563;">
+      👉 <strong>验证步骤</strong>：复制并在插件中检索此词。观察浮窗顶栏：<br>
+      1. 左侧是否出现 <code>iframe 0/6</code> 及多段分段状态条；<br>
+      2. 点击 iframe 按钮，是否能在各有效 iframe 之间<strong>自动跳过无命中的 iframe C</strong> 进行环形顺位跳转；<br>
+      3. 底部小色条是否精准联动高亮主题色。
+    </p>
+    <div style="margin-top: 8px; font-size: 13px;">
+      主页面当前埋点：<code>SWE_FRAME_GLOBAL_TEST</code>（当前页面命中项）
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+    <!-- iframe A: 常规独立文档 -->
     <div>
-      <p><strong>iframe A (独立文档)：</strong></p>
+      <p style="margin: 0 0 6px;"><strong>iframe A (独立文档 1)：</strong></p>
       <iframe id="iframe-a" srcdoc="
         <!DOCTYPE html>
         <html>
         <body style='font-family: sans-serif; padding: 15px; background: #fffbe6; color: #795548;'>
-          <h4>这是 iframe A 内部</h4>
-          <p>测试词：<code>IFRAME_TARGET_ALPHA</code></p>
-          <p>跨标签测试：<span>嵌入</span><b>框架</b><i>内部</i></p>
+          <h4 style='margin-top:0;'>这是 iframe A 内部</h4>
+          <p>专属测试词：<code>IFRAME_TARGET_ALPHA</code></p>
+          <p>全域测试词：<span>SWE_</span><b>FRAME_</b><i>GLOBAL_TEST</i></p>
         </body>
         </html>
-      " style="width: 100%; height: 150px; border: 1px solid #ffe58f; border-radius: 6px;"></iframe>
+      " style="width: 100%; height: 160px; border: 1px solid #ffe58f; border-radius: 6px;"></iframe>
     </div>
 
+    <!-- iframe B: 常规独立文档 -->
     <div>
-      <p><strong>iframe B (独立文档)：</strong></p>
+      <p style="margin: 0 0 6px;"><strong>iframe B (独立文档 2)：</strong></p>
       <iframe id="iframe-b" srcdoc="
         <!DOCTYPE html>
         <html>
         <body style='font-family: sans-serif; padding: 15px; background: #e6f7ff; color: #0050b3;'>
-          <h4>这是 iframe B 内部</h4>
-          <p>测试词：<code>IFRAME_TARGET_BETA</code></p>
-          <p>跨标签测试：<span>独立</span><b>沙箱</b><i>文档</i></p>
+          <h4 style='margin-top:0;'>这是 iframe B 内部</h4>
+          <p>专属测试词：<code>IFRAME_TARGET_BETA</code></p>
+          <p>全域测试词：<span>SWE_</span><b>FRAME_</b><i>GLOBAL_TEST</i></p>
         </body>
         </html>
-      " style="width: 100%; height: 150px; border: 1px solid #91d5ff; border-radius: 6px;"></iframe>
+      " style="width: 100%; height: 160px; border: 1px solid #91d5ff; border-radius: 6px;"></iframe>
     </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+    <!-- iframe C: 空结果/噪音 iframe (用于测试 FrameList 自动跳过无命中帧) -->
+    <div>
+      <p style="margin: 0 0 6px;"><strong>iframe C (无结果空帧 - 测试跳过算法)：</strong></p>
+      <iframe id="iframe-c" srcdoc="
+        <!DOCTYPE html>
+        <html>
+        <body style='font-family: sans-serif; padding: 15px; background: #fafafa; color: #8c8c8c;'>
+          <h4 style='margin-top:0; color:#595959;'>这是 iframe C 内部 (零命中)</h4>
+          <p>本子文档故意<strong>不包含</strong>任何通用测试词，用于测试当点击顶栏 iframe 轮换时，插件能否智能<strong>跳过</strong>本无结果帧，直接进入下一个有结果的 iframe。</p>
+        </body>
+        </html>
+      " style="width: 100%; height: 160px; border: 1px dashed #d9d9d9; border-radius: 6px;"></iframe>
+    </div>
+
+    <!-- iframe D: 高频多命中 iframe -->
+    <div>
+      <p style="margin: 0 0 6px;"><strong>iframe D (多命中密集子文档)：</strong></p>
+      <iframe id="iframe-d" srcdoc="
+        <!DOCTYPE html>
+        <html>
+        <body style='font-family: sans-serif; padding: 15px; background: #f6ffed; color: #389e0d;'>
+          <h4 style='margin-top:0;'>这是 iframe D 内部</h4>
+          <p>专属测试词：<code>IFRAME_TARGET_DELTA</code></p>
+          <p>全域测试词 1：<code>SWE_FRAME_GLOBAL_TEST</code></p>
+          <p>全域测试词 2：<code>SWE_FRAME_GLOBAL_TEST</code> (次级命中)</p>
+        </body>
+        </html>
+      " style="width: 100%; height: 160px; border: 1px solid #b7eb8f; border-radius: 6px;"></iframe>
+    </div>
+  </div>
+
+  <!-- 多层深层嵌套 iframe: 父级嵌入子级 iframe -->
+  <div>
+    <p style="margin: 0 0 6px;"><strong>iframe E 嵌套 iframe F (二级多层嵌套文档)：</strong></p>
+    <iframe id="iframe-parent" srcdoc="
+      <!DOCTYPE html>
+      <html>
+      <body style='font-family: sans-serif; padding: 12px; background: #fdf2f8; color: #9d174d;'>
+        <h4 style='margin:0 0 4px;'>👑 这是父级 iframe E</h4>
+        <p style='margin:0 0 8px; font-size:13px;'>父级测试词：<code>NESTED_PARENT_FRAME_TARGET</code></p>
+        <!-- 二级嵌套 iframe F -->
+        <iframe id='iframe-child' srcdoc=&quot;
+          <!DOCTYPE html>
+          <html>
+          <body style='font-family: sans-serif; padding: 10px; background: #fdf4ff; color: #86198f;'>
+            <h5 style='margin:0 0 4px;'>👶 这是二级深层嵌套的 iframe F</h5>
+            <p style='margin:0; font-size:12px;'>二级嵌套测试词：<code>NESTED_CHILD_FRAME_TARGET</code></p>
+            <p style='margin:4px 0 0; font-size:12px;'>全域测试词：<code>SWE_FRAME_GLOBAL_TEST</code></p>
+          </body>
+          </html>
+        &quot; style='width: 100%; height: 90px; border: 1px solid #f0abfc; border-radius: 4px;'></iframe>
+      </body>
+      </html>
+    " style="width: 100%; height: 210px; border: 1px solid #fbcfe8; border-radius: 6px;"></iframe>
   </div>
 </section>
 
