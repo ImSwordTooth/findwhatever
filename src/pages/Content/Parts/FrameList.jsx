@@ -1,4 +1,4 @@
-import React, { useMemo } from 'preact/compat'
+import { useMemo } from 'preact/compat'
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 

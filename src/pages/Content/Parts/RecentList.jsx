@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'preact/compat'
+import { useRef, useEffect } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import { Tooltip } from '../../../components/Tooltip'

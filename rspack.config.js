@@ -117,9 +117,8 @@ const config = {
 						},
 						transform: {
 							react: {
-								runtime: 'classic',
-								pragma: 'React.createElement',
-								pragmaFrag: 'React.Fragment',
+								runtime: 'automatic',
+								importSource: 'preact',
 								throwIfNamespace: false,
 								development: isDevelopment,
 								useBuiltins: false,

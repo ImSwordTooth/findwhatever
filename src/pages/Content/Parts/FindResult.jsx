@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'preact/compat'
+import { useEffect, useMemo, useState, useRef } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
 import Proptypes from 'prop-types'
 import { animate, motion, useMotionValue, useTransform } from 'motion/react'

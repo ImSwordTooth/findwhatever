@@ -1,9 +1,7 @@
-import React from 'preact/compat';
 import { createRoot } from 'preact/compat/client';
 import { Pop } from './Pop'
 import '../i18nnext'
 import styles from '../../global.css'
-import CoverAntdStyle from '../../coverAntd.css'
 
 const CONTAINER_ID = '__swe_container';
 let containerDiv = null;
@@ -34,7 +32,6 @@ export const createOrUpdatePopup = (props) => {
 		<>
 			<Pop {...props} />
 			<style type="text/css">{styles[0][1].toString()}</style>
-			<style type="text/css">{CoverAntdStyle[0][1].toString()}</style>
 		</>
 	);
 };

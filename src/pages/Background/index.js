@@ -1,53 +1,57 @@
+// 在 Service Worker 顶层设置 session storage 访问权限，确保浏览器重启或扩展更新后内容脚本常态具备读取权限
+chrome.storage?.session?.setAccessLevel?.({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' }).catch(() => null);
+
 const getVisibleFrames = async (tabId, frames) => {
-	const promises = frames.map(f => {
-		return chrome.scripting.executeScript({
-			target: { tabId, frameIds: [f.frameId] },
-			func: () => {
-				function hasVisibleText() {
-					const treeWalker = document.createTreeWalker(
-						document.body,
-						NodeFilter.SHOW_TEXT
-					);
+	if (!Array.isArray(frames) || frames.length === 0) return [];
 
-					while (treeWalker.nextNode()) {
-						const text = treeWalker.currentNode.textContent.trim();
-						const parent = treeWalker.currentNode.parentElement; // 检查文本节点是否在可见元素内
+	const topFrame = frames.find(f => f.frameId === 0);
+	const childFrames = frames.filter(f => f.frameId !== 0);
 
-						if (text.length > 0 &&
-							parent.tagName !== 'SCRIPT' &&
-							parent.tagName !== 'STYLE' &&
-							parent.tagName !== 'NOSCRIPT') {
-							return true;
-						}
-					}
-					return false;
-				}
-				return hasVisibleText()
-			}
-		})
-	})
-
-	const results = await Promise.all(promises);
-
-	let visibleFrames = [];
-	results.forEach((res, index) => {
-		if (res && res[0] && res[0].result) {
-			visibleFrames.push(frames[index]);
-		}
-	});
-
-	const index = visibleFrames.findIndex(r => r.frameId === 0);
-	if (index > 0) {
-		visibleFrames.unshift(visibleFrames.splice(index, 1)[0]);
+	// 如果没有子 iframe，直接返回顶层 frame
+	if (childFrames.length === 0) {
+		return topFrame ? [topFrame] : [];
 	}
-	return visibleFrames;
+
+	// 一次性单次 IPC 调用探测所有子 frame，改用浏览器布局计算的 innerText 与视口尺寸判定真实可见性
+	const childResults = await chrome.scripting.executeScript({
+		target: { tabId, frameIds: childFrames.map(f => f.frameId) },
+		func: () => {
+			if (window.innerWidth === 0 || window.innerHeight === 0) return false;
+			return Boolean(document.body?.innerText?.trim?.()?.length > 0);
+		}
+	}).catch(() => null);
+
+	const validChildFrameIds = new Set(
+		(childResults || [])
+			.filter(r => r && r.result)
+			.map(r => r.frameId)
+	);
+
+	const visibleChildFrames = childFrames.filter(f => validChildFrameIds.has(f.frameId));
+	return topFrame ? [topFrame, ...visibleChildFrames] : visibleChildFrames;
 }
+
+const isRestrictedUrl = (url) => {
+	if (!url) return true;
+	return (
+		url.startsWith('chrome://') ||
+		url.startsWith('chrome-extension://') ||
+		url.startsWith('edge://') ||
+		url.startsWith('about:') ||
+		url.startsWith('devtools://')
+	);
+};
 
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
-    const frames = (await chrome.webNavigation.getAllFrames({ tabId: tab.id })).filter(a => !a.errorOccurred); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
+	if (!tab?.id || isRestrictedUrl(tab?.url)) {
+		return;
+	}
 
-	const visibleFrames = await getVisibleFrames(tab.id, frames.sort((a, b) => a.frameId > b.frameId ? 1 : -1 ))
+	const rawFrames = await chrome.webNavigation.getAllFrames({ tabId: tab.id }).catch(() => null)
+	const frames = (rawFrames || []).filter(a => !a.errorOccurred); // 获取当前标签页下的所有 iframe，去除无效的，去除报错的
+
+	const visibleFrames = await getVisibleFrames(tab.id, frames.sort((a, b) => a.frameId - b.frameId))
 	const resultSum = visibleFrames.map((f) => ({  // 提前定义好结构，有助于后续操作
 		frameId: f.frameId,
 		sum: 0,
@@ -61,124 +65,120 @@ chrome.action.onClicked.addListener(async (tab) => {
 		activeTabId: tab.id
 	})
 
-	if (visibleFrames.length > 0) {
-
-		const injectPromises = visibleFrames.map(i =>
-			chrome.scripting.executeScript({
-				target: { tabId: tab.id, frameIds: [i.frameId] },
-				files: ['./action.bundle.js']
-			})
-		);
-		await Promise.all(injectPromises);
-	} else {
-		await chrome.scripting.executeScript({
-			target: { tabId: tab.id, frameIds: [0] },
+	const targetFrameIds = visibleFrames.length > 0 ? visibleFrames.map(i => i.frameId) : [0]
+	const injectPromises = targetFrameIds.map(frameId =>
+		chrome.scripting.executeScript({
+			target: { tabId: tab.id, frameIds: [frameId] },
 			files: ['./action.bundle.js']
-		})
-	}
+		}).catch(() => null)
+	);
+	await Promise.all(injectPromises);
 })
 
 chrome.runtime.onInstalled.addListener(async (res) => {
+	chrome.storage.session?.setAccessLevel?.({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' }).catch(() => null)
 	if (res.reason === 'install') {
 		chrome.storage.local.set({ searchValue: '' })
 		chrome.storage.sync.set({ isMatchCase: false, isWord: false, isReg: false, isLive: true })
-		chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
 		chrome.runtime.openOptionsPage()
 	}
 })
+
+const performSearch = async (tabId, isAuto = false) => {
+	if (!tabId) return;
+	const { frames, activeResult } = await chrome.storage.session.get(['frames', 'activeResult']);
+
+	const regRes = await chrome.scripting.executeScript({
+		target: { tabId, frameIds: [0] },
+		func: async () => {
+			return await window?.__swe_getSearchReg?.();
+		}
+	}).catch(() => null);
+
+	if (!regRes || !regRes[0] || !regRes[0].result) return;
+	const { error, errorType, regContent } = regRes[0].result;
+
+	if (error) {
+		await chrome.scripting.executeScript({
+			target: { tabId, frameIds: [0] },
+			args: [error, errorType],
+			func: (e, eT) => {
+				window.postMessage({
+					type: 'swe_updateSearchResult',
+					data: { error: e, errorType: eT }
+				}, '*');
+			}
+		}).catch(() => null);
+	} else {
+		const targetFrames = (Array.isArray(frames) && frames.length > 0) ? frames : [{ frameId: 0 }];
+		const searchPromises = targetFrames.map(f =>
+			chrome.scripting.executeScript({
+				target: { tabId, frameIds: [f.frameId] },
+				args: [f.frameId, regContent],
+				func: async (frameId, rC) => {
+					const res = await window?.__swe_doSearchOutside?.(rC, false);
+					return { ...res, frameId };
+				}
+			}).catch(() => null)
+		);
+		const executionResults = await Promise.all(searchPromises);
+
+		const newResultSum = executionResults
+			.filter(r => r && r[0] && r[0].result)
+			.map(r => ({
+				frameId: r[0].result.frameId,
+				sum: r[0].result.resultNum,
+				matchText: r[0].result.matchText
+			}));
+
+		const finalSession = { resultSum: newResultSum, lastSearchTime: Date.now() };
+
+		if (isAuto) {
+			finalSession.activeResult = activeResult || 0;
+			finalSession.force = Math.random() + 1;
+		} else {
+			finalSession.activeResult = 0;
+		}
+		await chrome.storage.session.set(finalSession);
+
+		await chrome.scripting.executeScript({
+			target: { tabId, frameIds: [0] },
+			args: [finalSession.activeResult, newResultSum],
+			func: (a, r) => {
+				window.postMessage({
+					type: 'swe_updateSearchResult',
+					data: { current: a, total: r }
+				}, '*');
+			}
+		}).catch(() => null);
+	}
+};
 
 chrome.runtime.onMessage.addListener(async (message, sender) => {
     const { action, data } = message
 
 	if (action === 'search') {
-		const { frames, activeTabId, activeResult } = await chrome.storage.session.get(['frames', 'activeTabId', 'activeResult'])
-		const currentTabId = activeTabId || sender.tab.id;
-		const regRes = await chrome.scripting.executeScript({
-			target: { tabId: currentTabId, frameIds: [0] },
-			func: async () => {
-				// 调用搜索并返回结果
-				return await window?.__swe_getSearchReg();
-			}
-		}) // 容错处理
-
-		const { error, errorType, regContent } = regRes[0].result
-
-		if (error) {
-			await chrome.scripting.executeScript({
-				target: { tabId: currentTabId, frameIds: [0] },
-				args: [error, errorType],
-				func: async (e, eT) => {
-					window.postMessage({ type: 'swe_updateSearchResult', data: {
-							error: e,
-							errorType: eT
-						} }, '*')
-				}
-			}) // 容错处理
-		} else {
-			const searchPromises = frames.map(f =>
-				chrome.scripting.executeScript({
-					target: { tabId: currentTabId, frameIds: [f.frameId] },
-					args: [f.frameId, regContent],
-					func: async (frameId, rC) => {
-						// 调用搜索并返回结果
-						const res = await window?.__swe_doSearchOutside(rC, false);
-						return { ...res, frameId: frameId };
-					}
-				}) // 容错处理
-			);
-			const executionResults = await Promise.all(searchPromises);
-
-			const newResultSum = executionResults
-				.filter(r => r && r[0] && r[0].result)
-				.map(r => ({
-					frameId: r[0].result.frameId,
-					sum: r[0].result.resultNum,
-					matchText: r[0].result.matchText
-				}));
-			//
-
-			const isAuto = data.isAuto;
-			// 记录下上次搜索的时间，打开面板后判断超过一定时间后清除查找条件
-			const finalSession = { resultSum: newResultSum, lastSearchTime: Date.now() }
-
-			if (isAuto) {
-				finalSession.activeResult = activeResult
-				finalSession.force = Math.random() + 1 // 加个 force，意味 activeResult 虽然没变，但是我要重新渲染一下高亮
-			} else {
-				finalSession.activeResult = 0;
-			}
-			await chrome.storage.session.set(finalSession);
-
-			await chrome.scripting.executeScript({
-				target: { tabId: currentTabId, frameIds: [0] },
-				args: [finalSession.activeResult, newResultSum],
-				func: async (a, r) => {
-					window.postMessage({ type: 'swe_updateSearchResult', data: {
-							current: a,
-							total: r
-						} }, '*')
-				}
-			})
-		}
-		return true
+		const { activeTabId } = await chrome.storage.session.get(['activeTabId']);
+		const currentTabId = sender?.tab?.id || activeTabId;
+		await performSearch(currentTabId, data?.isAuto);
+		return true;
 	}
 
 	if (action === 'closeAction' || action === 'openAction') {
 		const currentTabId = sender?.tab?.id;
 		if (!currentTabId) return;
 
-		chrome.storage.sync.get('styleText', (res) => {
-			const cssParam = {
-				target: { tabId: currentTabId, allFrames: true },
-				css: res?.styleText || `::highlight(search-results) { background-color: #ffff37; color: black; } ::highlight(search-results-active) { background-color: #ff8b3a; color: black; }`
-			};
+		const syncRes = await chrome.storage.sync.get('styleText').catch(() => null);
+		const cssParam = {
+			target: { tabId: currentTabId, allFrames: true },
+			css: syncRes?.styleText || `::highlight(search-results) { background-color: #ffff37; color: black; } ::highlight(search-results-active) { background-color: #ff8b3a; color: black; }`
+		};
 
-			if (action === 'closeAction') {
-				chrome.scripting.removeCSS(cssParam).catch(()=>null);
-			} else {
-				chrome.scripting.insertCSS(cssParam).catch(()=>null);
-			}
-		})
+		// 先移除已有样式，防止重复插入多个注入样式表
+		await chrome.scripting.removeCSS(cssParam).catch(() => null);
+		if (action === 'openAction') {
+			await chrome.scripting.insertCSS(cssParam).catch(() => null);
+		}
 
 		return true
 	}
@@ -194,13 +194,15 @@ const handleStorageChange = async (changes, areaName) => {
             const { resultSum, activeResult: activeResultFromStorage, frames, activeTabId } = await chrome.storage.session.get(['resultSum', 'activeResult', 'frames', 'activeTabId']);
             const activeResult = changes.activeResult ? changes.activeResult.newValue : activeResultFromStorage
 
-			for (let i in frames) {
-				await chrome.scripting.executeScript({
-					target: {tabId: activeTabId, frameIds: [frames[i].frameId]},
-					func: () => {
-						CSS.highlights.delete('search-results-active')
-					}
-				})
+			if (Array.isArray(frames) && frames.length > 0 && activeTabId) {
+				await Promise.all(frames.map(f =>
+					chrome.scripting.executeScript({
+						target: { tabId: activeTabId, frameIds: [f.frameId] },
+						func: () => {
+							CSS.highlights?.delete('search-results-active')
+						}
+					}).catch(() => null)
+				))
 			}
 
 			if (activeResult === 0) {
@@ -209,19 +211,19 @@ const handleStorageChange = async (changes, areaName) => {
 
 			let temp = 0;
 
-			for (let i in resultSum) {
-				temp += resultSum[i].sum;
+			for (const item of (resultSum || [])) {
+				temp += item.sum;
 				if (activeResult <= temp) {
 					chrome.scripting.executeScript({
-						target: { tabId: activeTabId, frameIds: [Number(resultSum[i].frameId)] },
-						args: [activeResult - temp + resultSum[i].sum, !changes.force],
+						target: { tabId: activeTabId, frameIds: [Number(item.frameId)] },
+						args: [activeResult - temp + item.sum, !changes.force],
 						func: (realIndex, isAuto) => {
 							if (!window.rangesFlat) {
 								return
 							}
 							CSS.highlights.set('search-results-active', new Highlight(window.rangesFlat[realIndex - 1]))
 
-							let currentActiveRangeDOM = filteredRangeList.value[realIndex - 1]
+							let currentActiveRangeDOM = window.filteredRangeList?.value?.[realIndex - 1]
 							if (!currentActiveRangeDOM) {
 								return;
 							}
@@ -244,9 +246,9 @@ const handleStorageChange = async (changes, areaName) => {
 								}
 								currentActiveRangeDOM.scrollIntoView({ behavior: 'instant', block: 'center' });
 							}
-							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible(currentActiveRangeDOM) })
+							chrome.storage.session.set({ visibleStatus: window.__swe_isElementVisible?.(currentActiveRangeDOM) }).catch(() => null)
 						}
-					})
+					}).catch(() => null)
 					break;
 				}
 			}
@@ -257,9 +259,10 @@ const handleStorageChange = async (changes, areaName) => {
 chrome.storage.onChanged.addListener(handleStorageChange)
 
 chrome.tabs.onActivated.addListener(async () => {
-    const [ currentTab ] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true }).catch(() => []);
+    const currentTab = tabs?.[0];
 
-	if (currentTab.url.indexOf('http') < 0) {
+	if (!currentTab?.id || isRestrictedUrl(currentTab?.url)) {
 		return;
 	}
 
@@ -268,59 +271,54 @@ chrome.tabs.onActivated.addListener(async () => {
 
 	await chrome.storage.session.set({ activeTabId: currentTab.id });
 
-	// 停用旧的标签页的isLive
+	// 停用旧的标签页的 isLive 监听
 	if (oldTabId && oldTabId !== currentTab.id) {
 		await chrome.scripting.executeScript({
 			target: { tabId: oldTabId, allFrames: true },
-			func: async () => {
-				window.__swe_observer?.disconnect()
+			func: () => {
+				window.__swe_observer?.disconnect();
 			}
-		}).catch(() => null)
+		}).catch(() => null);
 	}
 
     const res = await chrome.scripting.executeScript({
         target: { tabId: currentTab.id, frameIds: [0] },
-        func: async () => {
-            return !!document.getElementById('__swe_container')
+        func: () => {
+            return !!document.getElementById('__swe_container');
         }
-    })
+    }).catch(() => null);
 
-    if (res[0].result) {
-		let frames = (await chrome.webNavigation.getAllFrames({ tabId: currentTab.id })).filter(a => !a.errorOccurred)
+    if (res?.[0]?.result) {
+		const rawFrames = (await chrome.webNavigation.getAllFrames({ tabId: currentTab.id }).catch(() => null)) || [];
+		const frames = rawFrames.filter(a => !a.errorOccurred);
 
-		const visibleFrames = await getVisibleFrames(currentTab.id, frames)
-		await chrome.storage.session.set({ resultSum: [], frames: visibleFrames });
+		const visibleFrames = await getVisibleFrames(currentTab.id, frames.sort((a, b) => a.frameId - b.frameId));
+		// 仅更新 frames 与 activeTabId，切勿清空 resultSum
+		await chrome.storage.session.set({ frames: visibleFrames, activeTabId: currentTab.id });
 
-		if (visibleFrames.length > 0) {
-			for (let i in visibleFrames) {
+		const { isLive } = await chrome.storage.sync.get('isLive').catch(() => ({}));
+		const targetFrameIds = visibleFrames.length > 0 ? visibleFrames.map(f => f.frameId) : [0];
+
+		if (isLive) {
+			await Promise.all(targetFrameIds.map(frameId =>
 				chrome.scripting.executeScript({
-					target: {tabId: currentTab.id, frameIds: [frames[i].frameId]},
-					func: async () => {
-						window.__swe_doSearchOutside(false, (response) => {
-							if (window.isFrame) {
-								window.parent.postMessage({ type: 'swe_updateSettings', data: response }, '*')
-							} else {
-								window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
-							}
-						})
-						window.observerBodyAndOpenShadowRoot()
+					target: { tabId: currentTab.id, frameIds: [frameId] },
+					func: () => {
+						window.observerBodyAndOpenShadowRoot?.();
 					}
-				})
-			}
-		} else {
-			chrome.scripting.executeScript({
-				target: {tabId: currentTab.id, frameIds: [0]},
-				func: async () => {
-					window.__swe_doSearchOutside(false, (response) => {
-						if (window.isFrame) {
-							window.parent.postMessage({ type: 'swe_updateSettings', data: response }, '*')
-						} else {
-							window.postMessage({ type: 'swe_updateSettings', data: response }, '*')
-						}
-					})
-					window.observerBodyAndOpenShadowRoot()
-				}
-			})
+				}).catch(() => null)
+			));
 		}
+
+		// 通知主界面更新最新帧列表与配置
+		await chrome.scripting.executeScript({
+			target: { tabId: currentTab.id, frameIds: [0] },
+			func: () => {
+				window.postMessage({ type: 'swe_updateSettings' }, '*');
+			}
+		}).catch(() => null);
+
+		// 重新执行一次搜索，重新计算真实 resultSum 并恢复各个 frame 的高亮，上下箭头即可平滑切换
+		await performSearch(currentTab.id, true);
     }
-})
+});

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'preact/compat'
+import { useRef, useState, useEffect } from 'preact/compat'
 import { Input } from '../../components/Input'
 import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, useDebounce, debounce } from './features'
 import { Tooltip } from '../../components/Tooltip'
@@ -37,7 +37,6 @@ export const Pop = () => {
 	const [ isExiting, setIsExiting ] = useState(false) // 退出动画进行中
 	const [ isReady, setIsReady ] = useState(false)
 	const [ recentList, setRecentList ] = useState([])
-	const [ fixList, setFixList ] = useState([])
 	const [ isShowWarn, setIsShowWarn ] = useState(false)
 	const [ warnReason, setWarnReason ] = useState(false)
 	const [ x, setX ] = useState(parseInt(window.innerWidth * 0.9 - 440))
@@ -134,10 +133,10 @@ export const Pop = () => {
 		const init = async () => {
 			const [ sessionStorage, syncStorage, locStorage ] = await Promise.all([
 				chrome.storage.session.get(['frames']),
-				chrome.storage.sync.get(['isMatchCase', 'isWord', 'isReg', 'isLive', 'recent', 'fix', 'swe_setting']),
+				chrome.storage.sync.get(['isMatchCase', 'isWord', 'isReg', 'isLive', 'recent', 'swe_setting']),
 				chrome.storage.local.get(['x', 'y', 'searchValue'])
 			])
-			setFrames(sessionStorage.frames)
+			setFrames(sessionStorage.frames || [])
 			setSearchValue(locStorage.searchValue || '')
 			setOptions({
 				isMatchCase: Boolean(syncStorage.isMatchCase),
@@ -145,21 +144,16 @@ export const Pop = () => {
 				isReg: Boolean(syncStorage.isReg),
 				isLive: Boolean(syncStorage.isLive)
 			})
-			setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 440))
-			setY(locStorage.y || parseInt(window.innerHeight * 0.1))
 			setRecentList(syncStorage.recent || [])
-			setFixList(syncStorage.fix || [])
 			setDebounceDuration(syncStorage.swe_setting?.debounceDuration || 200)
 			setRegexDebounceDuration(syncStorage.swe_setting?.regexDebounceDuration || 2000)
 			setSweSetting(syncStorage.swe_setting || { tempOpacity: 0.3 })
-			setIsReady(true)
 
 			// 设定语言
 			const language = syncStorage.swe_setting?.language
 			if (!language) {
 				changeLanguage('')
-			}
-			if (language !== 'auto') {
+			} else if (language !== 'auto') {
 				changeLanguage(language)
 			} else {
 				const lang = /(\w+)-?/g.exec(navigator.language)
@@ -175,6 +169,7 @@ export const Pop = () => {
 						case 'de': changeLanguage('German'); break;
 						case 'ko': changeLanguage('Korean'); break;
 						case 'ja': changeLanguage('Japanese'); break;
+						default: changeLanguage(''); break;
 					}
 				} else {
 					changeLanguage('')
@@ -190,32 +185,48 @@ export const Pop = () => {
 			setColorMode(color)
 
 			const dom = document.querySelector('#__swe_container > div')
-			if (color === 'light') {
-				dom.style.setProperty('--swe-color-primary', syncStorage.swe_setting?.primaryColor || '#1677ff')
-			} else {
-				dom.style.setProperty('--swe-color-primary', syncStorage.swe_setting?.primaryColor_dark || '#44d62c')
+			if (dom) {
+				const primaryColor = color === 'light'
+					? (syncStorage.swe_setting?.primaryColor || '#1677ff')
+					: (syncStorage.swe_setting?.primaryColor_dark || '#44d62c')
+				dom.style.setProperty('--swe-color-primary', primaryColor)
 			}
 
-			if (window.innerHeight < locStorage.y + 94 || window.innerWidth < locStorage.x + 440) { // 如果在当前视口不能完全显示，临时重置位置(右下)
-				setX(parseInt(window.innerWidth * 0.9 - 440))
-				setY(parseInt(window.innerHeight * 0.1))
+			// 坐标精准校验与单次设置（支持 0 坐标边界贴靠）
+			const defaultX = Math.round(window.innerWidth * 0.9 - 440)
+			const defaultY = Math.round(window.innerHeight * 0.1)
+			const hasSavedX = typeof locStorage.x === 'number'
+			const hasSavedY = typeof locStorage.y === 'number'
+			const savedX = hasSavedX ? locStorage.x : defaultX
+			const savedY = hasSavedY ? locStorage.y : defaultY
 
-				if (window.screen.height < locStorage.y + 94 || window.screen.width < locStorage.x + 440) { // 继续判断，如果在当前设备都不能完全显示，重置位置
+			let targetX = savedX
+			let targetY = savedY
+
+			if (window.innerHeight < savedY + 94 || window.innerWidth < savedX + 440) {
+				// 如果在当前视口不能完全显示，重置到默认位置
+				targetX = defaultX
+				targetY = defaultY
+				if (window.screen.height < savedY + 94 || window.screen.width < savedX + 440) {
 					chrome.storage.local.remove(['x', 'y'])
 				}
-			} else if (locStorage.y < 0 || locStorage.x < 0) { // 如果在当前视口不能完全显示(左上)，重置位置并直接删除存储
-				setX(parseInt(window.innerWidth * 0.9 - 440))
-				setY(parseInt(window.innerHeight * 0.1))
+			} else if (savedX < 0 || savedY < 0) {
+				// 如果超出左上边界负值，重置并清理存储
+				targetX = defaultX
+				targetY = defaultY
 				chrome.storage.local.remove(['x', 'y'])
-			} else { // 如果能完全显示，就使用用户上次保存的位置
-				setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 440))
-				setY(locStorage.y || parseInt(window.innerHeight * 0.1))
 			}
+
+			setX(targetX)
+			setY(targetY)
 
 			const debouncedUpdate = debounce(handleUpdate, 200)
 			window.__swe_observer = new MutationObserver((mutationsList, observer) => {
 				debouncedUpdate()
 			})
+
+			// 核心保证：在所有配置、颜色、样式、DOM 以及坐标均完整解析并设置完成后，最后才开启 isReady
+			setIsReady(true)
 		}
 
 		window.addEventListener('message', handleMessage)
@@ -296,8 +307,8 @@ export const Pop = () => {
 			isFirstRender.current = false;
 			return;
 		}
-		chrome.storage.sync.set({ recent: recentList, fix: fixList })
-	}, [recentList, fixList]);
+		chrome.storage.sync.set({ recent: recentList }).catch(() => null);
+	}, [recentList]);
 
 	useEffect(() => {
 		if (!isReady) {
@@ -483,7 +494,8 @@ export const Pop = () => {
 	}
 
 	const addToRecent = () => {
-		if (!searchValue) {
+		const trimmed = searchValue?.trim();
+		if (!trimmed) {
 			return
 		}
 		const newRecent = recentList.slice()

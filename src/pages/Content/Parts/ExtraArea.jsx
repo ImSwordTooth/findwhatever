@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'preact/compat'
+import { useEffect, useState } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import HiddenSvg from '../../../assets/svg/hidden.svg'

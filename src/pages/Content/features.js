@@ -1,5 +1,5 @@
 import { destroyPopup } from "./index";
-import { useState, useRef, useEffect } from 'preact/compat'
+import { useState, useEffect } from 'preact/compat'
 
 // 块级元素和分隔标签：遇到这些元素时，行内文本流在此自然断开
 const BLOCK_TAGS = new Set([
@@ -163,7 +163,8 @@ export const closePop = () => {
 		chrome.storage.sync.get(['recent']),
 		chrome.storage.local.get(['searchValue'])
 	]).then(([{ recent }, { searchValue }]) => {
-		if (searchValue) {
+		const trimmed = searchValue?.trim()
+		if (trimmed) {
 			const newRecent = Array.isArray(recent) ? recent.slice() : []
 			if (!newRecent.includes(searchValue)) { // 没有就直接新增到头部
 				newRecent.unshift(searchValue)
@@ -176,9 +177,9 @@ export const closePop = () => {
 					newRecent.unshift(newRecent.splice(index, 1)[0])
 				}
 			}
-			chrome.storage.sync.set({ recent: newRecent })
+			chrome.storage.sync.set({ recent: newRecent }).catch(() => null)
 		}
-	})
+	}).catch(() => null)
 }
 
 const observedShadowRoots = new WeakSet()
@@ -316,6 +317,10 @@ export const getSearchReg = async () => {
 export const doSearchOutside = async (regContent, isAuto = false) => {
 	CSS.highlights.clear() // 清除所有高亮
 
+	if (!window.allNodes || window.allNodes.length === 0) {
+		await reCheckTree()
+	}
+
 	const [{ isMatchCase }, { searchValue }] = await Promise.all([
 		chrome.storage.sync.get(['isMatchCase', 'isWord', 'isReg', 'isLive', 'swe_setting']),
 		chrome.storage.local.get(['searchValue'])
@@ -328,7 +333,20 @@ export const doSearchOutside = async (regContent, isAuto = false) => {
 
 		// 根据筛选项，设置正则表达式
 		let reg = null
-		reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`);
+		try {
+			reg = new RegExp(regContent, `${isMatchCase ? '' : 'i'}dgu`);
+		} catch (e) {
+			window.rangesFlat = []
+			if (window.filteredRangeList) {
+				window.filteredRangeList.value = []
+			}
+			return {
+				resultNum: 0,
+				matchText: [],
+				isAuto,
+				isFrame: window.isFrame
+			}
+		}
 
 		window.rangesFlat = window.allNodes.map(({ text, segments }) => {
 			const indices = [] // 对象数组，{ indicesStart: number, indicesLength: number }，分别是起点和长度
@@ -454,15 +472,22 @@ export const isElementVisible = (el) => {
 	]
 
 	let isCovered = true
+	let testedCount = 0
 	for (const point of points) {
 		// 避开视口外坐标
 		if (point.x < 0 || point.y < 0 || point.x > window.innerWidth || point.y > window.innerHeight) continue
 
+		testedCount++
 		const topElement = document.elementFromPoint(point.x, point.y)
 		if (topElement && (el === topElement || el.contains(topElement) || topElement.contains(el))) {
 			isCovered = false // 只要有一个测试点能露出来，就认为未被遮盖
 			break
 		}
+	}
+
+	// 若所有测试点刚好全在视口外，由于 isInViewport 已经确认元素部分在视口内，绝不误判为“被遮盖”
+	if (testedCount === 0) {
+		isCovered = false
 	}
 
 	return isCovered ? '被遮盖' : ''
@@ -496,6 +521,7 @@ export const useDebounce = (value, delay, immediate) => {
 
 window.__swe_doSearchOutside = doSearchOutside
 window.__swe_getSearchReg = getSearchReg
+window.__swe_reCheckTree = window.reCheckTree = reCheckTree
 
 // 获取元素的隐藏状态，返回一个描述元素不可见的原因的字符串，如果不为空，说明元素不可见
 window.__swe_isElementVisible = isElementVisible

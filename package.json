@@ -19,7 +19,6 @@
     "antd": "^4.x",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.17.3",
     "i18next": "^25.8.13",
     "motion": "^12.16.0",
     "preact": "^10.29.8",
