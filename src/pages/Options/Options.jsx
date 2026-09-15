@@ -48,7 +48,7 @@ const INIT_SETTING = {
 	underlineStyleActive:'solid',
 	underlineColorActive: '#000000',
 
-	textWidth: 340, // 文本框长度
+	textWidth: 380, // 文本框长度
 	retentionTime: -1, // 历史记录保留时间
 	isShowRing: true, // 是否显示文本框光圈
 

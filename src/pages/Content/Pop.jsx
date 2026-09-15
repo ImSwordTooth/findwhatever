@@ -17,6 +17,7 @@ import UpArrowSvg from '../../assets/svg/upArrow.svg'
 import DownArrowSvg from '../../assets/svg/downArrow.svg'
 import CloseSvg from '../../assets/svg/close.svg'
 import WarnSvg from '../../assets/svg/warn.svg'
+import SearchSvg from '../../assets/svg/search.svg'
 
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
@@ -39,12 +40,57 @@ export const Pop = () => {
 	const [ fixList, setFixList ] = useState([])
 	const [ isShowWarn, setIsShowWarn ] = useState(false)
 	const [ warnReason, setWarnReason ] = useState(false)
-	const [ x, setX ] = useState(parseInt(window.innerWidth * 0.9 - 400))
+	const [ x, setX ] = useState(parseInt(window.innerWidth * 0.9 - 440))
 	const [ y, setY ] = useState(parseInt(window.innerHeight * 0.1))
 	const [ debounceDuration, setDebounceDuration ] = useState(200)
 	const [ regexDebounceDuration, setRegexDebounceDuration ] = useState(1000)
 	const [ colorMode, setColorMode ] = useState('light')
 	const [ sweSetting, setSweSetting ] = useState({})
+	const [ isHistoryOpen, setIsHistoryOpen ] = useState(false)
+	const [ selectedHistoryIndex, setSelectedHistoryIndex ] = useState(-1)
+	const searchContainerRef = useRef(null)
+
+	useEffect(() => {
+		if (!isHistoryOpen) return
+
+		const rootNode = searchContainerRef.current?.getRootNode()
+		const isShadow = rootNode instanceof ShadowRoot || (rootNode && rootNode.nodeType === 11)
+		const host = isShadow ? rootNode.host : null
+
+		// 1. 处理 Shadow DOM 内部点击：精确判断是否在搜索容器/历史列表内部
+		const handleShadowMouseDown = (e) => {
+			if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+				setIsHistoryOpen(false)
+				setSelectedHistoryIndex(-1)
+			}
+		}
+
+		// 2. 处理宿主页面点击：如果点击落在扩展容器外部，立即收起历史面板
+		const handleDocMouseDown = (e) => {
+			const container = document.getElementById('__swe_container')
+			const path = e.composedPath ? e.composedPath() : []
+			if (
+				(host && (path.includes(host) || e.target === host || host.contains(e.target))) ||
+				(container && (path.includes(container) || e.target === container || container.contains(e.target)))
+			) {
+				return
+			}
+			setIsHistoryOpen(false)
+			setSelectedHistoryIndex(-1)
+		}
+
+		if (rootNode && rootNode.addEventListener) {
+			rootNode.addEventListener('mousedown', handleShadowMouseDown)
+		}
+		document.addEventListener('mousedown', handleDocMouseDown)
+
+		return () => {
+			if (rootNode && rootNode.removeEventListener) {
+				rootNode.removeEventListener('mousedown', handleShadowMouseDown)
+			}
+			document.removeEventListener('mousedown', handleDocMouseDown)
+		}
+	}, [isHistoryOpen])
 
 	const handleCloseWithAnimation = () => {
 		if (isExiting) return
@@ -99,7 +145,7 @@ export const Pop = () => {
 				isReg: Boolean(syncStorage.isReg),
 				isLive: Boolean(syncStorage.isLive)
 			})
-			setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 400))
+			setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 440))
 			setY(locStorage.y || parseInt(window.innerHeight * 0.1))
 			setRecentList(syncStorage.recent || [])
 			setFixList(syncStorage.fix || [])
@@ -150,19 +196,19 @@ export const Pop = () => {
 				dom.style.setProperty('--swe-color-primary', syncStorage.swe_setting?.primaryColor_dark || '#44d62c')
 			}
 
-			if (window.innerHeight < locStorage.y + 94 || window.innerWidth < locStorage.x + 400) { // 如果在当前视口不能完全显示，临时重置位置(右下)
-				setX(parseInt(window.innerWidth * 0.9 - 400))
+			if (window.innerHeight < locStorage.y + 94 || window.innerWidth < locStorage.x + 440) { // 如果在当前视口不能完全显示，临时重置位置(右下)
+				setX(parseInt(window.innerWidth * 0.9 - 440))
 				setY(parseInt(window.innerHeight * 0.1))
 
-				if (window.screen.height < locStorage.y + 94 || window.screen.width < locStorage.x + 400) { // 继续判断，如果在当前设备都不能完全显示，重置位置
+				if (window.screen.height < locStorage.y + 94 || window.screen.width < locStorage.x + 440) { // 继续判断，如果在当前设备都不能完全显示，重置位置
 					chrome.storage.local.remove(['x', 'y'])
 				}
 			} else if (locStorage.y < 0 || locStorage.x < 0) { // 如果在当前视口不能完全显示(左上)，重置位置并直接删除存储
-				setX(parseInt(window.innerWidth * 0.9 - 400))
+				setX(parseInt(window.innerWidth * 0.9 - 440))
 				setY(parseInt(window.innerHeight * 0.1))
 				chrome.storage.local.remove(['x', 'y'])
 			} else { // 如果能完全显示，就使用用户上次保存的位置
-				setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 400))
+				setX(locStorage.x || parseInt(window.innerWidth * 0.9 - 440))
 				setY(locStorage.y || parseInt(window.innerHeight * 0.1))
 			}
 
@@ -329,24 +375,74 @@ export const Pop = () => {
 	const handleSearchValueChange = (e) => {
 		const value = e.target.value
 		setSearchValue(value)
+		setSelectedHistoryIndex(-1)
+		if (isHistoryOpen) {
+			setIsHistoryOpen(false)
+		}
 	}
 
 	const handleEnter = e => {
 		if (e.nativeEvent?.isComposing || e.keyCode === 229) {
 			return
 		}
+
+		const totalHistoryItems = recentList?.length || 0
+		const isHistoryAvailable = (sweSetting.isShowHistory ?? true) && totalHistoryItems > 0
+
+		if (isHistoryOpen) {
+			if (e.key === 'Escape') {
+				e.preventDefault()
+				e.stopPropagation()
+				setIsHistoryOpen(false)
+				setSelectedHistoryIndex(-1)
+				return
+			}
+			if (e.key === 'ArrowDown') {
+				e.preventDefault()
+				setSelectedHistoryIndex(prev => (prev + 1) % totalHistoryItems)
+				return
+			}
+			if (e.key === 'ArrowUp') {
+				e.preventDefault()
+				setSelectedHistoryIndex(prev => (prev <= 0 ? totalHistoryItems - 1 : prev - 1))
+				return
+			}
+			if (e.key === 'Enter') {
+				if (selectedHistoryIndex >= 0 && selectedHistoryIndex < totalHistoryItems) {
+					e.preventDefault()
+					const targetText = recentList[selectedHistoryIndex]
+					if (targetText) {
+						fillSearchValue(e, targetText)
+						setIsHistoryOpen(false)
+						setSelectedHistoryIndex(-1)
+						searchInputRef.current?.focus()
+						return
+					}
+				}
+				setIsHistoryOpen(false)
+				setSelectedHistoryIndex(-1)
+			}
+		} else {
+			if (e.key === 'ArrowDown' && isHistoryAvailable) {
+				e.preventDefault()
+				setIsHistoryOpen(true)
+				setSelectedHistoryIndex(0)
+				return
+			}
+			if (e.key === 'Escape') {
+				e.preventDefault()
+				e.stopPropagation()
+				handleCloseWithAnimation()
+				return
+			}
+		}
+
 		if (e.key === 'Enter') {
 			if (e.shiftKey) {
 				stepTo(-1)
 			} else {
 				stepTo(1)
 			}
-		}
-		if (e.key === 'Escape') {
-			e.preventDefault();
-			e.stopPropagation();
-			handleCloseWithAnimation();
-			return;
 		}
 	}
 
@@ -408,7 +504,7 @@ export const Pop = () => {
 	}
 
 	const fillSearchValue = (e, text, isReg = undefined) => {
-		e.stopPropagation()
+		e?.stopPropagation?.()
 		setSearchValue(text)
 		if (isReg) {
 			setOptions(prev => {
@@ -444,7 +540,7 @@ export const Pop = () => {
 				<Rnd
 					dragHandleClassName={sweSetting.dragArea === 'total' ? '' : 'searchWhateverMoveHandler'}
 					onDragStop={handleDragStop}
-					cancel="#swe_searchInput"
+					cancel=".swe_search, #swe_searchInput"
 					position={{ x, y }}
 					bounds='window'
 					enableResizing={false}
@@ -502,17 +598,26 @@ export const Pop = () => {
 								</div>
 							</div>
 							<div className="flex items-center w-full">
-								<div className="swe_search relative">
-									{
-										(sweSetting.isShowHistory ?? true) &&
-										<RecentList recentList={recentList} fixList={fixList} openHistoryMode={sweSetting.openHistoryMode ?? 'hover'} updateFixList={setFixList} updateRecentList={setRecentList} fillSearchValue={fillSearchValue} popupContainer={popContainerRef.current} />
-									}
+								<div className="swe_search relative" ref={searchContainerRef}>
+									<SearchSvg
+										className="absolute left-[6px] top-0 bottom-0 p-1 box-content m-auto w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[var(--swe-color-primary)] dark:*:fill-[#fff] dark:hover:bg-[#353535]"
+										onClick={() => {
+											if (sweSetting.isShowHistory ?? true) {
+												setIsHistoryOpen(prev => !prev)
+												setSelectedHistoryIndex(-1)
+											}
+										}}
+									/>
 									<Input
 										ref={searchInputRef}
 										id="swe_searchInput"
 										autoFocus
-										placeholder={t('输入文本...')}
-										className={(sweSetting.isShowHistory??true) ? '' : 'pl-[8px]'}
+										placeholder={
+											((recentList?.length > 0) && (sweSetting.isShowHistory ?? true))
+												? t('查找或按 ↓ 查历史')
+												: t('输入文本...')
+										}
+										className={(sweSetting.isShowHistory ?? true) ? 'pl-8' : 'pl-[8px]'}
 										value={searchValue}
 										onChange={handleSearchValueChange}
 										onKeyDown={handleEnter}
@@ -620,6 +725,24 @@ export const Pop = () => {
 											</Tooltip>
 										</div>
 									</Input>
+									{
+										(sweSetting.isShowHistory ?? true) &&
+										<RecentList
+											isOpen={isHistoryOpen}
+											onClose={() => {
+												setIsHistoryOpen(false)
+												setSelectedHistoryIndex(-1)
+												searchInputRef.current?.focus()
+											}}
+											recentList={recentList}
+											selectedIndex={selectedHistoryIndex}
+											updateRecentList={(newList) => {
+												setRecentList(newList)
+												setSelectedHistoryIndex(-1)
+											}}
+											fillSearchValue={fillSearchValue}
+										/>
+									}
 								</div>
 								{
 									sweSetting.isShowClose &&

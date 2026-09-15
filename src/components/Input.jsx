@@ -36,7 +36,7 @@ const Input = React.forwardRef(({ className, type, children, isShowRing, textWid
          					group-hover/input:shadow-none transition duration-400 pr-[184px]
          					`, className
 					)}
-					style={{ width: `${textWidth || 340}px` }}
+					style={{ width: `${textWidth || 380}px` }}
 					ref={ref}
 					{...props}
 				/>

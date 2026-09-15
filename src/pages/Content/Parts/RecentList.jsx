@@ -1,148 +1,119 @@
-import React from 'preact/compat'
-import {Button, Divider, Dropdown, Menu, Tooltip} from "antd";
+import React, { useRef, useEffect } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
-import PropTypes from "prop-types";
-import FixSvg from '../../../assets/svg/fix.svg'
-import UnfixSvg from '../../../assets/svg/unfix.svg'
-import TrashSvg from '../../../assets/svg/trash.svg'
-import SearchSvg from '../../../assets/svg/search.svg'
-import DownSvg from '../../../assets/svg/down.svg'
+import PropTypes from 'prop-types'
+import { Tooltip } from '../../../components/Tooltip'
 
 export const RecentList = (props) => {
-	const { fillSearchValue, popupContainer, fixList, recentList, openHistoryMode, updateFixList, updateRecentList } = props
+	const {
+		isOpen = false,
+		onClose,
+		fillSearchValue,
+		recentList = [],
+		selectedIndex = -1,
+		updateRecentList
+	} = props
 
 	const { t } = useTranslation()
+	const listRef = useRef(null)
 
-	const addToFix = (e, text) => {
-		e.stopPropagation()
-		const newFixList = fixList.slice()
-
-		if (newFixList.includes(text)) {
-			const index = newFixList.findIndex(r => r === text);
-			if (index > 0) {
-				newFixList.unshift(newFixList.splice(index, 1)[0])
+	// 当选中的索引变化时，自动将对应条目平滑滚入可视区
+	useEffect(() => {
+		if (isOpen && selectedIndex >= 0 && listRef.current) {
+			const activeItem = listRef.current.querySelector(`[data-index="${selectedIndex}"]`)
+			if (activeItem) {
+				activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
 			}
-		} else {
-			newFixList.unshift(text)
 		}
-		updateFixList(newFixList)
+	}, [selectedIndex, isOpen])
+
+	if (!isOpen) return null
+
+	const clearRecent = (e) => {
+		e?.stopPropagation?.()
+		updateRecentList?.([])
 	}
 
-	const cancelToFix = (e, text) => {
-		e.stopPropagation()
-		const newFixList = fixList.slice()
-
-		const index = newFixList.findIndex(r => r === text);
-		newFixList.splice(index, 1)
-		updateFixList(newFixList)
+	const handleItemClick = (e, text, isReg = false) => {
+		e?.stopPropagation?.()
+		fillSearchValue?.(e, text, isReg)
+		onClose?.()
 	}
 
-	const clearRecent = () => {
-		updateRecentList([])
-	}
+	const hasRecent = Array.isArray(recentList) && recentList.length > 0
 
 	return (
-		<Dropdown
-			arrow={true}
-			placement='bottomLeft'
-			trigger={[openHistoryMode]}
-			align={{offset: [-4, -8]}}
-			overlayStyle={{width: '136px'}}
-			menu={{
-				items: recentList.map((r, i) => ({
-					key: i,
-					label:
-						<div className="relative pr-[32px] group">
-							<div className=" h-5 text-ellipsis whitespace-nowrap overflow-hidden dark:text-[#fff]" onClick={(e) => fillSearchValue(e, r)}>{r}</div>
-							<div className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
-								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('填入并开启正则模式')}</div>}>
-									<div
-										onClick={(e) => fillSearchValue(e, r, true)}
-										className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2] dark:text-[#b0b0b0] dark:hover:bg-[#2c2c2c]">.*
-									</div>
-								</Tooltip>
-
-								<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('固定之')}</div>}>
-									<div
-										onClick={(e) => addToFix(e, r)}
-										className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] dark:hover:bg-[#2c2c2c] group/fix ">
-										<FixSvg className="w-3 h-3 group-hover/fix:fill-[#50a3d2] dark:*:fill-[#b0b0b0]" />
-									</div>
-								</Tooltip>
-							</div>
-						</div>
-				}))
-			}}
-			dropdownRender={(menu) => (
-				<div className="bg-white dark:bg-[#242424] dark:[&_.ant-dropdown-menu]:bg-[#242424]" style={{
-					boxShadow: '0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
-					borderRadius: '6px'
-				}}>
-					{
-						fixList.length > 0 &&
-						<>
-							<div className="font-bold pl-[10px] pt-[10px] select-none dark:text-[#fff]">{t('固定')}</div>
-							<Menu
-								style={{boxShadow: 'none'}}
-								items={fixList.map((r, i) => ({
-									key: i,
-									label:
-										<div className="relative pr-[32px] group">
-											<div className="max-w-10 h-5 text-ellipsis whitespace-nowrap overflow-hidden dark:text-[#fff]" onClick={(e) => fillSearchValue(e, r)}>{r}</div>
-											<div className="hidden group-hover:flex items-center absolute -right-[4px] top-[2px]">
-												<Tooltip arrowPointAtCenter={true} placement="top"
-														 getPopupContainer={() => popupContainer}
-														 align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('填入并开启正则模式')}</div>}>
-													<div
-														onClick={(e) => fillSearchValue(e, r, true)}
-														className="flex w-[18px] h-[18px] justify-center items-center text-[14px] select-none rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:text-[#50a3d2] dark:text-[#b0b0b0] dark:hover:bg-[#2c2c2c]">.*
-													</div>
-												</Tooltip>
-
-												<Tooltip arrowPointAtCenter={true} placement="top" getPopupContainer={() => popupContainer} align={{offset: [0, 4]}} title={<div className="scale-90 p-1">{t('取消固定')}</div>}>
-													<div
-														onClick={(e) => cancelToFix(e, r)}
-														className="flex w-[18px] h-[18px] justify-center items-center select-none rounded cursor-pointer transition-colors hover:bg-[rgba(216,30,6,0.1)] ">
-														<UnfixSvg className="w-3 h-3" />
-													</div>
-												</Tooltip>
-											</div>
-										</div>
-								}))}
-							/>
-							<Divider style={{margin: 0}}/>
-						</>
-					}
-					<div className="flex items-center justify-between pl-[10px] pr-[10px] pt-[10px] h-[20px] box-content dark:text-[#fff]">
-						<div className="font-bold select-none">{t('最近')}</div>
-						<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 ml-2 cursor-pointer !inline-flex items-center justify-center" onClick={clearRecent}>
-							<TrashSvg className="w-[16px] h-[16px] cursor-pointer" />
-						</Button>
+		<div
+			className="absolute top-[calc(100%+6px)] left-0 w-full bg-white/95 dark:bg-[#222222]/95 backdrop-blur-md rounded-lg shadow-xl border border-[rgba(232,232,232,0.9)] dark:border-[rgba(64,64,64,0.9)] z-50 overflow-hidden text-xs select-none transition-all duration-150 p-1.5"
+			onClick={(e) => e.stopPropagation()}
+			onMouseDown={(e) => e.stopPropagation()}
+		>
+			{hasRecent ? (
+				<>
+					<div className="flex items-center justify-between text-[11px] font-medium text-neutral-400 dark:text-neutral-500 px-2 py-0.5 mb-1 select-none">
+						<span>{t('最近搜索')}</span>
+						<button
+							type="button"
+							onClick={clearRecent}
+							className="text-[11px] text-neutral-400 hover:text-red-500 transition-colors cursor-pointer p-0 border-none bg-transparent"
+						>
+							{t('清除')}
+						</button>
 					</div>
-					<div className="smallScroll max-h-[160px] overflow-auto overscroll-contain dark:[&_.ant-dropdown-menu]:bg-[#242424]">
-						{
-							recentList.length > 0
-								? React.cloneElement(menu, {style: {boxShadow: 'none'}})
-								: <div className="text-xs h-[30px] text-center scale-90 text-[#cccccc] select-none">{t('暂无数据')}</div>
-						}
+					<div
+						ref={listRef}
+						className="space-y-[1px] max-h-[160px] overflow-y-auto overflow-x-hidden smallScroll"
+					>
+						{recentList.map((r, i) => {
+							const isSelected = selectedIndex === i
+							return (
+								<div
+									key={`recent-${r}-${i}`}
+									data-index={i}
+									onClick={(e) => handleItemClick(e, r)}
+									className={`flex items-center justify-between px-2 py-1 h-6 rounded cursor-pointer group transition-colors ${
+										isSelected
+											? 'bg-[var(--swe-color-primary)]/10 text-[var(--swe-color-primary)] font-medium'
+											: 'hover:bg-gray-100 dark:hover:bg-[#2c2c2c] text-neutral-800 dark:text-neutral-200'
+									}`}
+								>
+									<span className="truncate flex-1 text-xs leading-none" title={r}>
+										{r}
+									</span>
+									<div className="hidden group-hover:flex items-center ml-2 shrink-0">
+										<Tooltip placement="topRight" title={<div className="scale-90 p-1">{t('填入并开启正则模式')}</div>}>
+											<button
+												type="button"
+												onClick={(e) => {
+													e.stopPropagation()
+													handleItemClick(e, r, true)
+												}}
+												className="flex w-[18px] h-[18px] justify-center items-center text-[12px] font-mono leading-none select-none rounded cursor-pointer transition-colors hover:bg-gray-200 hover:text-[var(--swe-color-primary)] dark:text-[#b0b0b0] dark:hover:bg-[#383838] p-0 border-none bg-transparent"
+											>
+												.*
+											</button>
+										</Tooltip>
+									</div>
+								</div>
+							)
+						})}
 					</div>
+				</>
+			) : (
+				<div className="py-3 text-center text-xs text-neutral-400 dark:text-neutral-500 select-none">
+					{t('暂无数据')}
 				</div>
 			)}
-			getPopupContainer={() => popupContainer}
-		>
-			<div className="absolute top-0 left-0 h-[36px]">
-				<SearchSvg className="absolute left-[4px] top-0 bottom-0 p-1 box-content m-auto w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[#50a3d2] dark:*:fill-[#fff] dark:hover:bg-[#353535]" />
-				<DownSvg className="absolute w-[8px] h-[8px] left-[23px] top-[14px] z-10 cursor-pointer" />
-			</div>
-		</Dropdown>
+		</div>
 	)
 }
 
 RecentList.propTypes = {
+	isOpen: PropTypes.bool,
+	onClose: PropTypes.func,
 	recentList: PropTypes.array,
-	fixList: PropTypes.array,
+	selectedIndex: PropTypes.number,
 	fillSearchValue: PropTypes.func,
-	popupContainer: PropTypes.object,
-	updateRecentList: PropTypes.func,
-	updateFixList: PropTypes.func
+	updateRecentList: PropTypes.func
 }
+
+
