@@ -11,7 +11,6 @@ import { Input } from './Parts/Input';
 import { History } from './Parts/History'
 import { Feature } from './Parts/Feature'
 import { Total } from './Parts/Total'
-import { Changelog } from './Parts/Changelog'
 
 export const SettingContext = createContext(null)
 
@@ -183,7 +182,17 @@ export const Options = () => {
 					</div>
 
 					<div className="flex items-center">
-						<a href="https://github.com/ImSwordTooth/findwhatever" target="_blank">
+						<a
+							href="changelog.html"
+							target="_blank"
+							rel="noreferrer"
+							className="mr-3 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-800/80 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs font-semibold tracking-wide transition-all inline-flex items-center gap-1.5 no-underline shadow-sm hover:shadow"
+						>
+							<span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+							<span>{t('更新日志')}</span>
+							<span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-500 font-bold">v5.0</span>
+						</a>
+						<a href="https://github.com/ImSwordTooth/findwhatever" target="_blank" rel="noreferrer">
 							<svg className="w-[26px] h-[26px] cursor-pointer" viewBox="0 0 1024 1024" version="1.1"
 								 xmlns="http://www.w3.org/2000/svg" p-id="4118" width="200" height="200">
 								<path
@@ -206,7 +215,37 @@ export const Options = () => {
 						<Feature/>
 					</div>
 					<FakePanel onReset={resetSetting}/>
-					<Changelog />
+					
+					{/* 全新独立更新日志入口横幅 */}
+					<div className="mt-8 mb-12 px-[40px]">
+						<a
+							href="changelog.html"
+							target="_blank"
+							rel="noreferrer"
+							className="block p-6 rounded-2xl bg-gradient-to-r from-rose-500/10 via-amber-500/10 to-indigo-500/10 border border-rose-500/20 hover:border-rose-500/40 shadow-sm hover:shadow-md transition-all group no-underline"
+						>
+							<div className="flex items-center justify-between">
+								<div className="flex items-center gap-3.5">
+									<div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white text-xl shadow-md group-hover:scale-105 transition-transform">
+										🚀
+									</div>
+									<div>
+										<div className="text-base font-bold text-neutral-800 dark:text-neutral-100 group-hover:text-rose-500 transition-colors flex items-center gap-2">
+											<span>{t('查看全新更新日志与版本演化史')}</span>
+											<span className="text-[11px] px-2 py-0.5 rounded-full bg-rose-500 text-white font-mono font-bold">v5.0.0</span>
+										</div>
+										<div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+											纯内存文本投影架构革新、去 Antd 轻量化历程与 35+ 次版本演进时间线
+										</div>
+									</div>
+								</div>
+								<div className="text-xs font-semibold text-rose-500 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+									<span>立即浏览</span>
+									<span>→</span>
+								</div>
+							</div>
+						</a>
+					</div>
 				</div>
 			</div>
 		</SettingContext.Provider>

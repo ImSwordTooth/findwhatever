@@ -1,17 +1,15 @@
 import { createRoot } from 'preact/compat/client'
 import '../i18nnext'
-import { Options } from './Options'
+import { ChangelogPage } from './ChangelogPage'
 import styles from '../../global.css'
-import antdStyle from 'antd/dist/antd.less'
 
 const container = document.getElementById('app-container')
 if (container) {
 	const root = createRoot(container)
 	root.render(
-		<div style={{ height: '100%' }}>
-			<Options title={'Settings'} />
+		<>
+			<ChangelogPage />
 			<style type="text/css">{styles[0][1].toString()}</style>
-			<style type="text/css">{antdStyle[0][1].toString()}</style>
-		</div>
+		</>
 	)
 }

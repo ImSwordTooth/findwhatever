@@ -38,6 +38,7 @@ const config = {
 		action: path.join(__dirname, 'src', 'pages', 'Background', 'action.js'),
 		contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.js'),
 		options: path.join(__dirname, 'src', 'pages', 'Options', 'index.js'),
+		changelog: path.join(__dirname, 'src', 'pages', 'Changelog', 'index.jsx'),
 	},
 	output: {
 		filename: '[name].bundle.js',
@@ -166,6 +167,11 @@ const config = {
 			template: path.join(__dirname, 'src', 'pages', 'Options', 'index.html'),
 			filename: 'options.html',
 			chunks: ['options'],
+		}),
+		new rspack.HtmlRspackPlugin({
+			template: path.join(__dirname, 'src', 'pages', 'Changelog', 'index.html'),
+			filename: 'changelog.html',
+			chunks: ['changelog'],
 		}),
 	],
 	devtool: isDevelopment ? 'cheap-module-source-map' : false,
