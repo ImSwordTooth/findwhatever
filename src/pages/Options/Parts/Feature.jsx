@@ -1,142 +1,160 @@
-import React, { useContext } from 'preact/compat'
+import { useContext } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
-import { Button, Switch, InputNumber, Tooltip } from 'antd';
+import { Tooltip } from '../../../components/Tooltip'
+import { Switch } from '../../../components/Switch'
+import { InputNumber } from '../../../components/InputNumber'
 import { SettingContext } from '../Options'
-import { Shortcut } from '../Shortcut';
-import { NewPart } from '../NewPart';
+import { Shortcut } from '../../../components/Shortcut'
+import { NewPart } from '../NewPart'
 import UpArrowSvg from '../../../assets/svg/upArrow.svg'
 import DownArrowSvg from '../../../assets/svg/downArrow.svg'
 import LiveSvg from '../../../assets/svg/live.svg'
 import CloseSvg from '../../../assets/svg/close.svg'
-import WarnSvg from '../../../assets/svg/warn.svg';
+import WarnSvg from '../../../assets/svg/warn.svg'
 
 export const Feature = () => {
 	const { setting, updateSetting } = useContext(SettingContext)
-
 	const { t } = useTranslation()
 
 	return (
 		<div>
-			<div className="areaTitle mt-[30px]">{t('功能区')}</div>
-			<div className="mt-[12px]">
-				<UpArrowSvg className="w-[16px] h-[16px]" />
-				<DownArrowSvg className="w-[16px] h-[16px]" />
-				<div>{t('切换当前定位的结果的下标(search-results-active)，切换时会尽量地把对应的元素滚动到视口内。')}</div>
-				<div>{t('在输入框 focus 的状态下，也可以按')} <code>Enter</code> 和 <code>Shift+Enter</code> {t('来切换。')}</div>
-				<div className="text-[#ff4d4f]"><strong>{t('切换 search-results-active 时，需要更新缓存来执行高亮和定位的动作，浏览器的 MAX_WRITE_OPERATIONS_PER_MINUTE 限制了一分钟只能更新 120 次，所以切换的时候最好别“幻影键舞”，否则可能会更新失败。')}</strong></div>
-			</div>
+			<div className="areaTitle">{t('功能区')}</div>
 
-			<div className="mt-[12px]">
-				<div className="flex items-center mt-2 mb-2">
-					<button className="normalButton ml-[0px]">
-						<span className="text-xs select-none">Cc</span>
-					</button>
-					<button className="normalButton activeButton">
-						<span className="text-xs select-none">Cc</span>
-					</button>
-				</div>
-
+			<div className="space-y-8">
+				{/* 切换定位结果 */}
 				<div>
-					<Shortcut isMulti shortkey="c" />
-					<div>{t('激活后会严格根据字母的大小写匹配。原理是正则表达式的 i 模式。')}</div>
-				</div>
-			</div>
-
-			<div className="mt-[12px]">
-				<div className="flex items-center mt-2 mb-2">
-					<button className="normalButton ml-[0px]">
-						<span className="text-xs select-none">W</span>
-					</button>
-					<button className="normalButton activeButton">
-						<span className="text-xs select-none">W</span>
-					</button>
+					<div className="flex items-center gap-1.5 mb-2.5 text-zinc-700 dark:text-zinc-200">
+						<UpArrowSvg className="w-4 h-4" />
+						<DownArrowSvg className="w-4 h-4" />
+					</div>
+					<p className="mb-2.5">{t('切换当前定位的结果的下标(search-results-active)，切换时会尽量地把对应的元素滚动到视口内。')}</p>
+					<p className="mb-2.5">
+						{t('在输入框 focus 的状态下，也可以按')} <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-[11px] shadow-xs">Enter</kbd> {t('和')} <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-[11px] shadow-xs">Shift+Enter</kbd> {t('来切换。')}
+					</p>
+					<p className="mb-2.5 text-rose-500 font-medium">
+						{t('切换 search-results-active 时，需要更新缓存来执行高亮和定位的动作，浏览器的 MAX_WRITE_OPERATIONS_PER_MINUTE 限制了一分钟只能更新 120 次，所以切换的时候最好别“幻影键舞”，否则可能会更新失败。')}
+					</p>
 				</div>
 
+				{/* 大小写敏感 */}
 				<div>
-					<Shortcut shortkey="w" isMulti />
-					<div>{t('激活后只能匹配一个完整的单词，比如 special 这个单词，激活单词模式后搜索 spec 是搜不到的。原理是在内容前后加上正则表达式的 \\b。')}</div>
+					<div className="flex items-center gap-2 mb-2">
+						<button type="button" className="normalButton ml-0">
+							<span className="text-xs select-none">Cc</span>
+						</button>
+						<button type="button" className="normalButton activeButton">
+							<span className="text-xs select-none">Cc</span>
+						</button>
+					</div>
+					<div className="mb-2.5">
+						<Shortcut isMulti shortkey="c" />
+					</div>
+					<p className="mb-2.5">{t('激活后会严格根据字母的大小写匹配。原理是正则表达式的 i 模式。')}</p>
 				</div>
-			</div>
 
-			<div className="mt-[12px]">
-				<div className="flex items-center mt-2 mb-2">
-					<button className="normalButton ml-[0px]">
-						<span className="text-xs select-none">.*</span>
-					</button>
-					<button className="normalButton activeButton">
-						<span className="text-xs select-none">.*</span>
-					</button>
-				</div>
-
+				{/* 单词匹配 */}
 				<div>
-					<Shortcut shortkey="r" isMulti />
-					<div>{t('激活后可以使用正则表达式的语法进行搜索，为了避免输入过程中出现 .* 这种会匹配所有字符的情况出现，正则模式开启后，会有一段较长的防抖时间，默认 1000ms。')}</div>
+					<div className="flex items-center gap-2 mb-2">
+						<button type="button" className="normalButton ml-0">
+							<span className="text-xs select-none">W</span>
+						</button>
+						<button type="button" className="normalButton activeButton">
+							<span className="text-xs select-none">W</span>
+						</button>
+					</div>
+					<div className="mb-2.5">
+						<Shortcut shortkey="w" isMulti />
+					</div>
+					<p className="mb-2.5">{t('激活后只能匹配一个完整的单词，比如 special 这个单词，激活单词模式后搜索 spec 是搜不到的。原理是在内容前后加上正则表达式的 \\b。')}</p>
 				</div>
-			</div>
 
-
-			<NewPart>
+				{/* 正则表达式 */}
 				<div>
-					{t('v3.9.0 添加了检测过于宽泛和不合法的正则表达式的功能，出现这种情况后，文本框的右侧会出现')}
-					<Tooltip
-						arrowPointAtCenter={true}
-						placement="bottom"
-						getPopupContainer={(e) => e.parentElement}
-						title={
-							<div className="scale-90" style={{ padding: '4px 0' }}>
-								<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('正则表达式过于宽泛，可能导致查找过程中卡死，已暂停搜索，请重新输入')}</div>
+					<div className="flex items-center gap-2 mb-2">
+						<button type="button" className="normalButton ml-0">
+							<span className="text-xs select-none">.*</span>
+						</button>
+						<button type="button" className="normalButton activeButton">
+							<span className="text-xs select-none">.*</span>
+						</button>
+					</div>
+					<div className="mb-2.5">
+						<Shortcut shortkey="r" isMulti />
+					</div>
+					<p className="mb-2.5">{t('激活后可以使用正则表达式的语法进行搜索，为了避免输入过程中出现 .* 这种会匹配所有字符的情况出现，正则模式开启后，会有一段较长的防抖时间，默认 1000ms。')}</p>
+
+					<NewPart>
+						<div className="space-y-2">
+							<p className="flex items-center flex-wrap gap-1">
+								<span>{t('v3.9.0 添加了检测过于宽泛和不合法的正则表达式的功能，出现这种情况后，文本框的右侧会出现')}</span>
+								<Tooltip
+									arrowPointAtCenter={true}
+									placement="bottom"
+									title={
+										<div className="scale-90 p-1">
+											<div className="text-[#cccccc] leading-4">{t('正则表达式过于宽泛，可能导致查找过程中卡死，已暂停搜索，请重新输入')}</div>
+										</div>
+									}
+								>
+									<WarnSvg className="mx-1 w-3.5 h-3.5 opacity-80 drop-shadow-[0px_0px_4px_red] hover:opacity-100 cursor-pointer fill-rose-500 inline-block align-middle" />
+								</Tooltip>
+								<span>{t('并拒绝实际匹配。此功能不可关闭。')}</span>
+							</p>
+							<p>{t('不合法的正则表达式即为会报错的。')}</p>
+							<p className="font-medium text-zinc-800 dark:text-zinc-200">{t('我是这样判断一个正则表达式是否“过于宽泛的”：')}</p>
+							<div className="ml-5 space-y-1 text-zinc-600 dark:text-zinc-400">
+								<p>1. {t('是否为全量匹配加任意量词，如')} <code className="px-1 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 font-mono text-[11px]">.*</code>、<code className="px-1 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 font-mono text-[11px]">.+</code>、<code className="px-1 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 font-mono text-[11px]">[\s\S]?</code></p>
+								<p>2. {t('如果侥幸过了黑名单，再维护一个基本上普通的正则表达式不会全部覆盖的文本。然后用当前正则判断，如果全都匹配覆盖到了，就说明太宽泛了。')}</p>
 							</div>
-						}
-					>
-						<WarnSvg className="m-[0px_4px] w-3 h-3 opacity-80 drop-shadow-[0px_0px_4px_red] hover:opacity-90 cursor-pointer fill-red dark:fill-[#ff4141]" />
-					</Tooltip>{t('并拒绝实际匹配。此功能不可关闭。')}
-				</div>
+						</div>
+					</NewPart>
 
-				<div>{t('不合法的正则表达式即为会报错的。')}</div>
-				<div>{t('我是这样判断一个正则表达式是否“过于宽泛的”：')}</div>
-				<div className="ml-[20px]">
-					<div>1. {t('是否为全量匹配加任意量词，如')} <code>.*</code>、<code>.+</code>、<code>[\s\S]?</code></div>
-					<div>2. {t('如果侥幸过了黑名单，再维护一个基本上普通的正则表达式不会全部覆盖的文本。然后用当前正则判断，如果全都匹配覆盖到了，就说明太宽泛了。')}</div>
-				</div>
-			</NewPart>
-
-			<div className="setting-area">
-				<div className="setting-row">
-					<div>{t('正则模式防抖时长')}</div>
-					<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={500} value={setting.regexDebounceDuration} onChange={e => updateSetting('regexDebounceDuration', e)} />
-				</div>
-			</div>
-
-			<div className="mt-[12px]">
-				<div className="flex items-center mt-2 mb-2">
-					<div className={`w-5 h-5 justify-center rounded-[6px] select-none inline-flex items-center cursor-pointer ml-1`}>
-						<LiveSvg className="w-4 h-4" />
-					</div>
-					<div className={`w-5 h-5 justify-center rounded-[6px] select-none inline-flex items-center cursor-pointer ml-1 activeButton`}>
-						<LiveSvg className="w-4 h-4" />
+					<div className="setting-row">
+						<div>{t('正则模式防抖时长')}</div>
+						<InputNumber
+							style={{ width: '130px' }}
+							addonAfter="ms"
+							min={500}
+							step={100}
+							value={setting.regexDebounceDuration}
+							onChange={e => updateSetting('regexDebounceDuration', e)}
+						/>
 					</div>
 				</div>
 
-				<Shortcut shortkey="d" isMulti />
-				<div>{t('激活后会启用一个 MutationObserver，监听页面里的 DOM 变化，变化后会自动更新查找结果。')}</div>
-				<div>{t('但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。')}</div>
-			</div>
-
-			<div className="mt-[12px]">
-				<div className="mt-1 mb-1">
-					<Button type="text" danger shape="circle" className="w-6 !h-6 min-w-0 cursor-pointer ">
-						<CloseSvg className="icon w-2.5 h-2.5" />
-					</Button>
-				</div>
-
+				{/* 实时监听 DOM */}
 				<div>
-					<Shortcut shortkey="Esc" />
-					<div>{t('点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。')}</div>
+					<div className="flex items-center gap-2 mb-2">
+						<div className="w-5 h-5 justify-center rounded-[6px] select-none inline-flex items-center cursor-pointer ml-0">
+							<LiveSvg className="w-4 h-4" />
+						</div>
+						<div className="w-5 h-5 justify-center rounded-[6px] select-none inline-flex items-center cursor-pointer ml-0 activeButton">
+							<LiveSvg className="w-4 h-4" />
+						</div>
+					</div>
+					<div className="mb-2.5">
+						<Shortcut shortkey="d" isMulti />
+					</div>
+					<p className="mb-2.5">{t('激活后会启用一个 MutationObserver，监听页面里的 DOM 变化，变化后会自动更新查找结果。')}</p>
+					<p className="mb-2.5">{t('但是网页的 DOM 变化是个很常见的行为，无法判断变化是否频繁、是否需要监听，因此这里需要用户判断，如果觉得没什么影响就可以开着，觉得不需要，或者某页面下 DOM 变化很频繁，就可以关闭。')}</p>
 				</div>
 
-				<div className="setting-row">
-					<div>{t('是否显示关闭按钮')}</div>
-					<Switch size="small" checked={setting.isShowClose} onChange={e => updateSetting('isShowClose', e)} />
+				{/* 关闭按钮 */}
+				<div>
+					<div className="mb-2">
+						<button type="button" className="w-6 h-6 rounded-full inline-flex items-center justify-center text-rose-500 hover:bg-rose-50 cursor-pointer transition-colors border-none bg-transparent">
+							<CloseSvg className="w-2.5 h-2.5" />
+						</button>
+					</div>
+					<div className="mb-2.5">
+						<Shortcut shortkey="Esc" />
+					</div>
+					<p className="mb-2.5">{t('点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。')}</p>
+
+					<div className="setting-row">
+						<div>{t('是否显示关闭按钮')}</div>
+						<Switch size="small" checked={setting.isShowClose} onChange={e => updateSetting('isShowClose', e)} />
+					</div>
 				</div>
 			</div>
 		</div>

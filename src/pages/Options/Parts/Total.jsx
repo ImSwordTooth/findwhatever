@@ -1,10 +1,13 @@
-import React, { useContext, useEffect, useState } from 'preact/compat'
+import { useContext, useEffect, useState } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
-import {Popover, Radio, Select, Switch, Tag} from 'antd';
+import { Popover } from 'antd'
+import { Select } from '../../../components/Select'
+import { Radio } from '../../../components/Radio'
+import { Switch } from '../../../components/Switch'
 import { SettingContext } from '../Options'
 import TipsSvg from '../../../assets/svg/tips.svg'
 import DownSvg from '../../../assets/svg/down.svg'
-import { SketchPicker } from 'react-color';
+import { SketchPicker } from 'react-color'
 
 export const Total = () => {
 	const { setting, updateSetting } = useContext(SettingContext)
@@ -39,13 +42,33 @@ export const Total = () => {
 		<div>
 			<div className="areaTitle">{t('整体')}</div>
 
-			<div>{t('现在打开面板的默认快捷键为 Alt+F。')}</div>
-			<div>{t('当前快捷键为')} <Tag color="cyan">{commandText || t('无')}</Tag>。</div>
-			<div>{t('未设置快捷键会导致面板只能通过点击图标打开。')}</div>
-			<div>{t('您可以在这里自定义快捷键：')}
-				<a href="chrome://extensions/shortcuts" style={{ textDecoration: 'underline', color: 'rgb(0 121 229)', margin: '0 4px' }}>chrome://extensions</a>
+			<div className="space-y-2 mb-4">
+				<p className="mb-2.5">
+					{t('现在打开面板的默认快捷键为')} <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-[11px] shadow-xs">Alt+F</kbd>。
+				</p>
+				<p className="mb-2.5 flex items-center flex-wrap gap-1.5">
+					<span>{t('当前快捷键为')}</span>
+					<kbd className="px-2 py-0.5 rounded bg-rose-50 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/40 text-xs font-mono font-medium shadow-2xs">
+						{commandText || t('无')}
+					</kbd>
+					<span>。</span>
+				</p>
+				<p className="mb-2.5 text-zinc-500">{t('未设置快捷键会导致面板只能通过点击图标打开。')}</p>
+				<p className="mb-2.5">
+					{t('您可以在这里自定义快捷键：')}
+					<a
+						href="chrome://extensions/shortcuts"
+						target="_blank"
+						rel="noreferrer"
+						className="text-rose-500 hover:text-rose-600 underline underline-offset-2 mx-1 font-mono text-xs transition-colors"
+					>
+						chrome://extensions/shortcuts
+					</a>
+				</p>
+				<p className="mb-2.5 text-zinc-500">
+					{t('设置 Command+F(macOS) 或者 Ctrl+F(windows等) 时会覆盖浏览器自带的查找。')}
+				</p>
 			</div>
-			<div>{t('设置 Command+F(macOS) 或者 Ctrl+F(windows等) 时会覆盖浏览器自带的查找。')}</div>
 			<div className="setting-area mb-[10px]">
 				<div className="setting-row">
 					<div>{t('语言')}：</div>
@@ -200,7 +223,9 @@ export const Total = () => {
 				}
 			</div>
 
-			<div>{t('我不是专业的UI设计师，所以颜色搭配做的很不自信。如果你有更好的想法，欢迎帮助我做出更美观的界面。')}🤝</div>
+			<p className="mt-8 text-xs text-zinc-400 dark:text-zinc-500 italic">
+				{t('我不是专业的UI设计师，所以颜色搭配做的很不自信。如果你有更好的想法，欢迎帮助我做出更美观的界面。')} 🤝
+			</p>
 		</div>
 	)
 }

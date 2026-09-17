@@ -10,7 +10,8 @@ export const RecentList = (props) => {
 		fillSearchValue,
 		recentList = [],
 		selectedIndex = -1,
-		updateRecentList
+		updateRecentList,
+		className = ''
 	} = props
 
 	const { t } = useTranslation()
@@ -43,7 +44,7 @@ export const RecentList = (props) => {
 
 	return (
 		<div
-			className="absolute top-[calc(100%+6px)] left-0 w-full bg-white/95 dark:bg-[#222222]/95 backdrop-blur-md rounded-lg shadow-xl border border-[rgba(232,232,232,0.9)] dark:border-[rgba(64,64,64,0.9)] z-50 overflow-hidden text-xs select-none transition-all duration-150 p-1.5"
+			className={`absolute top-[calc(100%+6px)] left-0 w-full bg-white/95 dark:bg-[#222222]/95 backdrop-blur-md rounded-lg shadow-xl border border-[rgba(232,232,232,0.9)] dark:border-[rgba(64,64,64,0.9)] z-50 overflow-hidden text-xs select-none transition-all duration-150 p-1.5 ${className || ''}`}
 			onClick={(e) => e.stopPropagation()}
 			onMouseDown={(e) => e.stopPropagation()}
 		>

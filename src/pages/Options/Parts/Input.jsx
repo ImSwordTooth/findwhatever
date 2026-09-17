@@ -1,12 +1,14 @@
-import React, { useContext, useEffect, useState } from 'preact/compat'
-import { InputNumber, Button, Spin, message, Select, Switch } from 'antd'
+import { useContext, useEffect, useState } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
-import { LoadingOutlined } from '@ant-design/icons';
+import { Select } from '../../../components/Select'
+import { Switch } from '../../../components/Switch'
+import { InputNumber } from '../../../components/InputNumber'
 import { SettingContext } from '../Options'
 
 export const Input = () => {
 	const { setting, updateSetting } = useContext(SettingContext)
 	const [ lastValue, setLastValue ] = useState('')
+	const [ clearToast, setClearToast ] = useState('')
 
 	const { t } = useTranslation()
 
@@ -19,21 +21,64 @@ export const Input = () => {
 	const clearLast = () => {
 		chrome.storage.local.set({ searchValue: '' }).then(() => {
 			setLastValue('')
-			message.success('清除成功')
+			setClearToast(t('清除成功'))
+			setTimeout(() => setClearToast(''), 2000)
 		})
 	}
 
 	return (
 		<div>
-			<div className="areaTitle mt-[30px]">{t('输入框')}</div>
+			<div className="areaTitle">{t('输入框')}</div>
 
-			<div>{t('本插件比较适用于简短的词语搜索，')}<strong>{t('不鼓励')}</strong>{t('跨行搜索。')}</div>
-			<div>{t('面板打开时，输入框会自动聚焦，如果当前有选中的文本，会自动填入；如果没有选中的文本，会自动填入上一次搜索的文本。')}</div>
-			<div>{t('支持设置防抖时长，停止输入 n 秒后才执行查找动作，可以防止输入过程无谓的内存消耗（尤其是开启了正则表达式模式时）。')}</div>
-			<div>{t('防抖触发时，输入框右侧会出现这样的标志：')}<div className="inline-flex items-center ml-[8px]"><Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 12 }} spin />} /></div></div>
-			<div>
-				<div>{t('如果上次搜索的结果会产生bug，而新面板又自动填入了，产生了新的 bug 导致插件不可用，可以')} <Button type="dashed" disabled={!lastValue} danger onClick={clearLast}><span className="px-[8px]">{t('点击此处删去上一次的文本')}（{lastValue || '空'}）</span></Button> 。</div>
-				<div className="text-xs"><em>{t('记得把 bug 反馈给我~')}</em></div>
+			<div className="space-y-3 mb-6">
+				<p className="mb-2.5">
+					{t('本插件比较适用于简短的词语搜索，')}<strong>{t('不鼓励')}</strong>{t('跨行搜索。')}
+				</p>
+				<p className="mb-2.5">
+					{t('面板打开时，输入框会自动聚焦，如果当前有选中的文本，会自动填入；如果没有选中的文本，会自动填入上一次搜索的文本。')}
+				</p>
+				<p className="mb-2.5">
+					{t('支持设置防抖时长，停止输入 n 秒后才执行查找动作，可以防止输入过程无谓的内存消耗（尤其是开启了正则表达式模式时）。')}
+				</p>
+				<p className="mb-2.5 flex items-center flex-wrap gap-1.5">
+					<span>{t('防抖触发时，输入框右侧会出现这样的标志：')}</span>
+					<span className="inline-flex items-center justify-center w-5 h-5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-500">
+						<svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+							<circle cx="12" cy="12" r="10" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" />
+						</svg>
+					</span>
+				</p>
+				<div className="rounded-lg bg-zinc-50 dark:bg-zinc-800/40 p-3 border border-zinc-200/60 dark:border-zinc-700/60 text-xs">
+					<div className="flex items-center justify-between gap-3 flex-wrap">
+						<div className="space-y-1">
+							<div className="text-zinc-700 dark:text-zinc-200">
+								{t('若上次搜索词异常导致面板打不开，可在此重置：')}
+							</div>
+							<div className="flex items-center gap-1.5 text-[11px] text-zinc-400 dark:text-zinc-500">
+								<span>{t('当前记忆文本')}：</span>
+								<code className="px-1.5 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-700/60 font-mono text-zinc-600 dark:text-zinc-300">
+									{lastValue ? `"${lastValue}"` : t('无')}
+								</code>
+								<span className="italic ml-2">{t('（记得把 bug 反馈给我~）')}</span>
+							</div>
+						</div>
+						<button
+							type="button"
+							disabled={!lastValue}
+							onClick={clearLast}
+							className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+								!lastValue
+									? 'bg-zinc-200/50 text-zinc-400 dark:bg-zinc-800 cursor-not-allowed'
+									: 'bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 dark:text-rose-400 cursor-pointer active:scale-95 shadow-2xs'
+							}`}
+						>
+							<svg className="w-3.5 h-3.5 stroke-current fill-none stroke-2" viewBox="0 0 24 24">
+								<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+							</svg>
+							<span>{clearToast ? clearToast : t('清除上次文本')}</span>
+						</button>
+					</div>
+				</div>
 			</div>
 
 			<div className="setting-area">

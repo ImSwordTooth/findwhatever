@@ -32,8 +32,8 @@ export const MilestoneCard = ({ item }) => {
 			className="relative group mb-8 pl-10 sm:pl-12"
 		>
 			{/* 时间轴发光主节点：严格定位于 left-4，-translate-x-1/2 确保中心与竖线 100% 同轴 */}
-			<div className="absolute left-4 -translate-x-1/2 top-4 w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-600 p-[2px] shadow-[0_0_15px_rgba(244,63,94,0.4)] z-10 pointer-events-none">
-				<div className="w-full h-full rounded-full bg-white dark:bg-[#0e1015] flex items-center justify-center">
+			<div className="absolute left-4 -translate-x-1/2 top-4 w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-600 p-[2px] shadow-[0_0_15px_rgba(244,63,94,0.35)] z-10 pointer-events-none">
+				<div className="w-full h-full rounded-full bg-white flex items-center justify-center">
 					<div className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-amber-500 to-rose-500 animate-pulse" />
 				</div>
 			</div>
@@ -47,16 +47,16 @@ export const MilestoneCard = ({ item }) => {
 					transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
 					transition: 'transform 0.15s ease-out'
 				}}
-				className="relative rounded-2xl p-[2px] bg-gradient-to-r from-amber-500/80 via-rose-500/80 to-indigo-600/80 shadow-xl hover:shadow-[0_20px_50px_rgba(244,63,94,0.22)] transition-shadow duration-300"
+				className="relative rounded-2xl p-[2px] bg-gradient-to-r from-amber-500/80 via-rose-500/80 to-indigo-600/80 shadow-xl hover:shadow-[0_20px_50px_rgba(244,63,94,0.2)] transition-shadow duration-300"
 			>
 				{/* 粒子喷发容器 */}
 				<SparkCanvas trigger={sparkTrigger} onComplete={() => setSparkTrigger(false)} />
 
 				{/* 卡片核心主体 */}
-				<div className="relative rounded-[14px] bg-white/95 dark:bg-[#15171e]/95 backdrop-blur-xl p-5 sm:p-7 overflow-hidden text-neutral-800 dark:text-neutral-100">
+				<div className="relative rounded-[14px] bg-white/95 backdrop-blur-xl p-5 sm:p-7 overflow-hidden text-neutral-800">
 					{/* 背景光斑装饰 */}
-					<div className="absolute -right-16 -top-16 w-56 h-56 bg-rose-500/10 dark:bg-rose-500/20 rounded-full blur-3xl pointer-events-none" />
-					<div className="absolute -left-16 -bottom-16 w-56 h-56 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+					<div className="absolute -right-16 -top-16 w-56 h-56 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+					<div className="absolute -left-16 -bottom-16 w-56 h-56 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
 					{/* 顶栏信息：版本号 + 最新粒子按钮 + 发布日期 */}
 					<div className="flex flex-wrap items-center justify-between gap-3 mb-3">
@@ -72,7 +72,7 @@ export const MilestoneCard = ({ item }) => {
 								✨ 最新
 							</button>
 						</div>
-						<div className="text-xs font-mono text-neutral-400 dark:text-neutral-500 flex items-center gap-1.5">
+						<div className="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
 							<svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
 								<rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeWidth="2" />
 								<line x1="16" y1="2" x2="16" y2="6" strokeWidth="2" />
@@ -83,9 +83,9 @@ export const MilestoneCard = ({ item }) => {
 						</div>
 					</div>
 
-					{/* 变更条目：与下面版本完全一致的素雅排版，无额外加粗或色彩干扰 */}
+					{/* 变更条目：素雅列表 */}
 					{item.contentList && item.contentList.length > 0 && (
-						<ul className="space-y-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-2 pl-0 list-none m-0">
+						<ul className="space-y-2 text-xs sm:text-sm text-neutral-600 mt-2 pl-0 list-none m-0">
 							{item.contentList.map((line, idx) => (
 								<li key={idx} className="flex items-start gap-2">
 									<span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-rose-500/80 shrink-0" />
