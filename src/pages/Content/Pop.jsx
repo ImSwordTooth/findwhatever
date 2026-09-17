@@ -4,7 +4,7 @@ import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, useDebounce, debo
 import { Tooltip } from '../../components/Tooltip'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Rnd } from 'react-rnd'
-import { changeLanguage } from 'i18next'
+import { applyAppLanguage } from '../../i18n'
 import { useTranslation } from 'react-i18next'
 import '../../global.css'
 import { FrameList } from "./Parts/FrameList";
@@ -150,31 +150,7 @@ export const Pop = () => {
 			setSweSetting(syncStorage.swe_setting || { tempOpacity: 0.3 })
 
 			// 设定语言
-			const language = syncStorage.swe_setting?.language
-			if (!language) {
-				changeLanguage('')
-			} else if (language !== 'auto') {
-				changeLanguage(language)
-			} else {
-				const lang = /(\w+)-?/g.exec(navigator.language)
-				if (lang && lang[1]) {
-					switch (lang[1]) {
-						case 'zh': changeLanguage(''); break;
-						case 'en': changeLanguage('English'); break;
-						case 'ru': changeLanguage('Russian'); break;
-						case 'ar': changeLanguage('Arabic'); break;
-						case 'pt': changeLanguage('Portuguese'); break;
-						case 'es': changeLanguage('Spanish'); break;
-						case 'fr': changeLanguage('French'); break;
-						case 'de': changeLanguage('German'); break;
-						case 'ko': changeLanguage('Korean'); break;
-						case 'ja': changeLanguage('Japanese'); break;
-						default: changeLanguage(''); break;
-					}
-				} else {
-					changeLanguage('')
-				}
-			}
+			applyAppLanguage(syncStorage.swe_setting?.language)
 
 			let color = ''
 			if (syncStorage.swe_setting?.colorMode === 'auto') {

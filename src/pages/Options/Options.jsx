@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext, useRef } from 'preact/compat'
-import { changeLanguage } from 'i18next'
+import { applyAppLanguage } from '../../i18n'
 import { useTranslation } from 'react-i18next'
 import { DragBar } from './Parts/DragBar'
 import { ExtraArea } from './Parts/ExtraArea'
@@ -182,28 +182,7 @@ export const Options = () => {
 	}, [setting.colorMode, setting.primaryColor, setting.primaryColor_dark])
 
 	useEffect(() => {
-		const language = setting.language
-		if (language !== 'auto') {
-			changeLanguage(language)
-		} else {
-			const lang = /(\w+)-?/g.exec(navigator.language)
-			if (lang && lang[1]) {
-				switch (lang[1]) {
-					case 'zh': changeLanguage(''); break;
-					case 'en': changeLanguage('English'); break;
-					case 'ru': changeLanguage('Russian'); break;
-					case 'ar': changeLanguage('Arabic'); break;
-					case 'pt': changeLanguage('Portuguese'); break;
-					case 'es': changeLanguage('Spanish'); break;
-					case 'fr': changeLanguage('French'); break;
-					case 'de': changeLanguage('German'); break;
-					case 'ko': changeLanguage('Korean'); break;
-					case 'ja': changeLanguage('Japanese'); break;
-				}
-			} else {
-				changeLanguage('')
-			}
-		}
+		applyAppLanguage(setting.language)
 	}, [setting.language])
 
 	const init = async () => {
