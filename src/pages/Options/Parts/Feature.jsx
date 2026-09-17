@@ -34,6 +34,11 @@ export const Feature = () => {
 					<p className="mb-2.5 text-rose-500 font-medium">
 						{t('切换 search-results-active 时，需要更新缓存来执行高亮和定位的动作，浏览器的 MAX_WRITE_OPERATIONS_PER_MINUTE 限制了一分钟只能更新 120 次，所以切换的时候最好别“幻影键舞”，否则可能会更新失败。')}
 					</p>
+
+					<div className="setting-row">
+						<div>{t('是否开启首尾循环跳转提示')}</div>
+						<Switch size="small" checked={setting.isLoopNotice ?? true} onChange={e => updateSetting('isLoopNotice', e)} />
+					</div>
 				</div>
 
 				{/* 大小写敏感 */}

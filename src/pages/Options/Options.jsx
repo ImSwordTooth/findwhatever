@@ -55,7 +55,8 @@ const INIT_SETTING = {
 	debounceDuration: 200, // 非正则模式防抖时长
 	regexDebounceDuration: 1000, // 正则模式防抖时长
 
-	isShowClose: true // 是否显示关闭按钮
+	isShowClose: true, // 是否显示关闭按钮
+	isLoopNotice: true // 是否开启首尾循环跳转提示
 }
 
 // 严格严格使用各子模块原生 .areaTitle 的标题文本

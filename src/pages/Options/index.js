@@ -1,5 +1,5 @@
 import { createRoot } from 'preact/compat/client'
-import '../i18nnext'
+import '../../i18n'
 import { Options } from './Options'
 import styles from '../../global.css'
 import antdStyle from 'antd/dist/antd.less'

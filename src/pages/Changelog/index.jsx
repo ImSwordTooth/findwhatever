@@ -1,5 +1,5 @@
 import { createRoot } from 'preact/compat/client'
-import '../i18nnext'
+import '../../i18n'
 import { ChangelogPage } from './ChangelogPage'
 import styles from '../../global.css'
 

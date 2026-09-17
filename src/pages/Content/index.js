@@ -1,6 +1,6 @@
 import { createRoot } from 'preact/compat/client';
 import { Pop } from './Pop'
-import '../i18nnext'
+import '../../i18n'
 import styles from '../../global.css'
 
 const CONTAINER_ID = '__swe_container';

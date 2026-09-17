@@ -6,13 +6,23 @@ import CopySvg from '../../../assets/svg/copy.svg'
 import OkSvg from '../../../assets/svg/ok.svg'
 
 export const FindResult = (props) => {
-	const { current = 0, total = [], isShowResultText } = props
+	const { current = 0, total = [], isShowResultText, loopNotice } = props
 
 	const { t } = useTranslation()
 
 	const [ isCopied, setIsCopied ] = useState(false)
+	const [ activeLoop, setActiveLoop ] = useState(null)
 	const containerRef = useRef(null)
 	const copyTimerRef = useRef(null)
+
+	useEffect(() => {
+		if (!loopNotice) return
+		setActiveLoop(loopNotice)
+		const timer = setTimeout(() => {
+			setActiveLoop(null)
+		}, 450)
+		return () => clearTimeout(timer)
+	}, [loopNotice])
 
 	const totalCount = useMemo(() => {
 		if (!Array.isArray(total)) return 0
@@ -96,7 +106,29 @@ export const FindResult = (props) => {
 					<span className="dark:text-[#ddd]">：</span>
 				</>
 			}
-			<span id="__swe_current" className="mr-1 inline-block min-w-[15px] text-right shrink-0 monofont shadowText dark:text-[#ddd]">{current}</span>
+			<div className="relative inline-flex items-center justify-end min-w-[15px] mr-1 shrink-0">
+				{activeLoop && (
+					<span
+						key={activeLoop.key}
+						className={`absolute inset-0 pointer-events-none select-none text-right monofont font-black text-[var(--swe-color-primary)] z-20 ${
+							activeLoop.direction === 'down' ? 'animate-ghost-down' : 'animate-ghost-up'
+						}`}
+						aria-hidden="true"
+					>
+						{current}
+					</span>
+				)}
+				<span
+					id="__swe_current"
+					className={`w-full inline-block text-right shrink-0 monofont transition-colors duration-300 ${
+						activeLoop
+							? 'text-[var(--swe-color-primary)] font-bold drop-shadow-[0_0_4px_var(--swe-color-primary)]'
+							: 'shadowText dark:text-[#ddd]'
+					}`}
+				>
+					{current}
+				</span>
+			</div>
 			<span className="dark:text-[#ddd]"> / </span><motion.span className="ml-1 inline-block min-w-[15px] text-left shrink-0 monofont shadowText dark:text-[#ddd]" id="__swe_total">{rounded}</motion.span>
 		</div>
 	)
@@ -106,4 +138,5 @@ FindResult.propTypes = {
 	current: Proptypes.number,
 	total: Proptypes.array,
 	isShowResultText: Proptypes.bool,
+	loopNotice: Proptypes.object,
 }

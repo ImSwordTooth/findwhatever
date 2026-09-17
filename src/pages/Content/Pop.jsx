@@ -47,6 +47,8 @@ export const Pop = () => {
 	const [ sweSetting, setSweSetting ] = useState({})
 	const [ isHistoryOpen, setIsHistoryOpen ] = useState(false)
 	const [ selectedHistoryIndex, setSelectedHistoryIndex ] = useState(-1)
+	const [ loopNotice, setLoopNotice ] = useState(null)
+	const loopTimerRef = useRef(null)
 	const searchContainerRef = useRef(null)
 
 	useEffect(() => {
@@ -442,6 +444,23 @@ export const Pop = () => {
 		if (nextIndex > sum) nextIndex = 1;
 		if (nextIndex <= 0) nextIndex = sum;
 
+		// 检查首尾循环边界提示 (1 ↔ n)：看在页面中的相对位置（1 在网页顶端，n 在网页底端）
+		if (sum > 1 && (sweSetting.isLoopNotice ?? true)) {
+			let direction = null;
+			if (step > 0 && activeResult === sum) {
+				direction = 'up'; // n -> 1: 从网页底部跳回网页顶端 (UP)
+			} else if (step < 0 && activeResult === 1) {
+				direction = 'down'; // 1 -> n: 从网页顶端跳到网页底端 (DOWN)
+			}
+			if (direction) {
+				setLoopNotice({ direction, key: Date.now() });
+				if (loopTimerRef.current) clearTimeout(loopTimerRef.current);
+				loopTimerRef.current = setTimeout(() => {
+					setLoopNotice(null);
+				}, 450);
+			}
+		}
+
 		await chrome.storage.session.set({ activeResult: nextIndex });
 
 		let accSum = 0;
@@ -582,7 +601,7 @@ export const Pop = () => {
 							<div className="flex items-center justify-between h-[24px] border-b-1 border-[#f5f5f5] mb-1">
 								<FrameList tabIndex={tabIndex} frames={frames} total={total} updateCurrent={setCurrent} updateTabIndex={setTabIndex} />
 								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
-									<FindResult total={total} current={current} isShowResultText={sweSetting.isShowResultText} />
+									<FindResult total={total} current={current} isShowResultText={sweSetting.isShowResultText} loopNotice={loopNotice} />
 								</div>
 							</div>
 							<div className="flex items-center w-full">
@@ -636,11 +655,39 @@ export const Pop = () => {
 													</Tooltip>
 												}
 											</div>
-											<button type="button" className="w-5 h-5 min-w-5 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all" onClick={() => stepTo(-1)}>
-												<UpArrowSvg className="w-3.5 h-3.5 shrink-0 dark:*:fill-[#fff]" />
+											<button
+												type="button"
+												className={`w-5 h-5 min-w-5 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all relative overflow-visible ${
+													loopNotice?.direction === 'up' ? 'ring-2 ring-[var(--swe-color-primary)] ring-offset-1 dark:ring-offset-[#282828]' : ''
+												}`}
+												onClick={() => stepTo(-1)}
+											>
+												<UpArrowSvg className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+													loopNotice?.direction === 'up' ? 'text-[var(--swe-color-primary)] fill-[var(--swe-color-primary)] dark:*:fill-[var(--swe-color-primary)]' : 'dark:*:fill-[#fff]'
+												}`} />
+												{loopNotice?.direction === 'up' && (
+													<UpArrowSvg
+														key={loopNotice.key}
+														className="w-3.5 h-3.5 shrink-0 absolute inset-0 m-auto pointer-events-none text-[var(--swe-color-primary)] fill-[var(--swe-color-primary)] dark:*:fill-[var(--swe-color-primary)] animate-ghost-up z-20"
+													/>
+												)}
 											</button>
-											<button type="button" className="w-5 h-5 min-w-5 ml-1 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all" onClick={() => stepTo(1)}>
-												<DownArrowSvg className="w-3.5 h-3.5 shrink-0 dark:*:fill-[#fff]" />
+											<button
+												type="button"
+												className={`w-5 h-5 min-w-5 ml-1 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all relative overflow-visible ${
+													loopNotice?.direction === 'down' ? 'ring-2 ring-[var(--swe-color-primary)] ring-offset-1 dark:ring-offset-[#282828]' : ''
+												}`}
+												onClick={() => stepTo(1)}
+											>
+												<DownArrowSvg className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+													loopNotice?.direction === 'down' ? 'text-[var(--swe-color-primary)] fill-[var(--swe-color-primary)] dark:*:fill-[var(--swe-color-primary)]' : 'dark:*:fill-[#fff]'
+												}`} />
+												{loopNotice?.direction === 'down' && (
+													<DownArrowSvg
+														key={loopNotice.key}
+														className="w-3.5 h-3.5 shrink-0 absolute inset-0 m-auto pointer-events-none text-[var(--swe-color-primary)] fill-[var(--swe-color-primary)] dark:*:fill-[var(--swe-color-primary)] animate-ghost-down z-20"
+													/>
+												)}
 											</button>
 											<div className="w-[1px] h-3.5 bg-[#dfdfdf] mx-1.5"></div>
 											<Tooltip
