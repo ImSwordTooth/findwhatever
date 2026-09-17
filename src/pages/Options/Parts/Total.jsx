@@ -186,6 +186,10 @@ export const Total = () => {
 					<div>{t('是否使用毛玻璃效果面板')}：</div>
 					<Switch size="small" checked={setting.isUseGlassEffect} onChange={e => updateSetting('isUseGlassEffect', e)} />
 				</div>
+				<div className="setting-row">
+					<div>{t('是否显示按钮提示气泡')}：</div>
+					<Switch size="small" checked={setting.isShowTooltip ?? true} onChange={e => updateSetting('isShowTooltip', e)} />
+				</div>
 			</div>
 
 			<div className="info-area">

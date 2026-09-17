@@ -154,5 +154,6 @@
   "（记得把 bug 反馈给我~）": "(Remember to report the bug to me~)",
   "清除上次文本": "Clear last text",
   "现在打开面板的默认快捷键为": "The default shortcut to open the panel is now ",
-  "是否开启首尾循环跳转提示": "Enable loop navigation hint"
+  "是否开启首尾循环跳转提示": "Enable loop navigation hint",
+  "是否显示按钮提示气泡": "Show button tooltips"
 }

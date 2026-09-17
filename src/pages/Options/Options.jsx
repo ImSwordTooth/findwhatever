@@ -56,7 +56,8 @@ const INIT_SETTING = {
 	regexDebounceDuration: 1000, // 正则模式防抖时长
 
 	isShowClose: true, // 是否显示关闭按钮
-	isLoopNotice: true // 是否开启首尾循环跳转提示
+	isLoopNotice: true, // 是否开启首尾循环跳转提示
+	isShowTooltip: true // 是否显示按钮提示气泡
 }
 
 // 严格严格使用各子模块原生 .areaTitle 的标题文本
@@ -64,7 +65,7 @@ const MENU_ITEMS = [
 	{
 		id: 'total',
 		name: '整体',
-		desc: '语言、浮窗主题色、毛玻璃效果等基础选项',
+		desc: '语言、浮窗主题色、毛玻璃效果、提示气泡等基础选项',
 		icon: (
 			<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
 				<circle cx="12" cy="12" r="9" strokeWidth="2" />

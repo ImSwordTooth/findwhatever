@@ -27,6 +27,7 @@ export const FakePanel = (props) => {
 	const textRef = useRef(null)
 	const popContainerRef = useRef(null)
 	const { setting } = useContext(SettingContext)
+	const isShowTooltip = setting?.isShowTooltip ?? true
 
 	const { t } = useTranslation()
 
@@ -251,7 +252,7 @@ export const FakePanel = (props) => {
 											arrowPointAtCenter={true}
 											placement="bottom"
 											getPopupContainer={(e) => e.parentElement}
-											title={<div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div>}
+											title={isShowTooltip ? <div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div> : null}
 										>
 											<button className="normalButton activeButton dark:bg-[#383838] dark:text-[#fff]">
 												<span className="text-xs select-none">Cc</span>
@@ -261,7 +262,7 @@ export const FakePanel = (props) => {
 											arrowPointAtCenter={true}
 											placement="bottom"
 											getPopupContainer={(e) => e.parentElement}
-											title={<div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div>}
+											title={isShowTooltip ? <div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div> : null}
 										>
 											<button className="normalButton dark:bg-[#383838] dark:text-[#fff]">
 												<span className="text-xs select-none">W</span>
@@ -272,10 +273,12 @@ export const FakePanel = (props) => {
 											placement="bottom"
 											getPopupContainer={(e) => e.parentElement}
 											title={
-												<div className="scale-90" style={{ padding: '4px 0' }}>
-													<div>{t('正则表达式')} {getShortcutText('r')}</div>
-													<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
-												</div>
+												isShowTooltip ? (
+													<div className="scale-90" style={{ padding: '4px 0' }}>
+														<div>{t('正则表达式')} {getShortcutText('r')}</div>
+														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
+													</div>
+												) : null
 											}
 										>
 											<button
@@ -288,12 +291,14 @@ export const FakePanel = (props) => {
 											arrowPointAtCenter={true}
 											placement="bottomRight"
 											getPopupContainer={(e) => e.parentElement}
-											title={(
-												<div className="scale-90" style={{ padding: '4px 0' }}>
-													<div>{t('实时监测 DOM 变化')} {getShortcutText('d')}</div>
-													<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('在不适合实时监测的情况下请临时关闭此功能')}</div>
-												</div>
-											)}
+											title={
+												isShowTooltip ? (
+													<div className="scale-90" style={{ padding: '4px 0' }}>
+														<div>{t('实时监测 DOM 变化')} {getShortcutText('d')}</div>
+														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('在不适合实时监测的情况下请临时关闭此功能')}</div>
+													</div>
+												) : null
+											}
 										>
 											<div className={`w-5 h-5 justify-center rounded-[6px] select-none inline-flex items-center cursor-pointer ml-1`}>
 												<svg className="w-4 h-4 will-change-transform" viewBox="0 0 1024 1024" version="1.1"
@@ -325,6 +330,7 @@ export const FakePanel = (props) => {
 									recentList={recentList}
 									selectedIndex={-1}
 									updateRecentList={(newList) => setRecentList(newList)}
+									isShowTooltip={isShowTooltip}
 									className={
 										activeId === 'history'
 											? '!outline !outline-2 !outline-rose-500 !outline-offset-2 !shadow-[0_0_0_3px_rgba(244,63,94,0.2),0_0_12px_rgba(244,63,94,0.3)] z-50'

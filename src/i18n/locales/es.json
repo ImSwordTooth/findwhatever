@@ -154,5 +154,6 @@
   "查找或按 ↓ 查历史": "Buscar o pulse ↓ para historial",
   "最近搜索": "Búsquedas recientes",
   "清除": "Borrar",
-  "是否开启首尾循环跳转提示": "Habilitar pista de navegación en bucle"
+  "是否开启首尾循环跳转提示": "Habilitar pista de navegación en bucle",
+  "是否显示按钮提示气泡": "Mostrar sugerencias de botones"
 }

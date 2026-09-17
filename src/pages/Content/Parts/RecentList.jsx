@@ -11,7 +11,8 @@ export const RecentList = (props) => {
 		recentList = [],
 		selectedIndex = -1,
 		updateRecentList,
-		className = ''
+		className = '',
+		isShowTooltip = true
 	} = props
 
 	const { t } = useTranslation()
@@ -81,7 +82,7 @@ export const RecentList = (props) => {
 										{r}
 									</span>
 									<div className="hidden group-hover:flex items-center ml-2 shrink-0">
-										<Tooltip placement="topRight" title={<div className="scale-90 p-1">{t('填入并开启正则模式')}</div>}>
+										<Tooltip placement="topRight" title={isShowTooltip ? <div className="scale-90 p-1">{t('填入并开启正则模式')}</div> : null}>
 											<button
 												type="button"
 												onClick={(e) => {
@@ -114,7 +115,8 @@ RecentList.propTypes = {
 	recentList: PropTypes.array,
 	selectedIndex: PropTypes.number,
 	fillSearchValue: PropTypes.func,
-	updateRecentList: PropTypes.func
+	updateRecentList: PropTypes.func,
+	isShowTooltip: PropTypes.bool
 }
 
 

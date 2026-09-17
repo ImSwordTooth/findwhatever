@@ -540,6 +540,8 @@ export const Pop = () => {
 		}
 	}
 
+	const isShowTooltip = sweSetting.isShowTooltip ?? true
+
 	return (
 		<div className="fixed z-[10000] top-0 left-0">
 			{
@@ -692,7 +694,7 @@ export const Pop = () => {
 											<div className="w-[1px] h-3.5 bg-[#dfdfdf] mx-1.5"></div>
 											<Tooltip
 												placement="bottom"
-												title={<div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div>}
+												title={isShowTooltip ? <div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div> : null}
 											>
 												<button
 													className={`normalButton ${isMatchCase ? 'activeButton' : ''}`}
@@ -703,7 +705,7 @@ export const Pop = () => {
 											</Tooltip>
 											<Tooltip
 												placement="bottom"
-												title={<div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div>}
+												title={isShowTooltip ? <div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div> : null}
 											>
 												<button
 													className={`normalButton ${isWord ? 'activeButton' : ''}`}
@@ -715,10 +717,12 @@ export const Pop = () => {
 											<Tooltip
 												placement="bottom"
 												title={
-													<div className="scale-90" style={{ padding: '4px 0' }}>
-														<div>{t('正则表达式')} {getShortcutText('r')}</div>
-														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
-													</div>
+													isShowTooltip ? (
+														<div className="scale-90" style={{ padding: '4px 0' }}>
+															<div>{t('正则表达式')} {getShortcutText('r')}</div>
+															<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('为了避免输入正则表达式的过程中卡死，开启此选项后的输入防抖会持续数秒')}</div>
+														</div>
+													) : null
 												}
 											>
 												<button
@@ -730,12 +734,14 @@ export const Pop = () => {
 											</Tooltip>
 											<Tooltip
 												placement="bottomRight"
-												title={(
-													<div className="scale-90" style={{ padding: '4px 0' }}>
-														<div>{t('实时监测 DOM 变化')} {getShortcutText('d')}</div>
-														<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('在不适合实时监测的情况下请临时关闭此功能')}</div>
-													</div>
-												)}
+												title={
+													isShowTooltip ? (
+														<div className="scale-90" style={{ padding: '4px 0' }}>
+															<div>{t('实时监测 DOM 变化')} {getShortcutText('d')}</div>
+															<div className="text-[#cccccc]" style={{ lineHeight: '16px' }}>{t('在不适合实时监测的情况下请临时关闭此功能')}</div>
+														</div>
+													) : null
+												}
 											>
 												<div
 													className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center ml-1 dark:[path]:fill-[#fff] ${isLive ? 'activeLive' : ''}`}
@@ -776,6 +782,7 @@ export const Pop = () => {
 												setSelectedHistoryIndex(-1)
 											}}
 											fillSearchValue={fillSearchValue}
+											isShowTooltip={isShowTooltip}
 										/>
 									}
 								</div>

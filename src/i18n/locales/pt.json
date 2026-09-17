@@ -154,5 +154,6 @@
   "查找或按 ↓ 查历史": "Pesquisar ou pressione ↓ para o histórico",
   "最近搜索": "Pesquisas recentes",
   "清除": "Limpar",
-  "是否开启首尾循环跳转提示": "Ativar dica de navegação em loop"
+  "是否开启首尾循环跳转提示": "Ativar dica de navegação em loop",
+  "是否显示按钮提示气泡": "Mostrar dicas de ferramentas dos botões"
 }

@@ -154,5 +154,6 @@
   "查找或按 ↓ 查历史": "Suchen oder ↓ drücken für Verlauf",
   "最近搜索": "Letzte Suchanfragen",
   "清除": "Löschen",
-  "是否开启首尾循环跳转提示": "Hinweis für Schleifennavigation aktivieren"
+  "是否开启首尾循环跳转提示": "Hinweis für Schleifennavigation aktivieren",
+  "是否显示按钮提示气泡": "Schaltflächen-Tooltips anzeigen"
 }
