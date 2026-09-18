@@ -53,7 +53,7 @@ const config = {
 	module: {
 		rules: [
 			{
-				test: /\.(css|scss)$/,
+				test: /\.css$/,
 				use: [
 					{
 						loader: 'css-loader',
@@ -61,39 +61,12 @@ const config = {
 					{
 						loader: 'postcss-loader',
 					},
-					{
-						loader: 'sass-loader',
-						options: {
-							sourceMap: true,
-						},
-					},
 				],
 			},
 			{
 				test: /\.svg$/i,
 				issuer: /\.[jt]sx?$/,
 				use: ['@svgr/webpack'],
-			},
-			{
-				test: /\.less$/,
-				use: [
-					{
-						loader: 'css-loader',
-					},
-					{
-						loader: 'less-loader',
-						options: {
-							lessOptions: {
-								modifyVars: {
-									'primary-color': '#12171a',
-									'font-size-base': '12px',
-									'border-radius-base': '6px',
-								},
-								javascriptEnabled: true,
-							},
-						},
-					},
-				],
 			},
 			{
 				test: new RegExp('.(' + fileExtensions.join('|') + ')$'),

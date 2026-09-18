@@ -50,7 +50,6 @@ const INIT_SETTING = {
 	isShowRing: true, // 是否显示文本框光圈
 
 	isShowHistory: true, // 是否显示历史记录
-	openHistoryMode: 'hover', // 历史记录打开方式
 	debounceDuration: 200, // 非正则模式防抖时长
 	regexDebounceDuration: 1000, // 正则模式防抖时长
 

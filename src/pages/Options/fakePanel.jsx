@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'preact/compat'
-import { Button, Alert, Tooltip } from "antd";
+import { Tooltip } from "../../components/Tooltip";
 import { Input } from "../../components/Input";
 import { FrameList } from '../Content/Parts/FrameList';
 import { RecentList } from '../Content/Parts/RecentList';
@@ -366,11 +366,29 @@ export const FakePanel = (props) => {
 				{text}
 			</pre>
 
-			<Alert message={t('设置项自动保存，但需要重新打开面板才能生效')} description={t('修改高亮样式后，可能需要刷新页面才能生效')} type="warning" showIcon />
+			<div className="flex items-start gap-2.5 p-3 rounded-xl border border-amber-200/80 bg-amber-50/70 dark:border-amber-900/40 dark:bg-amber-950/20 text-xs">
+				<svg className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+					<circle cx="12" cy="12" r="10" />
+					<line x1="12" y1="8" x2="12" y2="12" />
+					<line x1="12" y1="16" x2="12.01" y2="16" />
+				</svg>
+				<div className="space-y-0.5">
+					<div className="font-medium text-amber-900 dark:text-amber-200 leading-tight">
+						{t('设置项自动保存，但需要重新打开面板才能生效')}
+					</div>
+					<div className="text-amber-700/80 dark:text-amber-400/80 text-[11px] leading-normal">
+						{t('修改高亮样式后，可能需要刷新页面才能生效')}
+					</div>
+				</div>
+			</div>
 			<div className="flex justify-end mt-2">
-				<Button type="primary" danger shape="round" onClick={onReset}>
-					<div className="px-[12px]">{t('重置设置项')}</div>
-				</Button>
+				<button
+					type="button"
+					className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-xs font-medium bg-rose-500 hover:bg-rose-600 text-white transition-all shadow-sm active:scale-95 cursor-pointer"
+					onClick={onReset}
+				>
+					{t('重置设置项')}
+				</button>
 			</div>
 		</div>
 	)

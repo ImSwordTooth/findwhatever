@@ -2,7 +2,6 @@ import { createRoot } from 'preact/compat/client'
 import '../../i18n'
 import { Options } from './Options'
 import styles from '../../global.css'
-import antdStyle from 'antd/dist/antd.less'
 
 const container = document.getElementById('app-container')
 if (container) {
@@ -11,7 +10,6 @@ if (container) {
 		<div style={{ height: '100%' }}>
 			<Options title={'Settings'} />
 			<style type="text/css">{styles[0][1].toString()}</style>
-			<style type="text/css">{antdStyle[0][1].toString()}</style>
 		</div>
 	)
 }
