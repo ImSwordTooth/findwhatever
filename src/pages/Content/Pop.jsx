@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from 'preact/compat'
 import { Input } from '../../components/Input'
 import { reCheckTree, closePop, observerBodyAndOpenShadowRoot, useDebounce, debounce } from './features'
 import { Tooltip } from '../../components/Tooltip'
-import { LoadingOutlined } from '@ant-design/icons'
 import { Rnd } from 'react-rnd'
 import { applyAppLanguage } from '../../i18n'
 import { useTranslation } from 'react-i18next'
@@ -18,6 +17,7 @@ import DownArrowSvg from '../../assets/svg/downArrow.svg'
 import CloseSvg from '../../assets/svg/close.svg'
 import WarnSvg from '../../assets/svg/warn.svg'
 import SearchSvg from '../../assets/svg/search.svg'
+import LoadingSvg from '../../assets/svg/loading.svg'
 
 export const Pop = () => {
 	const [ frames, setFrames ] = useState([])
@@ -103,7 +103,19 @@ export const Pop = () => {
 		closePop();
 	};
 
+	const [pressingBtn, setPressingBtn] = useState(null)
+	const pressTimerRef = useRef(null)
+
+	const triggerBtnPress = (btnKey) => {
+		setPressingBtn(btnKey)
+		if (pressTimerRef.current) clearTimeout(pressTimerRef.current)
+		pressTimerRef.current = setTimeout(() => {
+			setPressingBtn(null)
+		}, 140)
+	}
+
 	const toggleOption = (key) => {
+		triggerBtnPress(key)
 		setOptions(prev => {
 			const nextVal = !prev[key]
 			chrome.storage.sync.set({ [key]: nextVal }).catch(() => null)
@@ -436,6 +448,7 @@ export const Pop = () => {
 	}
 
 	const stepTo = async (step) => {
+		triggerBtnPress(step === -1 ? 'up' : 'down');
 		const { activeResult = 0, resultSum = [] } = await chrome.storage.session.get(['activeResult', 'resultSum']);
 		const sum = resultSum.reduce((acc, cur) => acc + (cur.sum || 0), 0);
 		if (sum === 0) return;
@@ -588,7 +601,7 @@ export const Pop = () => {
 							{
 								sweSetting.dragArea !== 'total' &&
 								<div className="flex justify-center absolute top-[7px] left-0 right-0 m-auto z-10 w-full">
-									<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100 relative before:content-[''] before:px-5 before:py-1 before:w-full before:absolute before:-top-1 before:h-[3px] before:box-content before:-left-5 before:-left-[20px]"/>
+									<div className="searchWhateverMoveHandler w-[42px] h-[3.5px] bg-[#888888] rounded-full opacity-35 transition-all duration-300 cursor-move hover:w-16 hover:opacity-80 active:bg-[var(--swe-color-primary)] active:opacity-100 relative before:content-[''] before:px-5 before:py-1 before:w-full before:absolute before:-top-1 before:h-[3px] before:box-content before:-left-[20px]"/>
 								</div>
 							}
 							<ExtraArea
@@ -609,7 +622,11 @@ export const Pop = () => {
 							<div className="flex items-center w-full">
 								<div className="swe_search relative" ref={searchContainerRef}>
 									<SearchSvg
-										className="absolute left-[6px] top-0 bottom-0 p-1 box-content m-auto w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[var(--swe-color-primary)] dark:*:fill-[#fff] dark:hover:bg-[#353535]"
+										className={`absolute left-[6px] top-0 bottom-0 p-1 box-content m-auto w-4 h-4 z-10 cursor-pointer transition-colors duration-200 active:scale-90 ${
+											isHistoryOpen
+												? 'fill-[var(--swe-color-primary)] dark:[&>path]:fill-[var(--swe-color-primary)]'
+												: 'fill-[#555] hover:fill-[var(--swe-color-primary)] dark:[&>path]:fill-[#fff] dark:hover:[&>path]:fill-[var(--swe-color-primary)]'
+										}`}
 										onClick={() => {
 											if (sweSetting.isShowHistory ?? true) {
 												setIsHistoryOpen(prev => !prev)
@@ -637,11 +654,11 @@ export const Pop = () => {
 											<div className="absolute right-[calc(100%_+_4px)] top-0 bottom-0 flex items-center gap-[6px]">
 												{
 													isReg && !isDebounceOk &&
-													<div className="h-full flex items-center"><LoadingOutlined className="animate-spin text-[12px] text-[var(--swe-color-primary)] dark:text-[#fff]" /></div>
+													<div className="h-full flex items-center"><LoadingSvg className="animate-spin w-3 h-3 text-[var(--swe-color-primary)] dark:text-[#fff]" /></div>
 												}
 												{
 													searchValue &&
-													<ClearSvg className=" w-3 h-3 opacity-25 hover:opacity-45 cursor-pointer dark:*:fill-[#fff]" onClick={clearInput} />
+													<ClearSvg className="w-3 h-3 opacity-35 hover:opacity-85 hover:scale-110 active:scale-90 transition-all cursor-pointer dark:*:fill-[#fff]" onClick={clearInput} />
 												}
 												{
 													isShowWarn &&
@@ -660,6 +677,8 @@ export const Pop = () => {
 											<button
 												type="button"
 												className={`w-5 h-5 min-w-5 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all relative overflow-visible ${
+													pressingBtn === 'up' ? 'animate-press' : ''
+												} ${
 													loopNotice?.direction === 'up' ? 'ring-2 ring-[var(--swe-color-primary)] ring-offset-1 dark:ring-offset-[#282828]' : ''
 												}`}
 												onClick={() => stepTo(-1)}
@@ -677,6 +696,8 @@ export const Pop = () => {
 											<button
 												type="button"
 												className={`w-5 h-5 min-w-5 ml-1 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all relative overflow-visible ${
+													pressingBtn === 'down' ? 'animate-press' : ''
+												} ${
 													loopNotice?.direction === 'down' ? 'ring-2 ring-[var(--swe-color-primary)] ring-offset-1 dark:ring-offset-[#282828]' : ''
 												}`}
 												onClick={() => stepTo(1)}
@@ -697,7 +718,7 @@ export const Pop = () => {
 												title={isShowTooltip ? <div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div> : null}
 											>
 												<button
-													className={`normalButton ${isMatchCase ? 'activeButton' : ''}`}
+													className={`normalButton ${isMatchCase ? 'activeButton' : ''} ${pressingBtn === 'isMatchCase' ? 'animate-press' : ''}`}
 													onClick={() => toggleOption('isMatchCase')}
 												>
 													<span className="text-[11px] select-none">Cc</span>
@@ -708,7 +729,7 @@ export const Pop = () => {
 												title={isShowTooltip ? <div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div> : null}
 											>
 												<button
-													className={`normalButton ${isWord ? 'activeButton' : ''}`}
+													className={`normalButton ${isWord ? 'activeButton' : ''} ${pressingBtn === 'isWord' ? 'animate-press' : ''}`}
 													onClick={() => toggleOption('isWord')}
 												>
 													<span className="text-[11px] select-none">W</span>
@@ -726,7 +747,7 @@ export const Pop = () => {
 												}
 											>
 												<button
-													className={`normalButton ${isReg ? 'activeButton' : ''}`}
+													className={`normalButton ${isReg ? 'activeButton' : ''} ${pressingBtn === 'isReg' ? 'animate-press' : ''}`}
 													onClick={() => toggleOption('isReg')}
 												>
 													<span className="text-[11px] select-none">.*</span>
@@ -744,7 +765,7 @@ export const Pop = () => {
 												}
 											>
 												<div
-													className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center ml-1 dark:[path]:fill-[#fff] ${isLive ? 'activeLive' : ''}`}
+													className={`w-5 h-5 justify-center rounded-[6px] cursor-pointer select-none inline-flex items-center ml-1 active:scale-90 transition-transform dark:[path]:fill-[#fff] ${isLive ? 'activeLive' : ''} ${pressingBtn === 'isLive' ? 'animate-press' : ''}`}
 													onClick={() => toggleOption('isLive')}
 												>
 													<svg className="w-4 h-4 will-change-transform" viewBox="0 0 1024 1024" version="1.1"

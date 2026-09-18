@@ -18,24 +18,36 @@
 		padding: 18px 12px 10px;
 		border-radius: 14px;
 		background-color: rgba(255, 255, 255, 1);
-		border: solid 1px rgb(211 211 211 / 47%);
-		box-shadow: 0 0 6px 3px rgb(233 233 233 / 27%);
+		background-color: color-mix(in srgb, var(--swe-color-primary, #1677ff) 2.5%, #ffffff);
+		border: solid 1px rgba(0, 0, 0, 0.08);
+		border-color: color-mix(in srgb, var(--swe-color-primary, #1677ff) 8%, rgba(0, 0, 0, 0.08));
+		box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.1), 0 0 20px -2px color-mix(in srgb, var(--swe-color-primary, #1677ff) 8%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--swe-color-primary, #1677ff) 22%, rgba(255, 255, 255, 0.95));
 
 		&.glass {
-			background-color: rgba(255, 255, 255, 0.4);
-			backdrop-filter: blur(4px);
-			border-color: rgb(255 255 255 / 36%);
+			background-color: rgba(255, 255, 255, 0.68);
+			background-color: color-mix(in srgb, var(--swe-color-primary, #1677ff) 3.5%, rgba(255, 255, 255, 0.68));
+			backdrop-filter: blur(12px) saturate(180%);
+			-webkit-backdrop-filter: blur(12px) saturate(180%);
+			border-color: rgba(255, 255, 255, 0.5);
+			border-color: color-mix(in srgb, var(--swe-color-primary, #1677ff) 12%, rgba(255, 255, 255, 0.5));
+			box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.12), 0 0 24px -2px color-mix(in srgb, var(--swe-color-primary, #1677ff) 10%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--swe-color-primary, #1677ff) 28%, rgba(255, 255, 255, 0.95));
 		}
 
 		&.dark {
 			background-color: rgba(28, 28, 28, 1);
-			border-color: rgb(65 65 65 / 47%);
-			box-shadow: 0 0 6px 3px rgb(0 0 0 / 27%);
+			background-color: color-mix(in srgb, var(--swe-color-primary, #44d62c) 6%, #18181b);
+			border: solid 1px rgba(255, 255, 255, 0.12);
+			border-color: color-mix(in srgb, var(--swe-color-primary, #44d62c) 14%, rgba(255, 255, 255, 0.12));
+			box-shadow: 0 14px 38px -4px rgba(0, 0, 0, 0.55), 0 0 28px -4px color-mix(in srgb, var(--swe-color-primary, #44d62c) 14%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--swe-color-primary, #44d62c) 24%, rgba(255, 255, 255, 0.2));
 
 			&.glass {
-				background-color: rgba(14, 14, 14, 0.76);
-				backdrop-filter: blur(4px);
-				border-color: rgb(63 63 63 / 36%);
+				background-color: rgba(24, 24, 27, 0.76);
+				background-color: color-mix(in srgb, var(--swe-color-primary, #44d62c) 7.5%, rgba(24, 24, 27, 0.78));
+				backdrop-filter: blur(12px) saturate(180%);
+				-webkit-backdrop-filter: blur(12px) saturate(180%);
+				border-color: rgba(255, 255, 255, 0.15);
+				border-color: color-mix(in srgb, var(--swe-color-primary, #44d62c) 16%, rgba(255, 255, 255, 0.14));
+				box-shadow: 0 18px 44px -4px rgba(0, 0, 0, 0.7), 0 0 28px -4px color-mix(in srgb, var(--swe-color-primary, #44d62c) 16%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--swe-color-primary, #44d62c) 28%, rgba(255, 255, 255, 0.24));
 			}
 
 			.normalButton {
@@ -44,9 +56,9 @@
 			}
 
 			.activeButton {
-				background-color: rgb(119 134 144 / 16%)!important;
-				font-weight: normal!important;
-				text-shadow: 0 0 6px var(--swe-color-primary)!important;
+				background-color: color-mix(in srgb, var(--swe-color-primary) 18%, #282828) !important;
+				font-weight: 500 !important;
+				text-shadow: 0 0 8px color-mix(in srgb, var(--swe-color-primary) 40%, transparent) !important;
 			}
 		}
 
@@ -64,10 +76,24 @@
 	}
 
 	.activeButton {
-		background-color: rgba(183, 217, 239, 0.16) !important;
+		background-color: color-mix(in srgb, var(--swe-color-primary) 15%, #ffffff) !important;
 		color: var(--swe-color-primary)!important;
 		font-weight: bold;
 		text-shadow: none;
+	}
+
+	.recentListPanel {
+		background-color: rgba(255, 255, 255, 0.96);
+		background-color: color-mix(in srgb, var(--swe-color-primary, #1677ff) 3.5%, rgba(255, 255, 255, 0.96));
+		border: solid 1px color-mix(in srgb, var(--swe-color-primary, #1677ff) 12%, rgba(0, 0, 0, 0.08));
+		box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.15), 0 0 20px -2px color-mix(in srgb, var(--swe-color-primary, #1677ff) 8%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--swe-color-primary, #1677ff) 22%, rgba(255, 255, 255, 0.95));
+	}
+
+	.dark .recentListPanel {
+		background-color: rgba(24, 24, 27, 0.96);
+		background-color: color-mix(in srgb, var(--swe-color-primary, #44d62c) 7%, rgba(24, 24, 27, 0.96));
+		border: solid 1px color-mix(in srgb, var(--swe-color-primary, #44d62c) 14%, rgba(255, 255, 255, 0.12));
+		box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.65), 0 0 24px -4px color-mix(in srgb, var(--swe-color-primary, #44d62c) 14%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--swe-color-primary, #44d62c) 24%, rgba(255, 255, 255, 0.2));
 	}
 
 	.activeLive {
@@ -90,7 +116,12 @@
 		background-color: white;
 		margin-left: 4px;
 		padding: 0;
-		transition: background-color .3s ease;
+		transition: background-color .2s ease, transform .1s cubic-bezier(0.34, 1.56, 0.64, 1);
+		user-select: none;
+
+		&:active {
+			transform: scale(0.88);
+		}
 	}
 
 	.pageTabStatusBar {
@@ -350,6 +381,23 @@
 	.animate-ghost-up {
 		animation: swe-ghost-up 360ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 		will-change: transform, opacity, filter;
+	}
+
+	@keyframes swe-press {
+		0% {
+			transform: scale(1);
+		}
+		40% {
+			transform: scale(0.85);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
+
+	.animate-press {
+		animation: swe-press 140ms cubic-bezier(0.34, 1.56, 0.64, 1);
+		will-change: transform;
 	}
 
 	.sketch-picker * {

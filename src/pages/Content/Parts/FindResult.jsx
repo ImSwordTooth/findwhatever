@@ -89,7 +89,8 @@ export const FindResult = (props) => {
 				isShowResultText &&
 				<>
 					<div
-						className="flex items-center cursor-grab shrink-0 active:cursor-grabbing hover:text-[var(--swe-color-primary)] dark:text-[#b7b4b4] dark:hover:text-[var(--swe-color-primary)] transition-colors"
+						className="flex items-center cursor-pointer shrink-0 transition-colors duration-200 select-none hover:text-[var(--swe-color-primary)] dark:text-[#b7b4b4] dark:hover:text-[var(--swe-color-primary)]"
+						title={t('点击复制全部结果')}
 						onClick={copyResult}>
 						<div className="scale-90 origin-right">{t('查找结果')}</div>
 						<span className="w-3.5 h-3.5 ml-1 inline-flex items-center justify-center shrink-0">
@@ -97,16 +98,16 @@ export const FindResult = (props) => {
 								isCopied
 									?
 									<motion.div style={{ originX: 0.5, originY: 0.5 }} className="w-full h-full flex items-center justify-center" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.15 }}>
-										<OkSvg className="w-3 h-3" />
+										<OkSvg className="w-3 h-3 text-[var(--swe-color-primary)] fill-[var(--swe-color-primary)]" />
 									</motion.div>
-									: <CopySvg className="w-2.5 h-2.5" />
+									: <CopySvg className="w-2.5 h-2.5 opacity-70" />
 							}
 						</span>
 					</div>
-					<span className="dark:text-[#ddd]">：</span>
+					<span className="dark:text-[#ddd] mr-0.5">：</span>
 				</>
 			}
-			<div className="relative inline-flex items-center justify-end min-w-[15px] mr-1 shrink-0">
+			<div className="relative inline-flex items-center justify-end min-w-[15px] mr-0.5 shrink-0">
 				{activeLoop && (
 					<span
 						key={activeLoop.key}
@@ -120,16 +121,28 @@ export const FindResult = (props) => {
 				)}
 				<span
 					id="__swe_current"
-					className={`w-full inline-block text-right shrink-0 monofont transition-colors duration-300 ${
+					className={`w-full inline-block text-right shrink-0 monofont transition-[filter] duration-300 ${
+						totalCount > 0
+							? 'font-bold text-neutral-900 dark:text-neutral-100'
+							: 'text-neutral-400 dark:text-neutral-500'
+					} ${
 						activeLoop
-							? 'text-[var(--swe-color-primary)] font-bold drop-shadow-[0_0_4px_var(--swe-color-primary)]'
-							: 'shadowText dark:text-[#ddd]'
+							? 'drop-shadow-[0_0_8px_var(--swe-color-primary)]'
+							: 'shadowText'
 					}`}
 				>
 					{current}
 				</span>
 			</div>
-			<span className="dark:text-[#ddd]"> / </span><motion.span className="ml-1 inline-block min-w-[15px] text-left shrink-0 monofont shadowText dark:text-[#ddd]" id="__swe_total">{rounded}</motion.span>
+			<span className="text-neutral-400 dark:text-neutral-500 font-mono">/</span>
+			<motion.span
+				className={`ml-0.5 inline-block min-w-[15px] text-left shrink-0 monofont ${
+					totalCount > 0 ? 'text-neutral-700 dark:text-neutral-300 font-medium' : 'text-neutral-400 dark:text-neutral-500'
+				}`}
+				id="__swe_total"
+			>
+				{rounded}
+			</motion.span>
 		</div>
 	)
 }

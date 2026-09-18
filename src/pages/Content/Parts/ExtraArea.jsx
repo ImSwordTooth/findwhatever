@@ -65,13 +65,25 @@ export const ExtraArea = (props) => {
 			}
 			{
 				isShowOpacity &&
-				<div className="flex items-center text-xs text-[#a0a0a0] cursor-grab opacity-80 active:cursor-grabbing z-30" onMouseEnter={hidePanelTemporarily} onMouseLeave={showPanelTemporarily} onClick={toggleHidePanel}>
+				<div
+					className={`flex items-center text-xs cursor-grab active:cursor-grabbing z-30 transition-all duration-200 hover:scale-110 active:scale-90 ${
+						isHidePanel
+							? 'text-[var(--swe-color-primary)] opacity-100'
+							: 'text-[#a0a0a0] opacity-75 hover:opacity-100 hover:text-[var(--swe-color-primary)]'
+					}`}
+					onMouseEnter={hidePanelTemporarily}
+					onMouseLeave={showPanelTemporarily}
+					onClick={toggleHidePanel}
+				>
 					<OpacitySvg />
 				</div>
 			}
 			{
 				isShowSetting &&
-				<div className="flex items-center text-xs text-[#a0a0a0] cursor-pointer opacity-80 z-30" onClick={openSetting}>
+				<div
+					className="flex items-center text-xs text-[#a0a0a0] cursor-pointer opacity-75 hover:opacity-100 hover:text-[var(--swe-color-primary)] z-30 transition-all duration-200 hover:scale-110 hover:rotate-45 active:scale-90"
+					onClick={openSetting}
+				>
 					<SettingSvg className="w-[11px] h-[11px]" />
 				</div>
 			}

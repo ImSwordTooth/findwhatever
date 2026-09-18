@@ -122,18 +122,14 @@ export const FakePanel = (props) => {
 			style={{ width: `${panelWidth}px` }}
 		>
 			<div
-				className={`mainPanel ${isDark ? 'dark' : ''} transition-all duration-200`}
+				className={`mainPanel ${isDark ? 'dark' : ''} ${setting.isUseGlassEffect ? 'glass' : ''} transition-all duration-200`}
 				style={{
 					position: 'relative',
 					width: '100%',
-					padding:'0 12px 10px',
-					background: isDark ? '#1c1c1c' : '#fff',
-					borderRadius: '14px',
-					boxShadow: isDark ? '0 0 6px 3px rgb(0 0 0 / 27%)' : '0 0 6px 3px rgb(233 233 233 / 27%)',
-					border: isDark ? 'solid 1px rgb(65 65 65 / 47%)' : 'solid 1px rgb(211 211 211 / 47%)',
 					opacity: (isHidePanel || isHidePanelTemporarily) ? setting.tempOpacity : 1,
-					paddingTop: `${!setting.isShowSetting && !setting.isShowOpacity && !setting.isShowStatus && setting.dragArea === 'total' ? '12px' : '18px'}`
-			}}>
+					paddingTop: `${!setting.isShowSetting && !setting.isShowOpacity && !setting.isShowStatus && setting.dragArea === 'total' ? '12px' : '18px'}`,
+					'--swe-color-primary': isDark ? (setting.primaryColor_dark || '#44d62c') : (setting.primaryColor || '#1677ff')
+				}}>
 				<div id="searchWhateverPopup" ref={popContainerRef}>
 					{
 						setting.dragArea === 'bar' &&
@@ -205,7 +201,11 @@ export const FakePanel = (props) => {
 							{
 								(setting.isShowHistory ?? true) &&
 								<SearchSvg
-									className="absolute left-[6px] top-0 bottom-0 p-1 box-content m-auto w-4 h-4 z-10 rounded cursor-pointer transition-colors hover:bg-[#e9e9e9] hover:fill-[var(--swe-color-primary)] dark:*:fill-[#fff] dark:hover:bg-[#353535]"
+									className={`absolute left-[6px] top-0 bottom-0 p-1 box-content m-auto w-4 h-4 z-10 cursor-pointer transition-colors duration-200 active:scale-90 ${
+										isHistoryOpen
+											? 'fill-[var(--swe-color-primary)] dark:[&>path]:fill-[var(--swe-color-primary)]'
+											: 'fill-[#555] hover:fill-[var(--swe-color-primary)] dark:[&>path]:fill-[#fff] dark:hover:[&>path]:fill-[var(--swe-color-primary)]'
+									}`}
 									onClick={() => {
 										if (setting.isShowHistory ?? true) {
 											setIsHistoryOpen(prev => !prev)
@@ -234,7 +234,7 @@ export const FakePanel = (props) => {
 											? '!outline !outline-2 !outline-rose-500 !outline-offset-2 !shadow-[0_0_0_3px_rgba(244,63,94,0.2),0_0_12px_rgba(244,63,94,0.3)] z-20 bg-rose-50/70'
 											: ''
 									}`}>
-										<ClearSvg className="absolute -left-[18px] w-3 h-3 opacity-25 hover:opacity-45 cursor-pointer dark:*:fill-[#fff]" />
+										<ClearSvg className="absolute -left-[18px] w-3 h-3 opacity-35 hover:opacity-85 hover:scale-110 active:scale-90 transition-all cursor-pointer dark:*:fill-[#fff]" />
 										<button
 											type="button"
 											className="w-5 h-5 min-w-5 p-0 cursor-pointer rounded-[6px] inline-flex items-center justify-center bg-white dark:bg-[#383838] hover:bg-[#f5f5f5] dark:hover:bg-[#484848] active:scale-95 transition-all border-none text-[#444] dark:text-[#fff]"
@@ -254,8 +254,8 @@ export const FakePanel = (props) => {
 											getPopupContainer={(e) => e.parentElement}
 											title={isShowTooltip ? <div className="scale-90" style={{ padding: '4px' }}>{t('大小写敏感')} {getShortcutText('c', true)}</div> : null}
 										>
-											<button className="normalButton activeButton dark:bg-[#383838] dark:text-[#fff]">
-												<span className="text-xs select-none">Cc</span>
+											<button className="normalButton activeButton">
+												<span className="text-[11px] select-none">Cc</span>
 											</button>
 										</Tooltip>
 										<Tooltip
@@ -264,8 +264,8 @@ export const FakePanel = (props) => {
 											getPopupContainer={(e) => e.parentElement}
 											title={isShowTooltip ? <div className="scale-90" style={{ padding: '4px' }}>{t('匹配单词')} {getShortcutText('w', true)}</div> : null}
 										>
-											<button className="normalButton dark:bg-[#383838] dark:text-[#fff]">
-												<span className="text-xs select-none">W</span>
+											<button className="normalButton">
+												<span className="text-[11px] select-none">W</span>
 											</button>
 										</Tooltip>
 										<Tooltip
@@ -282,9 +282,9 @@ export const FakePanel = (props) => {
 											}
 										>
 											<button
-												className="normalButton dark:bg-[#383838] dark:text-[#fff]"
+												className="normalButton"
 											>
-												<span className="text-xs select-none">.*</span>
+												<span className="text-[11px] select-none">.*</span>
 											</button>
 										</Tooltip>
 										<Tooltip
