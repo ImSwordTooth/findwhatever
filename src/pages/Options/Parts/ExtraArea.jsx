@@ -1,6 +1,7 @@
 import { useContext } from 'preact/compat'
 import { Switch } from '../../../components/Switch'
 import { Slider } from '../../../components/Slider'
+import { SettingCard, SettingRow } from '../../../components/SettingCard'
 import { SettingContext } from '../Options'
 import { useTranslation } from 'react-i18next'
 import HiddenSvg from '../../../assets/svg/hidden.svg'
@@ -32,10 +33,9 @@ export const ExtraArea = () => {
 						</div>
 						<p className="mb-2.5">{t('元素被其他元素盖住了，导致不可见。')}</p>
 
-						<div className="setting-row">
-							<div>{t('是否显示元素状态')}</div>
+						<SettingRow standalone label={t('是否显示元素状态')}>
 							<Switch size="small" checked={setting.isShowStatus} onChange={e => updateSetting('isShowStatus', e)} />
-						</div>
+						</SettingRow>
 					</div>
 				</div>
 
@@ -46,22 +46,22 @@ export const ExtraArea = () => {
 					<p className="mb-1">{t('控制面板的透明度，防止遮盖背后的元素。')}</p>
 					<p className="mb-2.5">{t('鼠标悬浮时暂时透明，离开时恢复；也可以点击该图标，使面板固定透明。')}</p>
 
-					<div className="setting-area">
-						<div className="setting-row">
-							<div>{t('是否显示透明按钮')}</div>
+					<SettingCard>
+						<SettingRow label={t('是否显示透明按钮')}>
 							<Switch size="small" checked={setting.isShowOpacity} onChange={e => updateSetting('isShowOpacity', e)} />
-						</div>
+						</SettingRow>
 						{
 							setting.isShowOpacity &&
-							<div className="setting-row">
-								<div>{t('临时透明度')}</div>
-								<div className="flex items-center">
-									<Slider style={{ width: '120px', margin: 0 }} min={0.1} max={0.9} step={0.1} value={setting.tempOpacity} onChange={e => updateSetting('tempOpacity', e)} />
-									<div className="ml-2">{setting.tempOpacity}</div>
+							<SettingRow label={t('临时透明度')}>
+								<div className="flex items-center gap-3">
+									<Slider style={{ width: '130px', margin: 0 }} min={0.1} max={0.9} step={0.1} value={setting.tempOpacity} onChange={e => updateSetting('tempOpacity', e)} />
+									<span className="px-2 py-0.5 rounded-md bg-zinc-50/80 border border-solid border-zinc-200/60 font-mono text-xs text-zinc-500 min-w-[34px] text-center">
+										{setting.tempOpacity}
+									</span>
 								</div>
-							</div>
+							</SettingRow>
 						}
-					</div>
+					</SettingCard>
 				</div>
 
 				<div>
@@ -73,10 +73,9 @@ export const ExtraArea = () => {
 						<li>{t('进入')} <a href="chrome://extensions/" style={{ textDecoration: 'underline' }}>chrome://extensions</a>，{t('找到 Find whatever，点击“详情”-“扩展程序选项”。')}</li>
 					</ol>
 
-					<div className="setting-row">
-						<div>{t('是否显示设置按钮')}</div>
+					<SettingRow standalone label={t('是否显示设置按钮')}>
 						<Switch size="small" checked={setting.isShowSetting} onChange={e => updateSetting('isShowSetting', e)} />
-					</div>
+					</SettingRow>
 				</div>
 			</div>
 		</div>

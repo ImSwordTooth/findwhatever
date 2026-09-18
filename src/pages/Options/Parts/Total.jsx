@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
-import { Popover } from 'antd'
+import { Popover } from '../../../components/Popover'
 import { Select } from '../../../components/Select'
 import { Radio } from '../../../components/Radio'
 import { Switch } from '../../../components/Switch'
+import { SettingCard, SettingRow, ColorPickerButton } from '../../../components/SettingCard'
 import { SettingContext } from '../Options'
 import TipsSvg from '../../../assets/svg/tips.svg'
 import DownSvg from '../../../assets/svg/down.svg'
@@ -69,9 +70,8 @@ export const Total = () => {
 					{t('设置 Command+F(macOS) 或者 Ctrl+F(windows等) 时会覆盖浏览器自带的查找。')}
 				</p>
 			</div>
-			<div className="setting-area mb-[10px]">
-				<div className="setting-row">
-					<div>{t('语言')}：</div>
+			<SettingCard>
+				<SettingRow label={t('语言')}>
 					<Select
 						value={setting.language}
 						onChange={e => updateSetting('language', e)}
@@ -124,20 +124,15 @@ export const Total = () => {
 								value: 'Spanish'
 							},
 						]} />
-				</div>
-				<div className="setting-row">
-					<div>{t('颜色模式')}：</div>
+				</SettingRow>
+				<SettingRow label={t('颜色模式')}>
 					<Radio.Group value={setting.colorMode} onChange={e  => updateSetting('colorMode', e.target.value)}>
 						<Radio value={'auto'}>{t('跟随系统')}</Radio>
 						<Radio value={'light'}>{t('浅色')}</Radio>
 						<Radio value={'dark'}>{t('深色')}</Radio>
 					</Radio.Group>
-				</div>
-				<div className="setting-row h-[60px]">
-					<div>
-						{t('主题色')}：
-						<div className="smallTip">{t('强烈建议尝试预设色')}</div>
-					</div>
+				</SettingRow>
+				<SettingRow label={t('主题色')} tip={t('强烈建议尝试预设色')}>
 					<Popover
 						trigger={['click']}
 						placement="rightTop"
@@ -151,17 +146,10 @@ export const Total = () => {
 							/>
 						}
 					>
-						<div className="color-picker">
-							<div className="color-block" style={{ backgroundColor: setting.primaryColor }} />
-							{setting.primaryColor}
-						</div>
+						<ColorPickerButton color={setting.primaryColor} />
 					</Popover>
-				</div>
-				<div className="setting-row h-[60px]">
-					<div>
-						{t('深色模式下的主题色')}：
-						<div className="smallTip">{t('强烈建议尝试预设色')}</div>
-					</div>
+				</SettingRow>
+				<SettingRow label={t('深色模式下的主题色')} tip={t('强烈建议尝试预设色')}>
 					<Popover
 						trigger={['click']}
 						placement="rightTop"
@@ -175,22 +163,16 @@ export const Total = () => {
 							/>
 						}
 					>
-						<div className="color-picker">
-							<div className="color-block" style={{ backgroundColor: setting.primaryColor_dark }} />
-							{setting.primaryColor_dark}
-						</div>
+						<ColorPickerButton color={setting.primaryColor_dark} />
 					</Popover>
-
-				</div>
-				<div className="setting-row">
-					<div>{t('是否使用毛玻璃效果面板')}：</div>
+				</SettingRow>
+				<SettingRow label={t('是否使用毛玻璃效果面板')}>
 					<Switch size="small" checked={setting.isUseGlassEffect} onChange={e => updateSetting('isUseGlassEffect', e)} />
-				</div>
-				<div className="setting-row">
-					<div>{t('是否显示按钮提示气泡')}：</div>
+				</SettingRow>
+				<SettingRow label={t('是否显示按钮提示气泡')}>
 					<Switch size="small" checked={setting.isShowTooltip ?? true} onChange={e => updateSetting('isShowTooltip', e)} />
-				</div>
-			</div>
+				</SettingRow>
+			</SettingCard>
 
 			<div className="info-area">
 				<div className="title" onClick={() => setIsShowPreview(!isShowPreview)}>{t('点击此处来展开颜色模式、毛玻璃效果面板的说明和预览')}<DownSvg style={{ width: '20px', height: '20px', marginLeft: '8px', transition: 'transform .3s ease', transform: `rotate(${isShowPreview ? 180 : 0}deg)` }} /></div>

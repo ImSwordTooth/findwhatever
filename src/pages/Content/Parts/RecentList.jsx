@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'preact/compat'
+import { useRef, useEffect, useState } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import { Tooltip } from '../../../components/Tooltip'
@@ -18,6 +18,25 @@ export const RecentList = (props) => {
 	const { t } = useTranslation()
 	const listRef = useRef(null)
 
+	const [shouldRender, setShouldRender] = useState(isOpen)
+	const [isVisible, setIsVisible] = useState(isOpen)
+
+	useEffect(() => {
+		if (isOpen) {
+			setShouldRender(true)
+			const frame = requestAnimationFrame(() => {
+				setIsVisible(true)
+			})
+			return () => cancelAnimationFrame(frame)
+		} else {
+			setIsVisible(false)
+			const timer = setTimeout(() => {
+				setShouldRender(false)
+			}, 160)
+			return () => clearTimeout(timer)
+		}
+	}, [isOpen])
+
 	// 当选中的索引变化时，自动将对应条目平滑滚入可视区
 	useEffect(() => {
 		if (isOpen && selectedIndex >= 0 && listRef.current) {
@@ -28,7 +47,7 @@ export const RecentList = (props) => {
 		}
 	}, [selectedIndex, isOpen])
 
-	if (!isOpen) return null
+	if (!shouldRender) return null
 
 	const clearRecent = (e) => {
 		e?.stopPropagation?.()
@@ -45,7 +64,11 @@ export const RecentList = (props) => {
 
 	return (
 		<div
-			className={`recentListPanel absolute top-[calc(100%+6px)] left-0 w-full backdrop-blur-md rounded-lg z-50 overflow-hidden text-xs select-none transition-all duration-150 p-1.5 ${className || ''}`}
+			className={`recentListPanel absolute top-[calc(100%+6px)] left-0 w-full backdrop-blur-md rounded-lg z-50 overflow-hidden text-xs select-none p-1.5 transition-all duration-160 ease-out origin-top ${
+				isVisible
+					? 'opacity-100 scale-100 translate-y-0'
+					: 'opacity-0 scale-95 -translate-y-1.5 pointer-events-none'
+			} ${className || ''}`}
 			onClick={(e) => e.stopPropagation()}
 			onMouseDown={(e) => e.stopPropagation()}
 		>

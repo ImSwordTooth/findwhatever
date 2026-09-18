@@ -331,50 +331,51 @@ export const Options = () => {
 						color: #52525b; /* zinc-600 */
 					}
 
-					.shadcn-settings > div > div:not(.setting-area):not(.info-area) {
+					.shadcn-settings > div > div:not(.setting-card):not(.info-area) {
 						font-size: 14px !important;
 						line-height: 22px !important;
 						color: #52525b !important;
 						margin-bottom: 8px;
 					}
 
-					/* 彻底重塑 .setting-area 为现代 shadcn 白底无缝卡片，彻底消灭紫色虚线框与粗糙阴影 */
-					.shadcn-settings .setting-area {
+					/* 现代化设置表单卡片体系 SettingCard：温润微底槽与轻盈浮岛 */
+					.shadcn-settings .setting-card {
 						width: 100% !important;
-						max-width: 100% !important;
-						margin-top: 16px;
-						margin-bottom: 20px;
-						box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
-						border: 1px solid #e4e4e7 !important; /* zinc-200 */
+						max-width: 520px !important;
+						margin-top: 12px;
+						margin-bottom: 16px;
+						background: #f9f9fb !important; /* 极浅温润底色，与纯白面板自然过渡，告别生硬发灰 */
+						border: 1px solid #ebecef !important; /* 柔化外边框，消灭两道深色边框打架的条纹感 */
 						border-radius: 12px !important;
-						background: #ffffff !important;
-						overflow: hidden;
+						padding: 4px !important;
+						box-shadow: none !important; /* 移除脏感的深色内阴影 */
+						display: flex !important;
+						flex-direction: column !important;
+						gap: 3px !important;
 					}
 
-					/* 每一行设置项：微弱分隔线，舒适内边距，悬停微高亮 */
-					.shadcn-settings .setting-area .setting-row {
+					.shadcn-settings .setting-row-item {
 						width: 100% !important;
 						margin: 0 !important;
-						padding: 10px 16px !important;
-						height: auto !important;
+						padding: 10px 14px !important;
 						min-height: 48px;
-						border: none !important;
-						border-bottom: 1px solid #f4f4f5 !important; /* zinc-100 */
-						box-shadow: none !important;
-						border-radius: 0 !important;
-						background: transparent !important;
-						font-size: 14px !important;
-						line-height: 22px !important;
+						display: flex !important;
+						align-items: center !important;
+						justify-content: space-between !important;
+						border: 1px solid rgba(0, 0, 0, 0.04) !important; /* 极轻边框，柔和贴合底槽 */
+						border-radius: 8px !important;
+						background: #ffffff !important;
+						box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important; /* 极弱轻透微浮起，杜绝割裂感 */
+						font-size: 13.5px !important;
+						line-height: 20px !important;
 						color: #27272a !important; /* zinc-800 */
-						transition: background-color 0.15s ease;
+						transition: all 0.15s ease;
 					}
 
-					.shadcn-settings .setting-area .setting-row:last-child {
-						border-bottom: none !important;
-					}
-
-					.shadcn-settings .setting-area .setting-row:hover {
-						background-color: #fafafa !important;
+					.shadcn-settings .setting-row-item:hover {
+						border-color: #e2e4e8 !important;
+						box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.04) !important;
+						background-color: #ffffff !important;
 					}
 
 					.shadcn-settings .smallTip {

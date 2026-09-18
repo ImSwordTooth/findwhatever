@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Tooltip } from '../../../components/Tooltip'
 import { Switch } from '../../../components/Switch'
 import { InputNumber } from '../../../components/InputNumber'
+import { SettingRow } from '../../../components/SettingCard'
 import { SettingContext } from '../Options'
 import { Shortcut } from '../../../components/Shortcut'
 import { NewPart } from '../NewPart'
@@ -35,10 +36,9 @@ export const Feature = () => {
 						{t('切换 search-results-active 时，需要更新缓存来执行高亮和定位的动作，浏览器的 MAX_WRITE_OPERATIONS_PER_MINUTE 限制了一分钟只能更新 120 次，所以切换的时候最好别“幻影键舞”，否则可能会更新失败。')}
 					</p>
 
-					<div className="setting-row">
-						<div>{t('是否开启首尾循环跳转提示')}</div>
+					<SettingRow standalone label={t('是否开启首尾循环跳转提示')}>
 						<Switch size="small" checked={setting.isLoopNotice ?? true} onChange={e => updateSetting('isLoopNotice', e)} />
-					</div>
+					</SettingRow>
 				</div>
 
 				{/* 大小写敏感 */}
@@ -114,8 +114,7 @@ export const Feature = () => {
 						</div>
 					</NewPart>
 
-					<div className="setting-row">
-						<div>{t('正则模式防抖时长')}</div>
+					<SettingRow standalone label={t('正则模式防抖时长')}>
 						<InputNumber
 							style={{ width: '130px' }}
 							addonAfter="ms"
@@ -124,7 +123,7 @@ export const Feature = () => {
 							value={setting.regexDebounceDuration}
 							onChange={e => updateSetting('regexDebounceDuration', e)}
 						/>
-					</div>
+					</SettingRow>
 				</div>
 
 				{/* 实时监听 DOM */}
@@ -156,10 +155,9 @@ export const Feature = () => {
 					</div>
 					<p className="mb-2.5">{t('点击后移除 MutationObserver、清除高亮、关闭面板、置零查找结果、保存查找记录。')}</p>
 
-					<div className="setting-row">
-						<div>{t('是否显示关闭按钮')}</div>
+					<SettingRow standalone label={t('是否显示关闭按钮')}>
 						<Switch size="small" checked={setting.isShowClose} onChange={e => updateSetting('isShowClose', e)} />
-					</div>
+					</SettingRow>
 				</div>
 			</div>
 		</div>

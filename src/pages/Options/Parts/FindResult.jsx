@@ -1,9 +1,10 @@
 import { useContext } from 'preact/compat'
 import { useTranslation } from 'react-i18next'
-import { Popover } from 'antd'
+import { Popover } from '../../../components/Popover'
 import { Switch } from '../../../components/Switch'
 import { Select } from '../../../components/Select'
 import { Slider } from '../../../components/Slider'
+import { SettingCard, SettingRow, ColorPickerButton } from '../../../components/SettingCard'
 import { SettingContext } from '../Options'
 import { SketchPicker } from 'react-color'
 import CopySvg from '../../../assets/svg/copy.svg'
@@ -49,57 +50,47 @@ export const FindResult = () => {
 					</ol>
 					<p className="text-zinc-500 italic text-xs">{t('核心且复杂的功能，如果有搜索结果错误的页面，请及时联系我，谢谢！')}</p>
 
-					<div className="setting-row">
-						<div>{t('是否显示查找结果的文本')}</div>
+					<SettingRow standalone label={t('是否显示查找结果的文本')}>
 						<Switch size="small" checked={setting.isShowResultText} onChange={e => updateSetting('isShowResultText', e)} />
-					</div>
+					</SettingRow>
 				</div>
 
 				{/* 普通匹配态 search-results */}
 				<div>
-					<h3 className="text-sm font-semibold font-mono text-zinc-700 dark:text-zinc-300 mb-2">search-results</h3>
-					<div className="setting-area">
-						<div className="setting-row">
-							<div>{t('背景色')}</div>
+					<SettingCard title="search-results">
+						<SettingRow label={t('背景色')}>
 							<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.bgColor} onChange={e => updateSetting('bgColor', colorFormat(e))} />}>
-								<div className="color-picker">
-									<div className="color-block" style={{ backgroundColor: setting.bgColor }} />
-									{setting.bgColor}
-								</div>
+								<ColorPickerButton color={setting.bgColor} />
 							</Popover>
-						</div>
-						<div className="setting-row">
-							<div>{t('字体颜色')}</div>
+						</SettingRow>
+						<SettingRow label={t('字体颜色')}>
 							<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.textColor} onChange={ e => updateSetting('textColor', colorFormat(e))} />}>
-								<div className="color-picker">
-									<div className="color-block" style={{ backgroundColor: setting.textColor }} />
-									{setting.textColor}
-								</div>
+								<ColorPickerButton color={setting.textColor} />
 							</Popover>
-						</div>
-						<div className="setting-row">
-							<div>{t('是否启用下划线')}</div>
+						</SettingRow>
+						<SettingRow label={t('是否启用下划线')}>
 							<Switch size="small" checked={setting.isOpenUnderline} onChange={ e => updateSetting('isOpenUnderline', e) } />
-						</div>
+						</SettingRow>
 						{
 							setting.isOpenUnderline &&
 							<>
-								<div className="setting-row">
-									<div>{t('下划线间距')}</div>
-									<div className="flex items-center">
+								<SettingRow label={t('下划线间距')}>
+									<div className="flex items-center gap-2.5">
 										<Slider style={{ width: '120px', margin: 0 }} min={0} max={10} value={setting.underlineOffset} onChange={e => updateSetting('underlineOffset', e)} />
-										<div className="ml-2 text-xs font-mono text-zinc-500 w-8 text-right">{setting.underlineOffset}px</div>
+										<span className="px-1.5 py-0.5 rounded-md bg-zinc-50/80 border border-solid border-zinc-200/60 font-mono text-xs text-zinc-500 min-w-[36px] text-center">
+											{setting.underlineOffset}px
+										</span>
 									</div>
-								</div>
-								<div className="setting-row">
-									<div>{t('下划线线条高度')}</div>
-									<div className="flex items-center">
+								</SettingRow>
+								<SettingRow label={t('下划线线条高度')}>
+									<div className="flex items-center gap-2.5">
 										<Slider style={{ width: '120px', margin: 0 }} min={1} max={10} value={setting.underlineThickness} onChange={e => updateSetting('underlineThickness', e)} />
-										<div className="ml-2 text-xs font-mono text-zinc-500 w-8 text-right">{setting.underlineThickness}px</div>
+										<span className="px-1.5 py-0.5 rounded-md bg-zinc-50/80 border border-solid border-zinc-200/60 font-mono text-xs text-zinc-500 min-w-[36px] text-center">
+											{setting.underlineThickness}px
+										</span>
 									</div>
-								</div>
-								<div className="setting-row">
-									<div>{t('下划线样式')}</div>
+								</SettingRow>
+								<SettingRow label={t('下划线样式')}>
 									<Select
 										value={setting.underlineStyle}
 										onChange={e => updateSetting('underlineStyle', e)}
@@ -128,74 +119,60 @@ export const FindResult = () => {
 												value: 'wavy'
 											},
 										]} />
-								</div>
-								<div className="setting-row">
-									<div>{t('下划线颜色')}</div>
+								</SettingRow>
+								<SettingRow label={t('下划线颜色')}>
 									<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.underlineColor} onChange={ e => updateSetting('underlineColor', colorFormat(e))} />}>
-										<div className="color-picker">
-											<div className="color-block" style={{ backgroundColor: setting.underlineColor }} />
-											{setting.underlineColor}
-										</div>
+										<ColorPickerButton color={setting.underlineColor} />
 									</Popover>
-								</div>
+								</SettingRow>
 							</>
 						}
-					</div>
+					</SettingCard>
 				</div>
 
 				{/* 激活定位态 search-results-active */}
 				<div>
-					<h3 className="text-sm font-semibold font-mono text-zinc-700 dark:text-zinc-300 mb-2">search-results-active</h3>
-					<div className="setting-area">
-						<div className="setting-row">
-							<div>{t('背景色')}</div>
+					<SettingCard title="search-results-active">
+						<SettingRow label={t('背景色')}>
 							<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.bgColorActive} onChange={e => updateSetting('bgColorActive', colorFormat(e))} />}>
-								<div className="color-picker">
-									<div className="color-block" style={{ backgroundColor: setting.bgColorActive }} />
-									{setting.bgColorActive}
-								</div>
+								<ColorPickerButton color={setting.bgColorActive} />
 							</Popover>
-						</div>
-						<div className="setting-row">
-							<div>{t('字体颜色')}</div>
+						</SettingRow>
+						<SettingRow label={t('字体颜色')}>
 							<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.textColorActive} onChange={ e => updateSetting('textColorActive', colorFormat(e))} />}>
-								<div className="color-picker">
-									<div className="color-block" style={{ backgroundColor: setting.textColorActive }} />
-									{setting.textColorActive}
-								</div>
+								<ColorPickerButton color={setting.textColorActive} />
 							</Popover>
-						</div>
-						<div className="setting-row">
-							<div>{t('下划线是否和 search-results 一致')}</div>
+						</SettingRow>
+						<SettingRow label={t('下划线是否和 search-results 一致')}>
 							<Switch size="small" checked={setting.isSame} onChange={ e => updateSetting('isSame', e) } />
-						</div>
+						</SettingRow>
 
 						{
 							!setting.isSame &&
 							<>
-								<div className="setting-row">
-									<div>{t('是否启用下划线')}</div>
+								<SettingRow label={t('是否启用下划线')}>
 									<Switch size="small" checked={setting.isOpenUnderlineActive} onChange={ e => updateSetting('isOpenUnderlineActive', e) } />
-								</div>
+								</SettingRow>
 								{
 									setting.isOpenUnderlineActive &&
 									<>
-										<div className="setting-row">
-											<div>{t('下划线间距')}</div>
-											<div className="flex items-center">
+										<SettingRow label={t('下划线间距')}>
+											<div className="flex items-center gap-2.5">
 												<Slider style={{ width: '120px', margin: 0 }} min={0} max={10} value={setting.underlineOffsetActive} onChange={e => updateSetting('underlineOffsetActive', e)} />
-												<div className="ml-2 text-xs font-mono text-zinc-500 w-8 text-right">{setting.underlineOffsetActive}px</div>
+												<span className="px-1.5 py-0.5 rounded-md bg-zinc-50/80 border border-solid border-zinc-200/60 font-mono text-xs text-zinc-500 min-w-[36px] text-center">
+													{setting.underlineOffsetActive}px
+												</span>
 											</div>
-										</div>
-										<div className="setting-row">
-											<div>{t('下划线线条高度')}</div>
-											<div className="flex items-center">
+										</SettingRow>
+										<SettingRow label={t('下划线线条高度')}>
+											<div className="flex items-center gap-2.5">
 												<Slider style={{ width: '120px', margin: 0 }} min={1} max={10} value={setting.underlineThicknessActive} onChange={e => updateSetting('underlineThicknessActive', e)} />
-												<div className="ml-2 text-xs font-mono text-zinc-500 w-8 text-right">{setting.underlineThicknessActive}px</div>
+												<span className="px-1.5 py-0.5 rounded-md bg-zinc-50/80 border border-solid border-zinc-200/60 font-mono text-xs text-zinc-500 min-w-[36px] text-center">
+													{setting.underlineThicknessActive}px
+												</span>
 											</div>
-										</div>
-										<div className="setting-row">
-											<div>{t('下划线样式')}</div>
+										</SettingRow>
+										<SettingRow label={t('下划线样式')}>
 											<Select
 												value={setting.underlineStyleActive}
 												onChange={e => updateSetting('underlineStyleActive', e)}
@@ -224,21 +201,17 @@ export const FindResult = () => {
 														value: 'wavy'
 													},
 												]} />
-										</div>
-										<div className="setting-row">
-											<div>{t('下划线颜色')}</div>
+										</SettingRow>
+										<SettingRow label={t('下划线颜色')}>
 											<Popover trigger={['click']} placement="rightTop" content={<SketchPicker color={setting.underlineColorActive} onChange={ e => updateSetting('underlineColorActive', colorFormat(e))} />}>
-												<div className="color-picker">
-													<div className="color-block" style={{ backgroundColor: setting.underlineColorActive }} />
-													{setting.underlineColorActive}
-												</div>
+												<ColorPickerButton color={setting.underlineColorActive} />
 											</Popover>
-										</div>
+										</SettingRow>
 									</>
 								}
 							</>
 						}
-					</div>
+					</SettingCard>
 				</div>
 			</div>
 		</div>

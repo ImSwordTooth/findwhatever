@@ -200,18 +200,20 @@ export const FakePanel = (props) => {
 						<div className="swe_search relative">
 							{
 								(setting.isShowHistory ?? true) &&
-								<SearchSvg
-									className={`absolute left-[6px] top-0 bottom-0 p-1 box-content m-auto w-4 h-4 z-10 cursor-pointer transition-colors duration-200 active:scale-90 ${
+								<div
+									className={`absolute left-[5px] top-0 bottom-0 m-auto w-[22px] h-[22px] flex items-center justify-center rounded-[5px] cursor-pointer z-10 transition-colors duration-150 hover:bg-[#e4e4e7] dark:hover:bg-[#383838] active:scale-90 ${
 										isHistoryOpen
-											? 'fill-[var(--swe-color-primary)] dark:[&>path]:fill-[var(--swe-color-primary)]'
-											: 'fill-[#555] hover:fill-[var(--swe-color-primary)] dark:[&>path]:fill-[#fff] dark:hover:[&>path]:fill-[var(--swe-color-primary)]'
+											? 'text-[var(--swe-color-primary)]'
+											: 'text-[#666] dark:text-[#fff] hover:text-[var(--swe-color-primary)]'
 									}`}
 									onClick={() => {
 										if (setting.isShowHistory ?? true) {
 											setIsHistoryOpen(prev => !prev)
 										}
 									}}
-								/>
+								>
+									<SearchSvg className="w-3.5 h-3.5 fill-current transition-colors duration-150" />
+								</div>
 							}
 
 							<div className={`relative rounded-lg transition-all duration-200 ${

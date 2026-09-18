@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Select } from '../../../components/Select'
 import { Switch } from '../../../components/Switch'
 import { InputNumber } from '../../../components/InputNumber'
+import { SettingCard, SettingRow } from '../../../components/SettingCard'
 import { SettingContext } from '../Options'
 
 export const Input = () => {
@@ -81,13 +82,11 @@ export const Input = () => {
 				</div>
 			</div>
 
-			<div className="setting-area">
-				<div className="setting-row">
-					<div>{t('文本框宽度')}</div>
+			<SettingCard>
+				<SettingRow label={t('文本框宽度')}>
 					<InputNumber size="small" style={{ width: '140px' }} addonAfter="px" min={340} value={setting.textWidth} onChange={e => updateSetting('textWidth', e)} />
-				</div>
-				<div className="setting-row">
-					<div>{t('上一次的搜索条件保留时间（包含搜索词、筛选项）')}</div>
+				</SettingRow>
+				<SettingRow label={t('上一次的搜索条件保留时间（包含搜索词、筛选项）')}>
 					<Select
 						value={setting.retentionTime}
 						onChange={e => updateSetting('retentionTime', e)}
@@ -123,21 +122,19 @@ export const Input = () => {
 								label: t('24小时'),
 								value: 1440
 							},
-						]} />
-				</div>
-				<div className="setting-row">
-					<div>{t('非正则模式防抖时长')}</div>
+						]}
+					/>
+				</SettingRow>
+				<SettingRow label={t('非正则模式防抖时长')}>
 					<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={0} value={setting.debounceDuration} onChange={e => updateSetting('debounceDuration', e)} />
-				</div>
-				<div className="setting-row">
-					<div>{t('正则模式防抖时长')}</div>
+				</SettingRow>
+				<SettingRow label={t('正则模式防抖时长')}>
 					<InputNumber size="small" style={{ width: '140px' }} addonAfter="ms" min={500} value={setting.regexDebounceDuration} onChange={e => updateSetting('regexDebounceDuration', e)} />
-				</div>
-				<div className="setting-row">
-					<div>{t('是否显示文本框光圈')}</div>
+				</SettingRow>
+				<SettingRow label={t('是否显示文本框光圈')}>
 					<Switch size="small" checked={setting.isShowRing} onChange={e => updateSetting('isShowRing', e)} />
-				</div>
-			</div>
+				</SettingRow>
+			</SettingCard>
 		</div>
 	)
 }

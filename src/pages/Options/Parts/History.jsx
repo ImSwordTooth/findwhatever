@@ -1,6 +1,7 @@
 import { useContext } from 'preact/compat'
 import { Switch } from '../../../components/Switch'
 import { Radio } from '../../../components/Radio'
+import { SettingCard, SettingRow } from '../../../components/SettingCard'
 import { SettingContext } from '../Options'
 import { useTranslation } from 'react-i18next'
 import SearchSvg from '../../../assets/svg/search.svg'
@@ -34,26 +35,19 @@ export const History = () => {
 					</p>
 				</div>
 
-				{setting.isShowHistory ? (
-					<div className="setting-area">
-						<div className="setting-row">
-							<div>{t('是否显示历史记录')}</div>
-							<Switch size="small" checked={setting.isShowHistory} onChange={e => updateSetting('isShowHistory', e)} />
-						</div>
-						<div className="setting-row">
-							<div>{t('历史记录打开方式')}</div>
+				<SettingCard>
+					<SettingRow label={t('是否显示历史记录')}>
+						<Switch size="small" checked={setting.isShowHistory} onChange={e => updateSetting('isShowHistory', e)} />
+					</SettingRow>
+					{setting.isShowHistory && (
+						<SettingRow label={t('历史记录打开方式')}>
 							<Radio.Group value={setting.openHistoryMode} onChange={e => updateSetting('openHistoryMode', e.target.value)}>
 								<Radio value={'hover'}>{t('鼠标移入')}</Radio>
 								<Radio value={'click'}>{t('鼠标点击')}</Radio>
 							</Radio.Group>
-						</div>
-					</div>
-				) : (
-					<div className="setting-row">
-						<div>{t('是否显示历史记录')}</div>
-						<Switch size="small" checked={setting.isShowHistory} onChange={e => updateSetting('isShowHistory', e)} />
-					</div>
-				)}
+						</SettingRow>
+					)}
+				</SettingCard>
 			</div>
 		</div>
 	)
