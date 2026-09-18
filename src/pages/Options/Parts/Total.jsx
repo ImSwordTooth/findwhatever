@@ -6,7 +6,6 @@ import { Radio } from '../../../components/Radio'
 import { Switch } from '../../../components/Switch'
 import { SettingCard, SettingRow, ColorPickerButton } from '../../../components/SettingCard'
 import { SettingContext } from '../Options'
-import TipsSvg from '../../../assets/svg/tips.svg'
 import DownSvg from '../../../assets/svg/down.svg'
 import { SketchPicker } from 'react-color'
 
@@ -39,36 +38,47 @@ export const Total = () => {
 		}
 	}
 
+	const openShortcutsPage = (e) => {
+		e?.preventDefault?.()
+		if (chrome?.tabs?.create) {
+			chrome.tabs.create({ url: 'chrome://extensions/shortcuts' })
+		} else {
+			window.open('chrome://extensions/shortcuts', '_blank')
+		}
+	}
+
 	return (
 		<div>
 			<div className="areaTitle">{t('整体')}</div>
 
-			<div className="space-y-2 mb-4">
-				<p className="mb-2.5">
-					{t('现在打开面板的默认快捷键为')} <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-[11px] shadow-xs">Alt+F</kbd>。
-				</p>
-				<p className="mb-2.5 flex items-center flex-wrap gap-1.5">
-					<span>{t('当前快捷键为')}</span>
-					<kbd className="px-2 py-0.5 rounded bg-rose-50 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/40 text-xs font-mono font-medium shadow-2xs">
-						{commandText || t('无')}
-					</kbd>
-					<span>。</span>
-				</p>
-				<p className="mb-2.5 text-zinc-500">{t('未设置快捷键会导致面板只能通过点击图标打开。')}</p>
-				<p className="mb-2.5">
-					{t('您可以在这里自定义快捷键：')}
-					<a
-						href="chrome://extensions/shortcuts"
-						target="_blank"
-						rel="noreferrer"
-						className="text-rose-500 hover:text-rose-600 underline underline-offset-2 mx-1 font-mono text-xs transition-colors"
-					>
-						chrome://extensions/shortcuts
-					</a>
-				</p>
-				<p className="mb-2.5 text-zinc-500">
-					{t('设置 Command+F(macOS) 或者 Ctrl+F(windows等) 时会覆盖浏览器自带的查找。')}
-				</p>
+			<div className="mb-5 p-3.5 rounded-xl bg-zinc-50/80 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-700/60 text-xs sm:text-sm">
+				<div className="flex items-center justify-between flex-wrap gap-2 pb-2.5 mb-2.5 border-b border-zinc-200/60 dark:border-zinc-700/40">
+					<div className="flex items-center flex-wrap gap-2">
+						<span className="text-zinc-600 dark:text-zinc-300 font-medium">{t('当前快捷键为')}</span>
+						<kbd className="px-2 py-0.5 rounded bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 text-xs font-mono font-semibold shadow-2xs">
+							{commandText || t('无')}
+						</kbd>
+						<span className="text-xs text-zinc-400 dark:text-zinc-500">
+							({t('现在打开面板的默认快捷键为')} <kbd className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-mono text-[11px]">Alt+F</kbd>)
+						</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<span className="text-xs text-zinc-500 dark:text-zinc-400">{t('您可以在这里自定义快捷键：')}</span>
+						<a
+							href="chrome://extensions/shortcuts"
+							target="_blank"
+							rel="noreferrer"
+							onClick={openShortcutsPage}
+							className="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 font-mono underline underline-offset-2 transition-colors cursor-pointer"
+						>
+							chrome://extensions/shortcuts
+						</a>
+					</div>
+				</div>
+				<ul className="space-y-1 text-xs text-zinc-500 dark:text-zinc-400 list-disc list-inside">
+					<li>{t('设置 Command+F(macOS) 或者 Ctrl+F(windows等) 时会覆盖浏览器自带的查找。')}</li>
+					<li>{t('未设置快捷键会导致面板只能通过点击图标打开。')}</li>
+				</ul>
 			</div>
 			<SettingCard>
 				<SettingRow label={t('语言')}>
@@ -166,28 +176,80 @@ export const Total = () => {
 						<ColorPickerButton color={setting.primaryColor_dark} />
 					</Popover>
 				</SettingRow>
-				<SettingRow label={t('是否显示按钮提示气泡')}>
+				<SettingRow label={t('是否显示按钮提示气泡')} tip={t('鼠标悬停在浮窗各按钮上时展示快捷键与功能说明')}>
 					<Switch size="small" checked={setting.isShowTooltip ?? true} onChange={e => updateSetting('isShowTooltip', e)} />
 				</SettingRow>
 			</SettingCard>
 
-			<div className="info-area">
-				<div className="title" onClick={() => setIsShowPreview(!isShowPreview)}>{t('点击此处来展开颜色模式的说明和预览')}<DownSvg style={{ width: '20px', height: '20px', marginLeft: '8px', transition: 'transform .3s ease', transform: `rotate(${isShowPreview ? 180 : 0}deg)` }} /></div>
+			<div className="mt-6 rounded-xl border border-zinc-200/80 dark:border-zinc-700/60 bg-white/70 dark:bg-zinc-900/40 overflow-hidden shadow-2xs">
+				<div
+					className="flex items-center justify-between px-4 py-3 cursor-pointer select-none hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40 transition-colors"
+					onClick={() => setIsShowPreview(!isShowPreview)}
+				>
+					<div className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-200">
+						<span className="w-2 h-2 rounded-full bg-rose-500" />
+						<span>{t('点击此处来展开颜色模式的说明和预览')}</span>
+					</div>
+					<DownSvg
+						style={{
+							width: '18px',
+							height: '18px',
+							transition: 'transform .3s ease',
+							transform: `rotate(${isShowPreview ? 180 : 0}deg)`,
+							opacity: 0.6
+						}}
+					/>
+				</div>
 				{
 					isShowPreview &&
-					<div className="content">
-						<div className="previewWp">
-							<ul className="case">
-								<li className={activeIndex === 0 ? 'active' : ''} onMouseEnter={() => setActiveIndex(0)}>{t('浅色模式-浅色页面')}</li>
-								<li className={activeIndex === 1 ? 'active' : ''} onMouseEnter={() => setActiveIndex(1)}>{t('浅色模式-深色页面')}</li>
-								<li className={activeIndex === 2 ? 'active' : ''} onMouseEnter={() => setActiveIndex(2)}>{t('深色模式-浅色页面')}</li>
-								<li className={activeIndex === 3 ? 'active' : ''} onMouseEnter={() => setActiveIndex(3)}>{t('深色模式-深色页面')}</li>
+					<div className="p-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/60">
+						<div className="previewWp flex flex-col sm:flex-row gap-4 mt-2">
+							<ul className="case flex sm:flex-col shrink-0 gap-1.5 list-none p-0 m-0">
+								{[
+									{ id: 0, text: t('浅色模式-浅色页面') },
+									{ id: 1, text: t('浅色模式-深色页面') },
+									{ id: 2, text: t('深色模式-浅色页面') },
+									{ id: 3, text: t('深色模式-深色页面') }
+								].map((item) => (
+									<li
+										key={item.id}
+										className={`px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all duration-200 flex items-center select-none ${
+											activeIndex === item.id
+												? 'active bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 font-semibold shadow-2xs'
+												: 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60'
+										}`}
+										onClick={() => setActiveIndex(item.id)}
+										onMouseEnter={() => setActiveIndex(item.id)}
+									>
+										{item.text}
+									</li>
+								))}
 							</ul>
-							<div className="preview">
-								<img className={activeIndex === 0 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png')} src="https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png" />
-								<img className={activeIndex === 1 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png')} src="https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png" />
-								<img className={activeIndex === 2 ? 'block' : 'hidden'} onClick={() => window.open('https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png')} src="https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png" />
-								<img className={activeIndex === 3 ? 'block' : 'hidden'} onClick={() => window.open('https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png')} src="https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png" />
+							<div className="preview flex-1 min-w-0">
+								<img
+									className={`${activeIndex === 0 ? 'block' : 'hidden'} w-full max-w-full rounded-xl border border-zinc-200 dark:border-zinc-700/80 shadow-xs cursor-zoom-in`}
+									onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png')}
+									src="https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png"
+									alt={t('浅色模式-浅色页面')}
+								/>
+								<img
+									className={`${activeIndex === 1 ? 'block' : 'hidden'} w-full max-w-full rounded-xl border border-zinc-200 dark:border-zinc-700/80 shadow-xs cursor-zoom-in`}
+									onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png')}
+									src="https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png"
+									alt={t('浅色模式-深色页面')}
+								/>
+								<img
+									className={`${activeIndex === 2 ? 'block' : 'hidden'} w-full max-w-full rounded-xl border border-zinc-200 dark:border-zinc-700/80 shadow-xs cursor-zoom-in`}
+									onClick={() => window.open('https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png')}
+									src="https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png"
+									alt={t('深色模式-浅色页面')}
+								/>
+								<img
+									className={`${activeIndex === 3 ? 'block' : 'hidden'} w-full max-w-full rounded-xl border border-zinc-200 dark:border-zinc-700/80 shadow-xs cursor-zoom-in`}
+									onClick={() => window.open('https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png')}
+									src="https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png"
+									alt={t('深色模式-深色页面')}
+								/>
 							</div>
 						</div>
 					</div>

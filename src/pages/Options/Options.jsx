@@ -417,46 +417,51 @@ export const Options = () => {
 					</div>
 				)}
 
-				{/* 现代化 shadcn 顶栏 Header */}
-				<header className="relative z-20 flex items-center justify-between px-8 py-3.5 bg-white/85 backdrop-blur-md border-b border-zinc-200/80 sticky top-0 shadow-2xs">
-					<div className="flex items-center gap-3">
-						<img className="w-8 h-8 rounded-lg shadow-2xs" src="popup.png" alt="Logo" />
-						<div className="flex items-center gap-2.5">
-							<span className="font-mono text-lg font-extrabold tracking-tight text-zinc-900">
-								Find whatever
-							</span>
-							<span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200/60 tracking-wide">
-								{t('设置项')}
-							</span>
+				{/* 现代精致顶栏 Header：与下方工作台同宽（max-w-[1520px]）同轴对齐，元素尺度饱满舒展 */}
+				<header className="relative z-20 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800/80 sticky top-0 shadow-2xs">
+					<div className="w-full max-w-[1520px] mx-auto px-6 sm:px-8 h-[70px] flex items-center justify-between">
+						{/* 左侧 Brand 品牌区 */}
+						<div className="flex items-center gap-3.5">
+							<img className="w-11 h-11 rounded-xl shrink-0" src="popup.png" alt="Logo" />
+							<div className="flex items-center gap-3">
+								<span className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
+									Find whatever
+								</span>
+								<span className="text-xs font-bold px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shadow-2xs tracking-wide select-none">
+									{t('设置项')}
+								</span>
+							</div>
 						</div>
-					</div>
 
-					<div className="flex items-center gap-3">
-						{/* 更新日志一键跳转 */}
-						<a
-							href="changelog.html"
-							target="_blank"
-							rel="noreferrer"
-							className="px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-medium tracking-wide transition-all inline-flex items-center gap-1.5 no-underline shadow-2xs hover:shadow-xs"
-						>
-							<span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-							<span>{t('更新日志')}</span>
-							<span className="text-[10px] font-mono px-1 py-0.2 rounded bg-rose-500/10 text-rose-500 font-bold">
-								v5.0
-							</span>
-						</a>
+						{/* 右侧 Actions 操作区 */}
+						<div className="flex items-center gap-3">
+							{/* 更新日志一键跳转 */}
+							<a
+								href="changelog.html"
+								target="_blank"
+								rel="noreferrer"
+								className="px-4 py-2 rounded-xl border border-zinc-200/90 dark:border-zinc-700/80 bg-white/90 dark:bg-zinc-800/90 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-sm font-medium tracking-wide transition-all inline-flex items-center gap-2.5 no-underline shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
+							>
+								<span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+								<span>{t('更新日志')}</span>
+								<span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300">
+									v5.0
+								</span>
+							</a>
 
-						<a
-							href="https://github.com/ImSwordTooth/findwhatever"
-							target="_blank"
-							rel="noreferrer"
-							className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-800 transition-colors"
-							title="GitHub Repository"
-						>
-							<svg className="w-4 h-4 cursor-pointer" viewBox="0 0 1024 1024" fill="currentColor">
-								<path d="M512 42.666667A464.64 464.64 0 0 0 42.666667 502.186667 460.373333 460.373333 0 0 0 363.52 938.666667c23.466667 4.266667 32-9.813333 32-22.186667v-78.08c-130.56 27.733333-158.293333-61.44-158.293333-61.44a122.026667 122.026667 0 0 0-52.053334-67.413333c-42.666667-28.16 3.413333-27.733333 3.413334-27.733334a98.56 98.56 0 0 1 71.68 47.36 101.12 101.12 0 0 0 136.533333 37.973334 99.413333 99.413333 0 0 1 29.866667-61.44c-104.106667-11.52-213.333333-50.773333-213.333334-226.986667a177.066667 177.066667 0 0 1 47.36-124.16 161.28 161.28 0 0 1 4.693334-121.173333s39.68-12.373333 128 46.933333a455.68 455.68 0 0 1 234.666666 0c89.6-59.306667 128-46.933333 128-46.933333a161.28 161.28 0 0 1 4.693334 121.173333A177.066667 177.066667 0 0 1 810.666667 477.866667c0 176.64-110.08 215.466667-213.333334 226.986666a106.666667 106.666667 0 0 1 32 85.333334v125.866666c0 14.933333 8.533333 26.88 32 22.186667A460.8 460.8 0 0 0 981.333333 502.186667 464.64 464.64 0 0 0 512 42.666667" />
-							</svg>
-						</a>
+							{/* GitHub 仓库跳转 */}
+							<a
+								href="https://github.com/ImSwordTooth/findwhatever"
+								target="_blank"
+								rel="noreferrer"
+								className="w-10 h-10 rounded-xl border border-zinc-200/90 dark:border-zinc-700/80 bg-white/90 dark:bg-zinc-800/90 hover:bg-zinc-50 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer no-underline"
+								title="GitHub Repository"
+							>
+								<svg className="w-8 h-8 cursor-pointer" viewBox="0 0 1024 1024" fill="currentColor">
+									<path d="M512 42.666667A464.64 464.64 0 0 0 42.666667 502.186667 460.373333 460.373333 0 0 0 363.52 938.666667c23.466667 4.266667 32-9.813333 32-22.186667v-78.08c-130.56 27.733333-158.293333-61.44-158.293333-61.44a122.026667 122.026667 0 0 0-52.053334-67.413333c-42.666667-28.16 3.413333-27.733333 3.413334-27.733334a98.56 98.56 0 0 1 71.68 47.36 101.12 101.12 0 0 0 136.533333 37.973334 99.413333 99.413333 0 0 1 29.866667-61.44c-104.106667-11.52-213.333333-50.773333-213.333334-226.986667a177.066667 177.066667 0 0 1 47.36-124.16 161.28 161.28 0 0 1 4.693334-121.173333s39.68-12.373333 128 46.933333a455.68 455.68 0 0 1 234.666666 0c89.6-59.306667 128-46.933333 128-46.933333a161.28 161.28 0 0 1 4.693334 121.173333A177.066667 177.066667 0 0 1 810.666667 477.866667c0 176.64-110.08 215.466667-213.333334 226.986666a106.666667 106.666667 0 0 1 32 85.333334v125.866666c0 14.933333 8.533333 26.88 32 22.186667A460.8 460.8 0 0 0 981.333333 502.186667 464.64 464.64 0 0 0 512 42.666667" />
+								</svg>
+							</a>
+						</div>
 					</div>
 				</header>
 

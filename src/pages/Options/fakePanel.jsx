@@ -357,7 +357,7 @@ export const FakePanel = (props) => {
 			</div>
 			<pre
 				ref={textRef}
-				className={`mt-4 rounded-2xl p-[12px] bg-[#e8e8e88c] text-[14px] whitespace-pre-wrap select-none border-solid border-2 transition-all duration-200 ${
+				className={`mt-[140px] rounded-2xl p-[12px] bg-[#e8e8e88c] text-[14px] whitespace-pre-wrap select-none border-solid border-2 transition-all duration-200 ${
 					activeId === 'findResult'
 						? 'border-rose-400 ring-2 ring-rose-500/30 shadow-[0_0_12px_rgba(244,63,94,0.15)]'
 						: 'border-[#e1e1e1]'
