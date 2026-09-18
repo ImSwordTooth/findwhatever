@@ -16,7 +16,6 @@ export const SettingContext = createContext(null)
 const INIT_SETTING = {
 	language: 'auto',
 	colorMode: 'dark',
-	isUseGlassEffect: false, // 是否使用玻璃效果
 	primaryColor: '#1677ff', // 主题色
 	primaryColor_dark: '#44d62c', // 深色模式下的主题色
 
@@ -65,7 +64,7 @@ const MENU_ITEMS = [
 	{
 		id: 'total',
 		name: '整体',
-		desc: '语言、浮窗主题色、毛玻璃效果、提示气泡等基础选项',
+		desc: '语言、浮窗主题色、提示气泡等基础选项',
 		icon: (
 			<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
 				<circle cx="12" cy="12" r="9" strokeWidth="2" />

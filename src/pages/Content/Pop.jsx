@@ -589,7 +589,7 @@ export const Pop = () => {
 								executeDirectClose();
 							}
 						}}
-						className={`mainPanel ${colorMode} ${sweSetting.isUseGlassEffect ? 'glass' : ''} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
+						className={`mainPanel ${colorMode} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
 					>
 						<div
 							id="searchWhateverPopup"
@@ -613,9 +613,9 @@ export const Pop = () => {
 								updateIsHidePanel={setIsHidePanel}
 								updateIsHidePanelTemporarily={setIsHidePanelTemporarily}
 							/>
-							<div className="flex items-center justify-between h-[24px] border-b-1 border-[#f5f5f5] mb-1">
+							<div className="flex items-center justify-between h-[24px] border-b border-black/[0.06] dark:border-white/[0.08] mb-1">
 								<FrameList tabIndex={tabIndex} frames={frames} total={total} updateCurrent={setCurrent} updateTabIndex={setTabIndex} />
-								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-[#333] justify-end">
+								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-neutral-700 dark:text-neutral-200 justify-end">
 									<FindResult total={total} current={current} isShowResultText={sweSetting.isShowResultText} loopNotice={loopNotice} />
 								</div>
 							</div>

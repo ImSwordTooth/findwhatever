@@ -166,43 +166,28 @@ export const Total = () => {
 						<ColorPickerButton color={setting.primaryColor_dark} />
 					</Popover>
 				</SettingRow>
-				<SettingRow label={t('是否使用毛玻璃效果面板')}>
-					<Switch size="small" checked={setting.isUseGlassEffect} onChange={e => updateSetting('isUseGlassEffect', e)} />
-				</SettingRow>
 				<SettingRow label={t('是否显示按钮提示气泡')}>
 					<Switch size="small" checked={setting.isShowTooltip ?? true} onChange={e => updateSetting('isShowTooltip', e)} />
 				</SettingRow>
 			</SettingCard>
 
 			<div className="info-area">
-				<div className="title" onClick={() => setIsShowPreview(!isShowPreview)}>{t('点击此处来展开颜色模式、毛玻璃效果面板的说明和预览')}<DownSvg style={{ width: '20px', height: '20px', marginLeft: '8px', transition: 'transform .3s ease', transform: `rotate(${isShowPreview ? 180 : 0}deg)` }} /></div>
+				<div className="title" onClick={() => setIsShowPreview(!isShowPreview)}>{t('点击此处来展开颜色模式的说明和预览')}<DownSvg style={{ width: '20px', height: '20px', marginLeft: '8px', transition: 'transform .3s ease', transform: `rotate(${isShowPreview ? 180 : 0}deg)` }} /></div>
 				{
 					isShowPreview &&
 					<div className="content">
-						<div style={{ paddingLeft: '22px', position: 'relative' }}>
-							<TipsSvg style={{ width: '18px', height: '18px', position: 'absolute', left: '0', top: '2px' }} />
-							{t('毛玻璃效果在相反的色调下不太好看，但是在相同色调下表现非常好，这也是我保留这个功能的原因。')}
-						</div>
 						<div className="previewWp">
 							<ul className="case">
 								<li className={activeIndex === 0 ? 'active' : ''} onMouseEnter={() => setActiveIndex(0)}>{t('浅色模式-浅色页面')}</li>
 								<li className={activeIndex === 1 ? 'active' : ''} onMouseEnter={() => setActiveIndex(1)}>{t('浅色模式-深色页面')}</li>
 								<li className={activeIndex === 2 ? 'active' : ''} onMouseEnter={() => setActiveIndex(2)}>{t('深色模式-浅色页面')}</li>
 								<li className={activeIndex === 3 ? 'active' : ''} onMouseEnter={() => setActiveIndex(3)}>{t('深色模式-深色页面')}</li>
-								<li className={activeIndex === 4 ? 'active' : ''} onMouseEnter={() => setActiveIndex(4)}>{t('浅色模式-浅色页面-毛玻璃')}</li>
-								<li className={activeIndex === 5 ? 'active' : ''} onMouseEnter={() => setActiveIndex(5)}>{t('浅色模式-深色页面-毛玻璃')}</li>
-								<li className={activeIndex === 6 ? 'active' : ''} onMouseEnter={() => setActiveIndex(6)}>{t('深色模式-浅色页面-毛玻璃')}</li>
-								<li className={activeIndex === 7 ? 'active' : ''} onMouseEnter={() => setActiveIndex(7)}>{t('深色模式-深色页面-毛玻璃')}</li>
 							</ul>
 							<div className="preview">
 								<img className={activeIndex === 0 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png')} src="https://i0.letvimg.com/lc21_lemf/202601/29/10/43/image2.png" />
 								<img className={activeIndex === 1 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png')} src="https://i0.letvimg.com/lc21_lemf/202601/29/10/42/image1.png" />
 								<img className={activeIndex === 2 ? 'block' : 'hidden'} onClick={() => window.open('https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png')} src="https://i3.letvimg.com/lc20_lemf/202601/29/10/45/image6.png" />
 								<img className={activeIndex === 3 ? 'block' : 'hidden'} onClick={() => window.open('https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png')} src="https://i2.letvimg.com/lc21_lemf/202601/29/10/44/image5.png" />
-								<img className={activeIndex === 4 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image4.png')} src="https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image4.png" />
-								<img className={activeIndex === 5 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image3.png')} src="https://i0.letvimg.com/lc20_lemf/202601/29/10/44/image3.png" />
-								<img className={activeIndex === 6 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc21_lemf/202601/29/10/45/image7.png')} src="https://i0.letvimg.com/lc21_lemf/202601/29/10/45/image7.png" />
-								<img className={activeIndex === 7 ? 'block' : 'hidden'} onClick={() => window.open('https://i0.letvimg.com/lc20_lemf/202601/29/10/45/image8.png')} src="https://i0.letvimg.com/lc20_lemf/202601/29/10/45/image8.png" />
 							</div>
 						</div>
 					</div>
