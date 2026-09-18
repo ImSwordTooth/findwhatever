@@ -42,8 +42,14 @@ const isRestrictedUrl = (url) => {
 	);
 };
 
+const clearUpdateBadge = () => {
+	chrome.action?.setBadgeText?.({ text: '' })?.catch?.(() => null);
+};
+
 // 手动实现弹出窗口，避免点击空白处自动关闭
 chrome.action.onClicked.addListener(async (tab) => {
+	clearUpdateBadge();
+
 	if (!tab?.id || isRestrictedUrl(tab?.url)) {
 		return;
 	}
@@ -81,6 +87,11 @@ chrome.runtime.onInstalled.addListener(async (res) => {
 		chrome.storage.local.set({ searchValue: '' })
 		chrome.storage.sync.set({ isMatchCase: false, isWord: false, isReg: false, isLive: true })
 		chrome.runtime.openOptionsPage()
+	} else if (res.reason === 'update') {
+		// 扩展升级后在浏览器工具栏显示一次性 NEW 徽标，用户点击后自动清除
+		chrome.action?.setBadgeText?.({ text: 'NEW' })?.catch?.(() => null);
+		chrome.action?.setBadgeBackgroundColor?.({ color: '#f43f5e' })?.catch?.(() => null);
+		chrome.action?.setBadgeTextColor?.({ color: '#ffffff' })?.catch?.(() => null);
 	}
 })
 
@@ -177,6 +188,7 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
 		// 先移除已有样式，防止重复插入多个注入样式表
 		await chrome.scripting.removeCSS(cssParam).catch(() => null);
 		if (action === 'openAction') {
+			clearUpdateBadge();
 			await chrome.scripting.insertCSS(cssParam).catch(() => null);
 		}
 

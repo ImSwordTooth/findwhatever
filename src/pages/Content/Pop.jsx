@@ -613,7 +613,7 @@ export const Pop = () => {
 								updateIsHidePanel={setIsHidePanel}
 								updateIsHidePanelTemporarily={setIsHidePanelTemporarily}
 							/>
-							<div className="flex items-center justify-between h-[24px] border-b border-black/[0.06] dark:border-white/[0.08] mb-1">
+							<div className="flex items-center justify-between h-[24px] border-b border-black/[0.05] dark:border-white/[0.08] mb-1">
 								<FrameList tabIndex={tabIndex} frames={frames} total={total} updateCurrent={setCurrent} updateTabIndex={setTabIndex} />
 								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-neutral-700 dark:text-neutral-200 justify-end">
 									<FindResult total={total} current={current} isShowResultText={sweSetting.isShowResultText} loopNotice={loopNotice} />

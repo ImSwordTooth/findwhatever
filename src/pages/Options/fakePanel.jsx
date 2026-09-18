@@ -141,7 +141,7 @@ export const FakePanel = (props) => {
 							<div className="searchWhateverMoveHandler w-[50px] h-[3px] bg-[#888888] rounded opacity-30 transition-all duration-300 cursor-move hover:w-20 hover:opacity-100 relative before:content-[''] before:px-5 before:py-1 before:w-full before:absolute before:-top-1 before:h-[3px] before:box-content before:-left-5 before:-left-[20px]"/>
 						</div>
 					}
-					<div className="flex items-center justify-between h-[24px] border-b border-black/[0.06] dark:border-white/[0.08] mb-1">
+					<div className="flex items-center justify-between h-[24px] border-b border-black/[0.05] dark:border-white/[0.08] mb-1">
 						<div className={`transition-all duration-200 rounded-md ${
 							activeId === 'frameList'
 								? '!outline !outline-2 !outline-rose-500 !outline-offset-2 bg-rose-500/10 p-0.5 !shadow-[0_0_0_3px_rgba(244,63,94,0.2),0_0_10px_rgba(244,63,94,0.3)]'
