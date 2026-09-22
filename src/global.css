@@ -17,6 +17,8 @@
 	.mainPanel {
 		padding: 18px 12px 10px;
 		border-radius: 14px;
+		transform: translateZ(0);
+		backface-visibility: hidden;
 		background-color: rgba(255, 255, 255, 1);
 		background-color: color-mix(in srgb, var(--swe-color-primary, #1677ff) 2%, #ffffff);
 		border: solid 1px rgba(0, 0, 0, 0.07);

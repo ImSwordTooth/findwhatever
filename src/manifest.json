@@ -4,7 +4,7 @@
 	"name": "__MSG_appName__",
 	"short_name": "Find whatever",
 	"description": "__MSG_appDesc__",
-	"version": "5.0.0",
+	"version": "5.0.1",
 	"icons": {
 		"16": "popup.png",
 		"32": "popup.png",
