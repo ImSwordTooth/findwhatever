@@ -4,7 +4,7 @@
 		"description": "The name of the extension."
 	},
 	"appDesc": {
-		"message": "Enhance your browser's find capabilities. Cross-tag continuous search, regular expressions, deep iframe penetration and 0 DOM pollution.",
+		"message": "Enhance browser search with cross-tag continuous matching, regex support, deep iframe penetration, and zero DOM pollution.",
 		"description": "The description of the extension."
 	}
 }
