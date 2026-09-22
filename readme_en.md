@@ -4,8 +4,7 @@
 
 # Find whatever 🔍
 
-> **The ultimate search experience beyond native browser limits.**
-> A powerful, aesthetically pleasing, and highly customizable text-finding tool for your browser. It doesn't just find words; it redefines how you interact with content through cross-tag matching, regex support, and dynamic DOM monitoring.
+An in-page search enhancement extension tailored for complex modern web pages. Built to resolve search limitations across nested iframes, Shadow DOM, segmented HTML tags, and dynamically loaded content.
 
 <div>
 	<img width="410" height="100" alt="image" src="https://github.com/user-attachments/assets/c5ffc073-1986-4267-85fd-d9d5f7b28487" />
@@ -16,68 +15,46 @@
 	<img width="407" height="100" alt="image" src="https://github.com/user-attachments/assets/4c7ba082-68a7-4800-b070-90d9bf010c9e" />
 </div>
 
-## ✨ Key Features
+## Key Capabilities
 
-| 🎨 **Stunning UI** | 🚀 **Advanced Search** | ⌨️ **Total Control** |
+- **Cross-Tag & Cross-Line Matching**: Powered by an in-memory text projection model, it continuously matches text split across inline tags (`<span>`, `<code>`, `<b>`) and line breaks without altering DOM structure.
+- **Deep Penetration**: Traverses open Shadow DOM, nested multi-domain iframes, and inline SVG text. The frame navigator automatically skips empty frames with zero matches.
+- **Dynamic DOM Monitoring**: Backed by MutationObserver, it automatically re-runs search when content dynamically loads via infinite scroll, AJAX, or Tab switching.
+- **Regex Support & Safety Protection**: Supports full regular expressions with Unicode mode (`u` flag) and includes an anti-freeze heuristic probe to block dangerous runaway patterns.
+- **Zero DOM Pollution & No Layout Thrashing**: The floating UI is isolated in an independent ShadowRoot. Visibility checking leverages native `checkVisibility` to eliminate layout recalculation.
+- **Lightweight & Fast**: Completely decoupled from React and Ant Design in v5.0, built with Preact and Rspack for minimal memory overhead.
+
+## Shortcuts
+
+| Action | Windows / Linux | macOS |
 | :--- | :--- | :--- |
-| Supports Auto/Light/Dark modes with an optional Frosted Glass effect. | Regex, Whole Word, Case Sensitive, and groundbreaking **Cross-Tag** search. | Fully customizable shortcuts. Can even override the native `Ctrl+F`. |
-
-## 🎯 Detailed Functionality
-
-### 1. Intelligent Control Panel
-*   **Adaptive Positioning**: A dedicated drag bar allows you to move the panel anywhere. It remembers your preferred location.
-*   **Smart Reset**: Automatically recalibrates the position if the browser window resizes or the console opens, preventing the panel from getting lost.
-*   **Transparency & Hover**: Adjust opacity to see content behind the panel. Toggle "Temporary Transparency" on hover or keep it permanently semi-transparent.
-
-### 2. Powerful Search Engine
-*   **Cross-Tag Search (v3.0+)**: Breaks the limitations of HTML. Locate text even if it's split by tags like `<span>`, `<b>`, or `<a>`.
-*   **Iframe Penetration**: Automatically detects and searches within all valid iframes on the current page.
-*   **Dynamic Monitoring (DOM Observer)**: Turn on `Ctrl+D` to monitor page changes. Ideal for infinite-scroll pages or dynamic web apps where content updates in real-time.
-
-### 3. Smart Input & History
-*   **Auto-Fill**: Automatically focuses the input and fills it with your currently selected text (or your last search) upon opening.
-*   **Search Debounce**: Customizable delay to optimize performance, especially when using complex Regular Expressions.
-*   **Smart History**: Stores up to 50 recent searches. You can "Pin" frequently used keywords to a fixed list for instant access.
-
-### 4. Result Navigation
-*   **Visual Progress**: A status bar at the bottom indicates the distribution of results across different page sections/iframes.
-*   **Quick Copy**: Click the result count to copy the keyword to your clipboard instantly.
-*   **Smart Scrolling**: Automatically scrolls the target result to the center of the viewport.
-
-
-## ⌨️ Shortcut Guide
-
-| Action | Windows/Linux | macOS |
-| :--- | :--- | :--- |
-| **Open/Close Panel** | `Alt + F` (Default) | `Alt + F` |
+| **Open / Close Panel** | `Alt + F` (Default) | `Alt + F` |
 | **Next Match** | `Enter` | `Enter` |
 | **Previous Match** | `Shift + Enter` | `Shift + Enter` |
-| **Case Sensitive** | `Ctrl + C` | `Cmd + C` |
-| **Whole Word** | `Ctrl + W` | `Cmd + W` |
-| **Regex Mode** | `Ctrl + R` | `Cmd + R` |
-| **Dynamic Monitor** | `Ctrl + D` | `Cmd + D` |
-| **Exit & Clear** | `Esc` | `Esc` |
+| **Toggle Case Sensitive** | `Ctrl + C` | `Cmd + C` |
+| **Toggle Whole Word** | `Ctrl + W` | `Cmd + W` |
+| **Toggle Regex Mode** | `Ctrl + R` | `Cmd + R` |
+| **Toggle Dynamic Monitor** | `Ctrl + D` | `Cmd + D` |
+| **Close Panel** | `Esc` | `Esc` |
 
-> *Pro Tip: Go to `chrome://extensions/shortcuts` to set the key to `Ctrl+F` if you wish to replace the default browser find function.*
+> *Tip: You can rebind the shortcut to `Ctrl+F` or `Cmd+F` in `chrome://extensions/shortcuts` or `edge://extensions/shortcuts` to seamlessly replace the browser's built-in find bar.*
 
-## 📦 Installation
-- chrome：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
-- edge：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
+## Installation
 
+- **Chrome Web Store**: [Find whatever on Chrome Web Store](https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo)
+- **Edge Add-ons**: [Find whatever on Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk)
 
-## 🤝 Feedback
+## Development
 
-If you encounter incorrect search results, performance issues, or have feature requests:
-*   Please report via GitHub Issues or 2223133607@qq.com.
-*   When reporting a bug, please provide the URL of the page where the error occurred.
+1. Clone repo and install dependencies: `npm install`
+2. Start development mode with hot rebuild: `npm run start`
+3. Open browser extension settings, enable "Developer mode", click "Load unpacked", and select the `build` directory
+4. Build production bundle: `npm run build` (generates the release archive in `zip/`)
 
-## 🌟 Support me
-If you find this project helpful, feel free to give me a star 🌟 or leave me a rating and review on the Chrome Store. This will be my biggest motivation to continue creating!
+## Feedback
 
-## 🛠 For developer
-1. Run `npm install`
-2. Run `npm run start` to start fast watch build
-3. Open your browser's extensions page in developer mode, press "load unpacked" and select the `build` directory
+If you encounter inaccurate search results, edge cases, or have suggestions, feel free to open a [GitHub Issue](https://github.com/ImSwordTooth/findwhatever/issues) or reach out via email at 2223133607@qq.com.
 
 ## License
+
 [GPL-3.0-only](LICENSE)

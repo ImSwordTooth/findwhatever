@@ -4,8 +4,7 @@
 
 # Find whatever 🔍
 
-> **超越浏览器原生搜索的极致体验。**
-> 这是一个功能强大、界面美观、深度定制的网页文本查找工具。它不仅支持传统的关键词搜索，还引入了跨标签搜索、正则匹配、动态监听等高级功能。
+针对复杂现代网页量身打造的页面内查找增强扩展。专为解决深层 iframe、Shadow DOM、跨 HTML 标签分词以及动态加载页面的查找痛点。
 
 <div>
 	<img width="410" height="100" alt="image" src="https://github.com/user-attachments/assets/c5ffc073-1986-4267-85fd-d9d5f7b28487" />
@@ -16,76 +15,46 @@
 	<img width="407" height="100" alt="image" src="https://github.com/user-attachments/assets/4c7ba082-68a7-4800-b070-90d9bf010c9e" />
 </div>
 
-## ✨ 核心特性
+## 核心能力
 
-| 🎨 **极致视觉** | 🚀 **强大搜索** | ⌨️ **快捷操作** |
+- **跨标签与跨换行连续查找**：基于纯内存文本投影映射，突破 `<span>`、`<code>`、`<b>` 等行内标签及换行符的限制，无损匹配完整词句。
+- **深度穿透**：原生穿透开放式 Shadow-DOM、嵌套 iframe 及内嵌 SVG 文本，页面列表自动跳过 0 命中的空帧。
+- **动态监听与自动重检**：接入 MutationObserver，在页面异步加载、瀑布流滚动或 Tab 切换时实时自动更新查找结果。
+- **正则模式与安全防护**：支持完整正则表达式与 Unicode 模式，内置防挂起探针机制，防止死循环正则导致页面卡顿。
+- **0 DOM 污染与零重排**：浮窗完全封装于隔离的 ShadowRoot 中；接入浏览器底层 `checkVisibility` 判定可见性，消除页面布局抖动。
+- **轻量纯粹**：5.0 全面剔除 React、AntD 等重型依赖，基于 Preact + Rspack 构建，占用更低的浏览器前台资源。
+
+## 快捷键
+
+| 功能 | Windows / Linux | macOS |
 | :--- | :--- | :--- |
-| 支持 自动/明亮/暗黑 模式，提供毛玻璃（Frosted Glass）环境感知效果。 | 支持正则表达式、全字匹配、大小写敏感，甚至可以跨 HTML 标签查找文本。 | 深度集成快捷键，完全自定义，支持覆盖浏览器内置 `Ctrl+F`。 |
-
-
-
-## 🎯 功能大观
-
-### 1. 智能交互面板
-*   **随心拖拽**：专设拖拽条，支持自定义位置并自动记忆。窗口大小变动时智能重置，防止面板“走丢”。
-*   **透明度控制**：悬浮时临时透明，或一键设为永久半透明，查找内容时不遮挡视线。
-*   **多种显示模式**：可选择仅拖拽条触发或全面板拖拽。
-
-### 2. 深度搜索能力
-*   **跨标签搜索 (v3.0+)**：打破 HTML 标签限制（如 `<span>`, `<b>`, `<a>` 等），即使文字被标签切分也能精准定位。
-*   **多页面/iframe 支持**：自动识别并穿透页面中的 `iframe`。
-*   **动态监听 (MutationObserver)**：开启后，当页面内容发生变化（如瀑布流加载）时，搜索结果将自动实时更新。
-
-### 3. 输入与历史记录
-*   **自动填充**：选中文本自动填入，打开面板自动聚焦。
-*   **搜索防抖**：内置 Debounce 机制，在高频输入或正则模式下保护浏览器性能。
-*   **历史管理**：最近 50 条记录自动保存，支持“一键固定（Pin）”常用搜索词。
-
-### 4. 结果定位与反馈
-*   **状态概览**：底边栏通过色块展示搜索结果在不同 iframe 中的分布与当前状态。
-*   **快速复制**：点击搜索结果统计数字，即可直接复制当前关键词。
-*   **智能滚动**：自动将目标结果滚动至视口中心。
-
-## ⌨️ 快捷键指南 (Shortcuts)
-
-为了极致的效率，我们提供了丰富的快捷键支持：
-
-| 功能 | Windows/Linux | macOS |
-| :--- | :--- | :--- |
-| **打开/关闭面板** | `Alt + F` (默认) | `Alt + F` |
+| **打开 / 关闭面板** | `Alt + F` (默认) | `Alt + F` |
 | **下一个匹配项** | `Enter` | `Enter` |
 | **上一个匹配项** | `Shift + Enter` | `Shift + Enter` |
 | **大小写敏感切换** | `Ctrl + C` | `Cmd + C` |
 | **全字匹配切换** | `Ctrl + W` | `Cmd + W` |
 | **正则模式切换** | `Ctrl + R` | `Cmd + R` |
 | **动态监听开关** | `Ctrl + D` | `Cmd + D` |
-| **关闭并清除痕迹** | `Esc` | `Esc` |
+| **关闭浮窗** | `Esc` | `Esc` |
 
-> *提示：您可以在 `chrome://extensions` 中将快捷键设置为 `Ctrl+F` 或 `Cmd+F` 来完美替代系统原生搜索。*
+> *提示：可以在浏览器的快捷键管理页（`chrome://extensions/shortcuts` 或 `edge://extensions/shortcuts`）中将快捷键直接映射为 `Ctrl+F` 或 `Cmd+F`，无缝替代浏览器自带的查找栏。*
 
+## 安装
 
-## 📦 如何安装
+- **Chrome 网上应用店**：[Find whatever on Chrome Web Store](https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo)
+- **Edge 外接程序**：[Find whatever on Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk)
 
-- **chrome**：https://chromewebstore.google.com/detail/find-whatever-regex-auto/pdpkckoiaiinjlhddhcoknjhdncepnbo
-- **edge**：https://microsoftedge.microsoft.com/addons/detail/find-whatever-regex-a/dfmiobmbhchkjnehfkgpoddfkhonafmk
+## 本地开发
 
+1. 克隆仓库并安装依赖：`npm install`
+2. 启动开发模式（实时监听构建）：`npm run start`
+3. 打开浏览器扩展程序管理页，开启“开发者模式”，点击“加载已解压的扩展程序”，选择项目生成的 `build` 目录
+4. 生产打包：`npm run build`（自动在 `zip/` 目录生成发布包）
 
-## 🤝 反馈与建议
+## 反馈与交流
 
-如果您在使用过程中遇到搜索结果不准确、页面卡顿或有更好的功能建议：
-*   请及时通过 GitHub Issues 或者 2223133607@qq.com 联系我。
-*   反馈 Bug 时，请附带该页面的 URL。
-
-## 🌟 支持我
-
-如果您觉得这个项目对您有帮助，欢迎给我点个 Star 🌟 或在 Chrome 商店给我留下评分和评论。这将是我持续创作的最大动力！
-
-
-## 🛠 开发
-
-1. 执行 `npm install`
-2. 执行 `npm run start` 即可开启极速热监听
-3. 打开扩展程序的开发者模式，加载已解压的扩展程序，把 `build` 目录放进去
+如果在使用中遇到任何匹配异常、边界情况或有改进建议，欢迎提交 [GitHub Issues](https://github.com/ImSwordTooth/findwhatever/issues) 或邮件联系 2223133607@qq.com（反馈时建议附带问题页面的 URL）。
 
 ## License
+
 [GPL-3.0-only](LICENSE)
