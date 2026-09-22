@@ -1,0 +1,10 @@
+{
+	"appName": {
+		"message": "Find whatever - regex & auto re-find",
+		"description": "扩展程序名称"
+	},
+	"appDesc": {
+		"message": "专为解决复杂网页搜索痛点而生的查找增强引擎。跨标签连续穿透、正则防护、深度 iframe 穿透与 0 DOM 污染。",
+		"description": "扩展程序描述"
+	}
+}

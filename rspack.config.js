@@ -1,8 +1,6 @@
 const rspack = require('@rspack/core');
 const path = require('path');
 const fileSystem = require('fs-extra');
-const env = require('./utils/env');
-
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -25,7 +23,7 @@ const alias = {
 	'react/jsx-runtime': 'preact/jsx-runtime',
 };
 
-const secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
+const secretsPath = path.join(__dirname, 'secrets.' + (process.env.NODE_ENV || 'development') + '.js');
 if (fileSystem.existsSync(secretsPath)) {
 	alias['secrets'] = secretsPath;
 }
@@ -47,17 +45,15 @@ const config = {
 		publicPath: ASSET_PATH,
 	},
 	experiments: {
-		// 关闭 Rspack 默认 CSS 处理，确保 css-loader 的 [[id, cssText]] 格式不变（兼容 ShadowRoot 内联注入）
+		// 关闭 Rspack 默认 CSS 处理，交给 loader 链
 		css: false,
 	},
 	module: {
 		rules: [
 			{
 				test: /\.css$/,
+				type: 'asset/source',
 				use: [
-					{
-						loader: 'css-loader',
-					},
 					{
 						loader: 'postcss-loader',
 					},
@@ -132,6 +128,11 @@ const config = {
 				{
 					from: 'src/assets/img/popup.png',
 					to: path.join(__dirname, 'build/popup.png'),
+					force: true,
+				},
+				{
+					from: 'src/_locales',
+					to: path.join(__dirname, 'build/_locales'),
 					force: true,
 				},
 			],

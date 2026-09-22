@@ -9,7 +9,7 @@ if (container) {
 	root.render(
 		<div style={{ height: '100%' }}>
 			<Options title={'Settings'} />
-			<style type="text/css">{styles[0][1].toString()}</style>
+			<style type="text/css">{styles}</style>
 		</div>
 	)
 }

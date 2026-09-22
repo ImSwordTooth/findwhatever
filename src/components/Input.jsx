@@ -1,10 +1,7 @@
 "use client";
 import { forwardRef, useState, useRef } from "preact/compat";
 import { useMotionTemplate, useMotionValue, motion } from "motion/react";
-import { twMerge } from "tailwind-merge";
-import { clsx } from "clsx";
-
-const cn = (...inputs) => twMerge(clsx(inputs));
+const cn = (...inputs) => inputs.filter(Boolean).join(" ");
 
 const Input = forwardRef(({ className, type, children, isShowRing, textWidth, ...props }, ref) => {
 	const radius = 100;
