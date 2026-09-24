@@ -84,15 +84,15 @@ export const FindResult = (props) => {
 	}
 
 	return (
-		<div ref={containerRef} className="flex items-center">
+		<div ref={containerRef} className="flex items-center shrink-0 whitespace-nowrap leading-none">
 			{
 				isShowResultText &&
 				<>
 					<div
-						className="flex items-center cursor-pointer shrink-0 transition-colors duration-200 select-none hover:text-[var(--swe-color-primary)] dark:text-[#b7b4b4] dark:hover:text-[var(--swe-color-primary)]"
+						className="flex items-center cursor-pointer shrink-0 transition-colors duration-200 select-none hover:text-[var(--swe-color-primary)] dark:text-[#b7b4b4] dark:hover:text-[var(--swe-color-primary)] whitespace-nowrap"
 						title={t('点击复制全部结果')}
 						onClick={copyResult}>
-						<div className="scale-90 origin-right">{t('查找结果')}</div>
+						<div className="scale-90 origin-right whitespace-nowrap">{t('查找结果')}</div>
 						<span className="w-3.5 h-3.5 ml-1 inline-flex items-center justify-center shrink-0">
 							{
 								isCopied

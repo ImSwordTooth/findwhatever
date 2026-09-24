@@ -93,8 +93,9 @@ export const reCheckTree = () => {
 				// 可见性检查（DETAILS 内部豁免，确保折叠内容可被检索并在激活时自动展开）
 				const isDetails = tagName === 'DETAILS' || (typeof node.closest === 'function' && node.closest('details'))
 				if (!isDetails) {
+					const style = window.getComputedStyle(node)
 					if (typeof node.checkVisibility === 'function') {
-						if (!node.checkVisibility({ checkVisibilityCSS: true })) {
+						if (!node.checkVisibility({ checkVisibilityCSS: true }) && style.display !== 'contents') {
 							return
 						}
 					} else {

@@ -13,12 +13,26 @@ export const createOrUpdatePopup = (props) => {
 	if (!containerDiv) {
 		containerDiv = document.createElement('div');
 		containerDiv.id = CONTAINER_ID;
-		// 建议使用 fixed 覆盖全屏或局部，z-index 取 32 位整型最大值
+		// 顶级容器与宿主插槽彻底重置，杜绝宿主页面的 font-size/line-height/zoom/box-sizing 穿透
 		containerDiv.style.cssText = `
-            position: fixed;
-            z-index: 2147483647;
-        `;
+			all: initial;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 0;
+			height: 0;
+			z-index: 2147483647;
+			pointer-events: none;
+			border: none;
+			padding: 0;
+			margin: 0;
+		`;
 		shadowHost = document.createElement('div');
+		shadowHost.style.cssText = `
+			all: initial;
+			display: block;
+			pointer-events: auto;
+		`;
 		containerDiv.appendChild(shadowHost);
 		shadowRoot = shadowHost.attachShadow({ mode: 'closed' });
 		document.documentElement.appendChild(containerDiv);

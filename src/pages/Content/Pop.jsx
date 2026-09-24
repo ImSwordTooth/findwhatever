@@ -315,16 +315,7 @@ export const Pop = () => {
 
 	}, [debouncedValue, isWord, isMatchCase, isReg, isLive, isReady]);
 
-	// pop再次出现时，自动选中文本，方便直接下一轮直接输入关键字检索
-	useEffect(() => {
-		if (isReady && searchInputRef.current) {
-			setTimeout(() => {
-				if (searchInputRef.current) {
-					searchInputRef.current.select();
-				}
-			}, 10);
-		}
-	}, [isReady]);
+
 
 	useEffect(() => {
 		window.__swe_requestClose = handleCloseWithAnimation;
@@ -556,7 +547,7 @@ export const Pop = () => {
 	const isShowTooltip = sweSetting.isShowTooltip ?? true
 
 	return (
-		<div className="fixed z-[10000] top-0 left-0">
+		<div className="fixed z-[10000] top-0 left-0 w-0 h-0 pointer-events-none overflow-visible">
 			{
 				isReady &&
 				<Rnd
@@ -568,6 +559,7 @@ export const Pop = () => {
 					enableResizing={false}
 					enableUserSelectHack={true}
 					style={{
+						pointerEvents: 'auto',
 						transition: (isHidePanel || isHidePanelTemporarily) ? 'opacity 0.3s ease' : undefined,
 						opacity: isHidePanel ? sweSetting.tempOpacity : (isHidePanelTemporarily ? sweSetting.tempOpacity : 1)
 					}}
@@ -579,14 +571,17 @@ export const Pop = () => {
 							duration: 0.16,
 							ease: [0.4, 0, 1, 1]
 						} : {
-							type: "spring",
-							damping: 24,
-							stiffness: 320,
-							mass: 0.8
+							duration: 0.18,
+							ease: [0.16, 1, 0.3, 1]
 						}}
 						onAnimationComplete={() => {
 							if (isExiting) {
 								executeDirectClose();
+							} else {
+								if (searchInputRef.current) {
+									searchInputRef.current.focus({ preventScroll: true });
+									searchInputRef.current.select();
+								}
 							}
 						}}
 						className={`mainPanel ${colorMode} ${!sweSetting.isShowSetting && !sweSetting.isShowOpacity && !sweSetting.isShowStatus && sweSetting.dragArea === 'total' ? 'lessPT' : ''}`}
@@ -613,9 +608,9 @@ export const Pop = () => {
 								updateIsHidePanel={setIsHidePanel}
 								updateIsHidePanelTemporarily={setIsHidePanelTemporarily}
 							/>
-							<div className="flex items-center justify-between h-[24px] border-b border-black/[0.05] dark:border-white/[0.08] mb-1">
+							<div className="flex items-center justify-between min-h-[24px] h-[24px] border-b border-black/[0.05] dark:border-white/[0.08] mb-1 box-border">
 								<FrameList tabIndex={tabIndex} frames={frames} total={total} updateCurrent={setCurrent} updateTabIndex={setTabIndex} />
-								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-neutral-700 dark:text-neutral-200 justify-end">
+								<div id="searchwhatever_result" className="text-xs flex items-center select-none text-neutral-700 dark:text-neutral-200 justify-end shrink-0">
 									<FindResult total={total} current={current} isShowResultText={sweSetting.isShowResultText} loopNotice={loopNotice} />
 								</div>
 							</div>
@@ -639,7 +634,6 @@ export const Pop = () => {
 									<Input
 										ref={searchInputRef}
 										id="swe_searchInput"
-										autoFocus
 										placeholder={
 											((recentList?.length > 0) && (sweSetting.isShowHistory ?? true))
 												? t('查找或按 ↓ 查历史')

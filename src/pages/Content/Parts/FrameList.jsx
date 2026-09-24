@@ -65,9 +65,9 @@ export const FrameList = (props) => {
 
 	return (
 		<div className="flex items-center border-solid border-0 border-b border-[rgba(232,232,232,0.8)] dark:border-[rgba(93,93,93,0.8)] h-full flex-1 mr-1">
-			<div className="flex items-center text-xs mr-2 text-[#000000] dark:text-[#ffffff] relative cursor-pointer select-none" onClick={() => handleTabChange('0')}>
-				{t('当前页')}
-				<span className="bg-[#f4f4f4] dark:bg-[#282828] dark:text-[#b7b4b4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content">
+			<div className="flex items-center text-xs mr-2 text-[#000000] dark:text-[#ffffff] relative cursor-pointer select-none whitespace-nowrap shrink-0" onClick={() => handleTabChange('0')}>
+				<span className="whitespace-nowrap leading-none">{t('当前页')}</span>
+				<span className="bg-[#f4f4f4] dark:bg-[#282828] dark:text-[#b7b4b4] py-[1px] px-[5px] rounded-[7px] ml-1 h-[13px] leading-[14px] box-content inline-flex items-center justify-center text-[11px]">
 					{mainFrameSum}
 				</span>
 				{
